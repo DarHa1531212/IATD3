@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IATD3
@@ -14,17 +15,25 @@ namespace IATD3
 
         private int boardSize;
         private Cell[,] board;
-        private int playerPosX;
+        private int playerPosX; 
         private int playerPosY;
+        private bool sizeToBeAdapted;
 
         internal Cell[,] Board { get => board; set => board = value; }
         public int BoardSize { get => boardSize; set => boardSize = value; }
+        public bool SizeToBeAdapted { get => sizeToBeAdapted; set => sizeToBeAdapted = value; }
 
         public Environment()
         {
-            boardSize = _boardSizeBeginning;
+            AdaptSize(_boardSizeBeginning);
+        }
+
+        private void AdaptSize(int size)
+        {
+            boardSize = size;
             board = new Cell[boardSize, boardSize];
             InitializeEnvironment();
+            sizeToBeAdapted = true;
         }
 
         private void InitializeEnvironment()
@@ -36,7 +45,7 @@ namespace IATD3
                 {
 
                     bool hasMonster = rng.Next(0, 100) <= _percentageRateMonster;
-                    bool hasAbyss = rng.Next(0, 100) <= _percentageRateAbyss;
+                    bool hasAbyss = rng.Next(0, 100) <= _percentageRateAbyss && !hasMonster;
 
                     board[line, column] = new Cell(line, column, hasAbyss, hasMonster);
                     AdaptToNeighboursProperties(line, column);
@@ -117,6 +126,11 @@ namespace IATD3
             {
                 board[line, column - 1].HasOdour = true;
             }
+        }
+
+        public void GenerateNextBoard()
+        {
+            AdaptSize(boardSize + 1);
         }
     }
 }

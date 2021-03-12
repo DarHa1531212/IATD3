@@ -19,14 +19,20 @@ namespace IATD3
             InitializeComponent();
             this.AutoSize = true;
             environment = new Environment();
-            createLabels();
             Board.AutoSize = true;
+
+            if (environment.SizeToBeAdapted)
+            {
+                createLabels();
+                environment.SizeToBeAdapted = false;
+            }
         }
 
         private void createLabels()
         {
             // design inspired by code found at https://playwithcsharpdotnet.blogspot.com/
             int boardSize = environment.BoardSize;
+            Board.Controls.Clear();
             for (int line = 0; line < boardSize; line++)
             {
                 for (int column = 0; column < boardSize; column++)

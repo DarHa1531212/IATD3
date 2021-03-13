@@ -39,17 +39,24 @@ namespace IATD3
         private void InitializeEnvironment()
         {
             Random rng = new Random();
+            int portalPosX = rng.Next(0, boardSize);
+            int portalPosY = rng.Next(0, boardSize);
             for (int line = 0; line < boardSize; line++)
             {
                 for (int column = 0; column < boardSize; column++)
                 {
-
-                    bool hasMonster = rng.Next(0, 100) <= _percentageRateMonster;
-                    bool hasAbyss = rng.Next(0, 100) <= _percentageRateAbyss && !hasMonster;
-
-                    board[line, column] = new Cell(line, column, hasAbyss, hasMonster);
-                    AdaptToNeighboursProperties(line, column);
-                    AdaptNeighboursProperties(line, column, hasAbyss, hasMonster);
+                    if (line == portalPosY && column == portalPosX)
+                    {
+                        board[line, column] = new Cell(line, column, true);
+                        AdaptToNeighboursProperties(line, column);
+                    } else
+                    {
+                        bool hasMonster = rng.Next(0, 100) <= _percentageRateMonster;
+                        bool hasAbyss = rng.Next(0, 100) <= _percentageRateAbyss && !hasMonster;
+                        board[line, column] = new Cell(line, column, hasAbyss, hasMonster);
+                        AdaptToNeighboursProperties(line, column);
+                        AdaptNeighboursProperties(line, column, hasAbyss, hasMonster);
+                    }
                 }
             }
         }

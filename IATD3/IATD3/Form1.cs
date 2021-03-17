@@ -28,14 +28,14 @@ namespace IATD3
             { "Odour", Color.Violet }
         };
 
-        Environment environment;
-        int boardCpt;
+        cEnvironment environment;
+        private int boardCpt;
 
         public Form1()
         {
             InitializeComponent();
             this.AutoSize = true;
-            environment = new Environment();
+            environment = new cEnvironment();
             Board.AutoSize = true;
             boardCpt = 0;
 

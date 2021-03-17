@@ -56,7 +56,7 @@
             this.Controls.Add(this.boardNumber);
             this.Controls.Add(this.Board);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Welcome to the forest !";
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -7,23 +7,21 @@ using System.Threading.Tasks;
 
 namespace IATD3
 {
-    public class Environment
+    public class cEnvironment
     {
         private const int _boardSizeBeginning = 4;
         private const float _percentageRateMonster = 10.0f;
         private const float _percentageRateAbyss = 10.0f;
 
         private int boardSize;
-        private Cell[,] board;
-        private int playerPosX; 
-        private int playerPosY;
+        private cCell[,] board;
         private bool sizeToBeAdapted;
 
-        internal Cell[,] Board { get => board; set => board = value; }
+        internal cCell[,] Board { get => board; set => board = value; }
         public int BoardSize { get => boardSize; set => boardSize = value; }
         public bool SizeToBeAdapted { get => sizeToBeAdapted; set => sizeToBeAdapted = value; }
 
-        public Environment()
+        public cEnvironment()
         {
             AdaptSize(_boardSizeBeginning);
         }
@@ -31,7 +29,7 @@ namespace IATD3
         private void AdaptSize(int size)
         {
             boardSize = size;
-            board = new Cell[boardSize, boardSize];
+            board = new cCell[boardSize, boardSize];
             InitializeEnvironment();
             sizeToBeAdapted = true;
         }
@@ -47,13 +45,13 @@ namespace IATD3
                 {
                     if (line == portalPosY && column == portalPosX)
                     {
-                        board[line, column] = new Cell(line, column, true);
+                        board[line, column] = new cCell(line, column, true);
                         AdaptToNeighboursProperties(line, column);
                     } else
                     {
                         bool hasMonster = rng.Next(0, 100) <= _percentageRateMonster;
                         bool hasAbyss = rng.Next(0, 100) <= _percentageRateAbyss && !hasMonster;
-                        board[line, column] = new Cell(line, column, hasAbyss, hasMonster);
+                        board[line, column] = new cCell(line, column, hasAbyss, hasMonster);
                         AdaptToNeighboursProperties(line, column);
                         AdaptNeighboursProperties(line, column, hasAbyss, hasMonster);
                     }
@@ -73,16 +71,19 @@ namespace IATD3
             }
         }
 
-        private bool CheckNeighboursMonsters(int line, int column)
+        public bool CheckNeighboursMonsters(int line, int column)
         {
             bool hasMonsterUp = (
-                (line - 1) >= 0 &&
-                board[line - 1, column].HasMonster
+                (line - 1) >= 0
+                    ? board[line - 1, column].HasMonster
+                    : false
             );
             bool hasMonsterLeft = (
-                (column - 1) >= 0 &&
-                board[line, column - 1].HasMonster
+                (column - 1) >= 0
+                    ? board[line, column - 1].HasMonster
+                    : false
             );
+            Console.WriteLine(line + " " + column + " " + hasMonsterUp + " " + hasMonsterLeft);
             return hasMonsterUp || hasMonsterLeft;
         }
 
@@ -138,6 +139,23 @@ namespace IATD3
         public void GenerateNextBoard()
         {
             AdaptSize(boardSize + 1);
+        }
+
+        public bool ThrowStone(int line, int column)
+        {
+            bool hadMonster = board[line, column].HasMonster;
+            board[line, column].HasMonster = false;
+            return hadMonster;
+        }
+
+        public bool IsDeadlyCell(int line, int column)
+        {
+            return board[line, column].HasMonster || board[line, column].HasAbyss;
+        }
+
+        public bool IsPortal(int line, int column)
+        {
+            return board[line, column].HasPortal;
         }
     }
 }

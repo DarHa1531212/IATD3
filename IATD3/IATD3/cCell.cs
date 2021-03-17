@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace IATD3
 {
-    class Cell
+    public class cCell
     {
         private Label label;
         private int posX;
@@ -25,7 +25,7 @@ namespace IATD3
         public bool HasPortal { get => hasPortal; set => hasPortal = value; }
         public Label Label { get => label; set => label = value; }
 
-        public Cell(int posX, int posY, bool hasAbyss, bool hasMonster) {
+        public cCell(int posX, int posY, bool hasAbyss, bool hasMonster) {
             this.posX = posX;
             this.posY = posY;
             this.hasAbyss = hasAbyss;
@@ -33,7 +33,7 @@ namespace IATD3
             this.hasOdour = false;
             this.hasWind = false;
         }
-        public Cell(int posX, int posY, bool hasPortal)
+        public cCell(int posX, int posY, bool hasPortal)
         {
             this.posX = posX;
             this.posY = posY;

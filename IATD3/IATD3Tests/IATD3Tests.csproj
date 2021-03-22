@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="CellTests.cs" />
     <Compile Include="EnvironmentTests.cs" />
+    <Compile Include="FactTableManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -100,17 +100,38 @@ namespace IATD3
             // But we assume each are cell sizes are equal
 
             Dictionary<string, string> attributes = new Dictionary<string, string>();
-            attributes.Add("locationX", relativeLocationX.ToString());
-            attributes.Add("locationY", relativeLocationY.ToString());
             attributes.Add("presence", isSmelly.ToString());
-            FactTableManager.AddFact("Smell", attributes);
+            FactTableManager.AddOrReplaceFactAtLocation("Smell", relativeLocationX, relativeLocationY, attributes);
+            
+            attributes = new Dictionary<string, string>();
+            attributes.Add("presence", isBright.ToString());
+            FactTableManager.AddOrReplaceFactAtLocation("Portal", relativeLocationX, relativeLocationY, attributes);
 
-            attributes["presence"] = isBright.ToString();
-            FactTableManager.AddFact("Portal", attributes);
+            attributes = new Dictionary<string, string>();
+            attributes.Add("presence", isWindy.ToString());
+            FactTableManager.AddOrReplaceFactAtLocation("Wind", relativeLocationX, relativeLocationY, attributes);
 
-            attributes["presence"] = isWindy.ToString();
-            FactTableManager.AddFact("Wind", attributes);
+        }
 
+        public void ThrowRock()
+        {
+            effectorThrowRock.LaunchPosX = 1;
+            effectorThrowRock.DoAction();
+        }
+
+        public void Die(bool hadMonster, bool hadAbyss)
+        {
+            Dictionary<string, string> attributes = new Dictionary<string, string>();
+            attributes.Add("presence", hadMonster.ToString());
+            FactTableManager.AddOrReplaceFactAtLocation("Monster", relativeLocationX, relativeLocationY, attributes);
+
+            attributes = new Dictionary<string, string>();
+            attributes.Add("presence", hadAbyss.ToString());
+            FactTableManager.AddOrReplaceFactAtLocation("Abyss", relativeLocationX, relativeLocationY, attributes);
+
+            relativeLocationX = 0;
+            relativeLocationY = 0;
+            // Reset la position en (0,0)
         }
     }
 }

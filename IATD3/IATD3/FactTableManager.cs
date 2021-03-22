@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace IATD3
 {
-    static class FactTableManager
+    public static class FactTableManager
     {
         private const string _path = @"../../facts.xml";
 
@@ -26,7 +26,7 @@ namespace IATD3
 
         }
 
-        public static void AddFact(string factName, Dictionary<string, string> attributes)
+        private static void AddFact(string factName, Dictionary<string, string> attributes)
         {
             XmlDocument xmldoc = new XmlDocument();
             FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
@@ -77,7 +77,23 @@ namespace IATD3
                 xmldoc.Save(fs);
                 fs.Close();
             }
+        }
 
+        public static string GetAttributeOfFactAtLocation(string factName, int locationX, int locationY, string attribute)
+        {
+            XmlDocument xmldoc = new XmlDocument();
+            FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
+            xmldoc.Load(fs);
+
+            XmlNode element = xmldoc.SelectSingleNode("//Fact[@locationX='" + locationX.ToString() +
+                "' and @locationY='" + locationY.ToString() + "' and text()='" + factName + "']");
+
+            if(element == null)
+            {
+                return null;
+            }
+            XmlElement xmlElement = element as XmlElement;
+            return xmlElement.GetAttribute(attribute);
         }
     }
 }

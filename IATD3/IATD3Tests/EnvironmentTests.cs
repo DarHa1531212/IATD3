@@ -393,7 +393,7 @@ namespace IATD3Tests
             // Assert
             Assert.IsTrue(board[0, 0].HasOdour);
         }
-
+        /*
         [TestMethod]
         public void T_ThrowStone_OnMonster()
         {
@@ -410,7 +410,7 @@ namespace IATD3Tests
             Assert.IsFalse(board[2, 2].HasMonster);
             Assert.IsTrue(monsterKilled);
         }
-
+        
         [TestMethod]
         public void T_ThrowStone_OnNothing()
         {
@@ -427,7 +427,7 @@ namespace IATD3Tests
             Assert.IsFalse(board[2, 2].HasMonster);
             Assert.IsFalse(monsterKilled);
         }
-
+        */
         [TestMethod]
         public void T_IsDeadlyCell_Monster()
         {

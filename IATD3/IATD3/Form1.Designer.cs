@@ -34,32 +34,33 @@
             // 
             // Board
             // 
-            this.Board.Location = new System.Drawing.Point(18, 45);
-            this.Board.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.Board.Location = new System.Drawing.Point(16, 36);
+            this.Board.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Board.Name = "Board";
-            this.Board.Size = new System.Drawing.Size(300, 308);
+            this.Board.Size = new System.Drawing.Size(267, 246);
             this.Board.TabIndex = 0;
             // 
             // boardNumber
             // 
             this.boardNumber.AutoSize = true;
-            this.boardNumber.Location = new System.Drawing.Point(20, 20);
+            this.boardNumber.Location = new System.Drawing.Point(18, 16);
             this.boardNumber.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.boardNumber.Name = "boardNumber";
-            this.boardNumber.Size = new System.Drawing.Size(51, 20);
+            this.boardNumber.Size = new System.Drawing.Size(46, 17);
             this.boardNumber.TabIndex = 1;
             this.boardNumber.Text = "label1";
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1200, 692);
+            this.ClientSize = new System.Drawing.Size(1067, 554);
             this.Controls.Add(this.boardNumber);
             this.Controls.Add(this.Board);
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "Form1";
             this.Text = "Welcome to the forest !";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

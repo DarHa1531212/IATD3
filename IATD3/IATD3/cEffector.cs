@@ -48,7 +48,6 @@ namespace IATD3
 
     public class cEffectorDown : cEffector
     {
-
         public override int DoAction()
         {
             return environment.Move(0, 1);
@@ -74,7 +73,6 @@ namespace IATD3
 
             FactTableManager.AddOrReplaceFactAtLocation("Monster", launchPosX, launchPosY, attributes);
             return cost;
-
         }
     }
 

@@ -18,14 +18,16 @@ namespace IATD3
             { "Abyss", "Abyss.png" },
             { "Monster", "Monster.png" },
             { "Wind", "Wind.png" },
-            { "Odour", "Odour.png" }
+            { "Odour", "Odour.png" },
+            { "Agent", "Agent.png" }
         };
         private static Dictionary<String, Color> colors = new Dictionary<String, Color>(){
             { "Portal", Color.Beige },
             { "Abyss", Color.LightSkyBlue },
             { "Monster", Color.PaleVioletRed },
             { "Wind", Color.RoyalBlue },
-            { "Odour", Color.Violet }
+            { "Odour", Color.Violet },
+            { "Agent", Color.LimeGreen }
         };
 
         cEnvironment environment;
@@ -40,6 +42,7 @@ namespace IATD3
             boardCpt = 0;
             cAgent agent = new cAgent();
             agent.UseSensors();
+            agent.ThrowRock();
 
             if (environment.SizeToBeAdapted)
             {
@@ -73,6 +76,11 @@ namespace IATD3
 
                     if (debugMode)
                     {
+                        if (environment.AgentPosX == column && environment.AgentPosY == line)
+                        {
+                            createPictureBox("Agent", label, new Point(label.Size.Width / 4, label.Size.Width / 4));
+                            label.BringToFront();
+                        }
                         if (environment.Board[line, column].HasPortal)
                         {
                             createPictureBox("Portal", label, new Point(0, 0), true);
@@ -121,6 +129,11 @@ namespace IATD3
                 : new Size(parent.Size.Width / 2, parent.Size.Height / 2);
             new ToolTip().SetToolTip(img, pictureKey);
             parent.Controls.Add(img);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<Rules>
+    <Rule>
+        <Fact presence ="true">Odour</Fact>
+        <Implies>Monster</Implies>
+        <Location>Adjascent</Location>
+    </Rule>
+    <Rule>
+        <Fact presence = "true">Light</Fact>
+        <Implies>Portal</Implies>
+        <Location>Current</Location>
+    </Rule>
+    <Rule>
+        <Fact presence = "true">Wind</Fact>
+        <Implies>Crevace</Implies>
+        <Location>Adjascent</Location>
+    </Rule>
+</Rules>

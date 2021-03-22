@@ -8,3 +8,13 @@ D:\1 - Etudes - OK\UQAC\8INF846 - Intelligence artificielle\Travail #3\IATD3\IAT
 D:\1 - Etudes - OK\UQAC\8INF846 - Intelligence artificielle\Travail #3\IATD3\IATD3\IATD3\obj\Debug\IATD3.exe
 D:\1 - Etudes - OK\UQAC\8INF846 - Intelligence artificielle\Travail #3\IATD3\IATD3\IATD3\obj\Debug\IATD3.pdb
 D:\1 - Etudes - OK\UQAC\8INF846 - Intelligence artificielle\Travail #3\IATD3\IATD3\IATD3\obj\Debug\IATD3.Form1.resources
+C:\Users\HansIV4\Documents\git repos\IATD3\IATD3\IATD3\IATD3\obj\Debug\IATD3.csprojAssemblyReference.cache
+C:\Users\HansIV4\Documents\git repos\IATD3\IATD3\IATD3\IATD3\obj\Debug\IATD3.Form1.resources
+C:\Users\HansIV4\Documents\git repos\IATD3\IATD3\IATD3\IATD3\obj\Debug\IATD3.Properties.Resources.resources
+C:\Users\HansIV4\Documents\git repos\IATD3\IATD3\IATD3\IATD3\obj\Debug\IATD3.csproj.GenerateResource.cache
+C:\Users\HansIV4\Documents\git repos\IATD3\IATD3\IATD3\IATD3\obj\Debug\IATD3.csproj.CoreCompileInputs.cache
+C:\Users\HansIV4\Documents\git repos\IATD3\IATD3\IATD3\IATD3\obj\Debug\IATD3.exe
+C:\Users\HansIV4\Documents\git repos\IATD3\IATD3\IATD3\IATD3\obj\Debug\IATD3.pdb
+C:\Users\HansIV4\Documents\git repos\IATD3\IATD3\IATD3\IATD3\bin\Debug\IATD3.exe.config
+C:\Users\HansIV4\Documents\git repos\IATD3\IATD3\IATD3\IATD3\bin\Debug\IATD3.exe
+C:\Users\HansIV4\Documents\git repos\IATD3\IATD3\IATD3\IATD3\bin\Debug\IATD3.pdb

@@ -34,27 +34,30 @@
             // 
             // Board
             // 
-            this.Board.Location = new System.Drawing.Point(12, 29);
+            this.Board.Location = new System.Drawing.Point(18, 45);
+            this.Board.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Board.Name = "Board";
-            this.Board.Size = new System.Drawing.Size(200, 200);
+            this.Board.Size = new System.Drawing.Size(300, 308);
             this.Board.TabIndex = 0;
             // 
             // boardNumber
             // 
             this.boardNumber.AutoSize = true;
-            this.boardNumber.Location = new System.Drawing.Point(13, 13);
+            this.boardNumber.Location = new System.Drawing.Point(20, 20);
+            this.boardNumber.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.boardNumber.Name = "boardNumber";
-            this.boardNumber.Size = new System.Drawing.Size(35, 13);
+            this.boardNumber.Size = new System.Drawing.Size(51, 20);
             this.boardNumber.TabIndex = 1;
             this.boardNumber.Text = "label1";
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1200, 692);
             this.Controls.Add(this.boardNumber);
             this.Controls.Add(this.Board);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "Form1";
             this.Text = "Welcome to the forest !";
             this.ResumeLayout(false);

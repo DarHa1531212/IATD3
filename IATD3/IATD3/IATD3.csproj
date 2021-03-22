@@ -51,6 +51,7 @@
     <Compile Include="cEffector.cs" />
     <Compile Include="cEnvironment.cs" />
     <Compile Include="cSensor.cs" />
+    <Compile Include="FactTableManager.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

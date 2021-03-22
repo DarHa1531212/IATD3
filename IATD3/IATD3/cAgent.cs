@@ -48,8 +48,7 @@ namespace IATD3
             relativeLocationY = 0;
 
             loadRulesFile();
-            createXmlFile();
-
+            FactTableManager.CreateFactFile();
         }
 
         private void loadRulesFile()
@@ -69,6 +68,7 @@ namespace IATD3
                 Console.WriteLine("XML tag: ");
                 Console.WriteLine(str);
             }
+            fs.Close();
         }
 
 
@@ -76,7 +76,6 @@ namespace IATD3
         {
             XmlTextWriter writer = new XmlTextWriter(@"../../facts.xml", null);
             writer.WriteStartDocument();
-            writer.WriteStartElement("Facts");
             writer.WriteEndElement();
 
             writer.WriteEndDocument();
@@ -99,34 +98,18 @@ namespace IATD3
 
             // Location would be a relative location (agent only knows what moves he did, not where he is exactly)
             // But we assume each are cell sizes are equal
-            XmlDocument xmldoc = new XmlDocument();
-            FileStream fs = new FileStream(@"../../facts.xml", FileMode.Open, FileAccess.ReadWrite);
-            xmldoc.Load(fs);
 
-            XmlNode facts = xmldoc.GetElementsByTagName("Facts")[0];
+            Dictionary<string, string> attributes = new Dictionary<string, string>();
+            attributes.Add("locationX", relativeLocationX.ToString());
+            attributes.Add("locationY", relativeLocationY.ToString());
+            attributes.Add("presence", isSmelly.ToString());
+            FactTableManager.AddFact("Smell", attributes);
 
-            XmlElement factSmell = xmldoc.CreateElement("Fact");
-            factSmell.InnerText = "Smell";
-            factSmell.SetAttribute("presence", isSmelly.ToString());
-            factSmell.SetAttribute("locationX", relativeLocationX.ToString());
-            factSmell.SetAttribute("locationY", relativeLocationY.ToString());
-            facts.AppendChild(factSmell);
+            attributes["presence"] = isBright.ToString();
+            FactTableManager.AddFact("Portal", attributes);
 
-            XmlElement factLight = xmldoc.CreateElement("Fact");
-            factLight.InnerText = "Portal";
-            factLight.SetAttribute("presence", isBright.ToString());
-            factLight.SetAttribute("locationX", relativeLocationX.ToString());
-            factLight.SetAttribute("locationY", relativeLocationY.ToString());
-            facts.AppendChild(factLight);
-
-            XmlElement factWind = xmldoc.CreateElement("Fact");
-            factWind.InnerText = "Wind";
-            factWind.SetAttribute("presence", isWindy.ToString());
-            factWind.SetAttribute("locationX", relativeLocationX.ToString());
-            factWind.SetAttribute("locationY", relativeLocationY.ToString());
-            facts.AppendChild(factWind);
-
-            xmldoc.Save(fs);
+            attributes["presence"] = isWindy.ToString();
+            FactTableManager.AddFact("Wind", attributes);
 
         }
     }

@@ -65,7 +65,13 @@ namespace IATD3
 
         public override int DoAction()
         {
-            return environment.Throw(launchPosY, launchPosX);
+            int cost = environment.Throw(launchPosY, launchPosX);
+
+            // Add that there is no monster on selected cell (and delete other fact if exists)
+
+
+            return cost;
+
         }
     }
 

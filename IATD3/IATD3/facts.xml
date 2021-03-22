@@ -1,6 +1,7 @@
-<?xml version="1.0"?><Facts /><?xml version="1.0"?>
-<Facts>
-  <Fact presence="False" locationX="0" locationY="0">Smell</Fact>
-  <Fact presence="False" locationX="0" locationY="0">Portal</Fact>
-  <Fact presence="False" locationX="0" locationY="0">Wind</Fact>
-</Facts>
+<FactTable>
+  <Facts>
+    <Fact locationX="0" locationY="0" presence="False">Smell</Fact>
+    <Fact locationX="0" locationY="0" presence="False">Portal</Fact>
+    <Fact locationX="0" locationY="0" presence="False">Wind</Fact>
+  </Facts>
+</FactTable>

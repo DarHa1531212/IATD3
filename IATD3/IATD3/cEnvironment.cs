@@ -37,6 +37,8 @@ namespace IATD3
 
         public cEnvironment()
         {
+            agentPosX = 0;
+            agentPosY = 0;
             AdaptSize(_boardSizeBeginning);
         }
 

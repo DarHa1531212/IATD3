@@ -38,6 +38,8 @@ namespace IATD3
             environment = new cEnvironment();
             Board.AutoSize = true;
             boardCpt = 0;
+            cAgent agent = new cAgent();
+            agent.UseSensors();
 
             if (environment.SizeToBeAdapted)
             {

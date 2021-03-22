@@ -15,4 +15,9 @@
         <Implies>Crevace</Implies>
         <Location>Adjascent</Location>
     </Rule>
+    <Rule>
+        <Fact presence = "false">Throw Rock</Fact>
+        <Implies>Monster</Implies>
+        <Location>RockThrowLocation</Location>
+    </Rule>
 </Rules>

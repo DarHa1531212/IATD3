@@ -6,7 +6,20 @@ using System.Threading.Tasks;
 
 namespace IATD3
 {
-    class cCapteur
+    class cSensor
+    {
+        cEnvironment environment = new cEnvironment();
+    }
+
+    class cSensorLight : cSensor
+    {
+    }
+
+    class cSensorOdour : cSensor
+    {
+    }
+
+    class cSensorWind : cSensor
     {
     }
 }

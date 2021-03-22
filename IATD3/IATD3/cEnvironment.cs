@@ -17,9 +17,15 @@ namespace IATD3
         private cCell[,] board;
         private bool sizeToBeAdapted;
 
+        private int agentPosX;
+        private int agentPosY;
+
         internal cCell[,] Board { get => board; set => board = value; }
         public int BoardSize { get => boardSize; set => boardSize = value; }
         public bool SizeToBeAdapted { get => sizeToBeAdapted; set => sizeToBeAdapted = value; }
+
+        public int AgentPosX { get => agentPosX; }
+        public int AgentPosY { get => agentPosY; }
 
         public cEnvironment()
         {

@@ -6,20 +6,34 @@ using System.Threading.Tasks;
 
 namespace IATD3
 {
-    class cSensor
+    abstract class cSensor
     {
-        cEnvironment environment = new cEnvironment();
+        protected cEnvironment environment = new cEnvironment();
+
+        public abstract bool Sense();
     }
 
     class cSensorLight : cSensor
     {
+        public override bool Sense()
+        {
+            return environment.IsAgentOnPortal();
+        }
     }
 
     class cSensorOdour : cSensor
     {
+        public override bool Sense()
+        {
+            return environment.IsAgentCellSmelly();
+        }
     }
 
     class cSensorWind : cSensor
     {
+        public override bool Sense()
+        {
+            return environment.IsAgentCellWindy();
+        }
     }
 }

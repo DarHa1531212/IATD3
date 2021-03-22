@@ -6,38 +6,75 @@ using System.Threading.Tasks;
 
 namespace IATD3
 {
-    class cEffecteur
+    public abstract class cEffector
     {
-        cEnvironment environment = new cEnvironment();
+        protected cEnvironment environment = new cEnvironment();
+
+        /// <summary>
+        ///   Sends the action to the environment (to simulate our agent doing the action).    
+        /// </summary>
+        /// <returns>
+        ///   The cost of the action
+        /// </returns>
+        public abstract int DoAction();
     }
 
-    class cEffectorUp : cEffecteur
+    public class cEffectorUp : cEffector
     {
-
+        public override int DoAction()
+        {
+            return environment.Move(0, -1);
+        }
     }
 
-    class cEffectorRight : cEffecteur
+    public class cEffectorRight : cEffector
     {
 
+        public override int DoAction()
+        {
+            return environment.Move(1, 0);
+            //return 1; //placeholder
+        }
     }
 
-    class cEffectorLeft : cEffecteur
+    public class cEffectorLeft : cEffector
     {
 
+        public override int DoAction()
+        {
+            return environment.Move(-1, 0);
+        }
     }
 
-    class cEffectorDown : cEffecteur
+    public class cEffectorDown : cEffector
     {
 
+        public override int DoAction()
+        {
+            return environment.Move(0, 1);
+        }
     }
 
-    class cEffectorThrowRock : cEffecteur
+    public class cEffectorThrowRock : cEffector
     {
+        private int launchPosX;
+        private int launchPosY;
 
+        public int LaunchPosX { get => launchPosX; set => launchPosX = value; }
+        public int LaunchPosY { get => launchPosY; set => launchPosY = value; }
+
+        public override int DoAction()
+        {
+            return environment.Throw(launchPosY, launchPosX);
+        }
     }
 
-    class cEffectorUsePortal : cEffecteur
+    public class cEffectorUsePortal : cEffector
     {
 
+        public override int DoAction()
+        {
+            return environment.UsePortal();
+        }
     }
 }

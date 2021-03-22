@@ -46,8 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="cAgent.cs" />
     <Compile Include="cCell.cs" />
+    <Compile Include="cEffector.cs" />
     <Compile Include="cEnvironment.cs" />
+    <Compile Include="cSensor.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

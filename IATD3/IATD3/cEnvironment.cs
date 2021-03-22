@@ -9,9 +9,17 @@ namespace IATD3
 {
     public class cEnvironment
     {
-        private const int _boardSizeBeginning = 4;
+        // Generation
+        private const int _boardSizeBeginning = 3;
         private const float _percentageRateMonster = 10.0f;
         private const float _percentageRateAbyss = 10.0f;
+
+        // Costs
+        private const int _deathCostPerCell = -10;
+        private const int _portalCostPerCell = 10;
+        private const int _movementCost = -1;
+        private const int _rockCost = -10;
+
 
         private int boardSize;
         private cCell[,] board;
@@ -147,7 +155,7 @@ namespace IATD3
             AdaptSize(boardSize + 1);
         }
 
-        public bool ThrowStone(int line, int column)
+        private bool ThrowStone(int line, int column)
         {
             bool hadMonster = board[line, column].HasMonster;
             board[line, column].HasMonster = false;
@@ -162,6 +170,61 @@ namespace IATD3
         public bool IsPortal(int line, int column)
         {
             return board[line, column].HasPortal;
+        }
+
+        // Smell and wind
+        private bool IsCellSmelly(int line, int column)
+        {
+            return board[line, column].HasOdour;
+        }
+        private bool IsCellWindy(int line, int column)
+        {
+            return board[line, column].HasWind;
+        }
+
+
+        // Effector actions
+        public int Throw(int line, int column)
+        {
+            ThrowStone(line, column);
+            return _rockCost;
+        }
+
+        public int UsePortal()
+        {
+            int returnTotal = _portalCostPerCell * boardSize * boardSize;
+            GenerateNextBoard();
+            return returnTotal;
+        }
+
+        public int Move(int lineMovement, int columnMovement)
+        {
+            agentPosX += columnMovement;
+            agentPosY += lineMovement;
+
+            if(IsDeadlyCell(agentPosY, agentPosX))
+            {
+                // TODO : make the agent die
+                return _movementCost + _deathCostPerCell * (boardSize * boardSize);
+            }
+            return _movementCost;
+        }
+
+
+        // Sensor tests
+        public bool IsAgentOnPortal()
+        {
+            return IsPortal(agentPosY, agentPosX);
+        }
+
+        public bool IsAgentCellSmelly()
+        {
+            return IsCellSmelly(agentPosY, agentPosX);
+        }
+
+        public bool IsAgentCellWindy()
+        {
+            return IsCellWindy(agentPosY, agentPosX);
         }
     }
 }

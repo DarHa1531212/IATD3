@@ -15,7 +15,7 @@ namespace IATD3Tests
     /// Description résumée pour CellTests
     /// </summary>
     [TestClass]
-    class FactTableManagerTests
+    public class FactTableManagerTests
     {
         
         [TestMethod]

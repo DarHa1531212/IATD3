@@ -135,5 +135,16 @@ namespace IATD3
         {
 
         }
+
+        private void bMove_Click(object sender, EventArgs e)
+        {
+            createLabels(); // maj de l'affichage
+            //agent will move
+            //test death
+                //reset agent position
+
+            //test end condition
+            //if end reached, generate new board
+        }
     }
 }

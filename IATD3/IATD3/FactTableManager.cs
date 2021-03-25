@@ -23,7 +23,6 @@ namespace IATD3
 
             xmldoc.Save(fs);
             fs.Close();
-
         }
 
         private static void AddFact(string factName, Dictionary<string, string> attributes)
@@ -90,10 +89,31 @@ namespace IATD3
 
             if(element == null)
             {
-                return null;
+                return "";
             }
             XmlElement xmlElement = element as XmlElement;
             return xmlElement.GetAttribute(attribute);
+        }
+
+        public static bool IsAttributeInTable(string factName, int locationX, int locationY, Dictionary<string, string> attributes)
+        {
+            XmlDocument xmldoc = new XmlDocument();
+            FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
+            xmldoc.Load(fs);
+
+            string xpath = "//Fact[@locationX='" + locationX.ToString() +
+                "' and @locationY='" + locationY.ToString() + "'";
+
+            foreach(string attribute in attributes.Keys)
+            {
+                xpath += " and @" + attribute + "='" + attributes[attribute] + "'";
+            }
+
+            xpath += " and text()='" + factName + "']";
+
+            XmlNode element = xmldoc.SelectSingleNode(xpath);
+
+            return (element != null);
         }
     }
 }

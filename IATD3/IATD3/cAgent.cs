@@ -28,6 +28,8 @@ namespace IATD3
         int relativeLocationX;
         int relativeLocationY;
 
+        List<cInference> inferences;
+
         public cAgent()
         {
             // Instantiate effectors
@@ -47,26 +49,55 @@ namespace IATD3
             relativeLocationX = 0;
             relativeLocationY = 0;
 
+            inferences = new List<cInference>();
             loadRulesFile();
             FactTableManager.CreateFactFile();
         }
 
         private void loadRulesFile()
         {
-            XmlDataDocument xmldoc = new XmlDataDocument();
+            XmlDocument xmldoc = new XmlDocument();
             XmlNodeList xmlnode;
             int i = 0;
-            string str = null;
             FileStream fs = new FileStream(@"../../rules.xml", FileMode.Open, FileAccess.Read);
             xmldoc.Load(fs);
             xmlnode = xmldoc.GetElementsByTagName("Rule");
             for (i = 0; i <= xmlnode.Count - 1; i++)
             {
-                xmlnode[i].ChildNodes.Item(0).InnerText.Trim();
-                str = xmlnode[i].ChildNodes.Item(0).InnerText.Trim() + "  " + xmlnode[i].ChildNodes.Item(1).InnerText.Trim() + "  " + xmlnode[i].ChildNodes.Item(2).InnerText.Trim();
-                Console.WriteLine("********************");
-                Console.WriteLine("XML tag: ");
-                Console.WriteLine(str);
+                XmlNodeList facts = ((XmlElement)xmlnode[i]).GetElementsByTagName("Fact");
+                XmlNodeList implies = ((XmlElement)xmlnode[i]).GetElementsByTagName("Implies");
+
+                cInference inference = new cInference();
+                for (var j = 0; j < facts.Count; j++)
+                {
+                    // Récupération du fait
+                    cFact fact = new cFact(facts.Item(j).Value);
+
+                    // Récupération des attributs associés au fait
+                    XmlElement xmlElement = facts.Item(j) as XmlElement;
+                    XmlAttributeCollection attributes = xmlElement.Attributes;
+                    foreach (XmlAttribute att in attributes)
+                    {
+                        fact.Attributs.Add(att.Name, att.Value);
+                    }
+
+                    inference.Facts.Add(fact);
+                }
+                for (var j = 0; j < implies.Count; j++)
+                {
+                    // Récupération de l'implication
+                    cFact implie = new cFact(implies.Item(j).Value);
+
+                    // Récupération des attributs associés à l'implication
+                    XmlElement xmlElement = implies.Item(j) as XmlElement;
+                    XmlAttributeCollection attributes = xmlElement.Attributes;
+                    foreach (XmlAttribute att in attributes)
+                    {
+                        implie.Attributs.Add(att.Name, att.Value);
+                    }
+
+                    inference.Implies.Add(implie);
+                }
             }
             fs.Close();
         }
@@ -132,6 +163,26 @@ namespace IATD3
             relativeLocationX = 0;
             relativeLocationY = 0;
             // Reset la position en (0,0)
+        }
+
+        private void ChainageAvant()
+        {
+            // loadRulesFile();
+            //obtenir les faits initiaux
+
+            //tant que  (pas ternimé et il reste au moins une règle non marquée)
+            /*
+                faire
+                    sélectionner les règles applicables
+                        celles non marquées
+                        si une des règles est en contraciction
+                            marquer la règle
+                        celles dont les conditions existent dans la base de faits
+                    choisir la règle à appliquer
+                    appliquer la règle: ajouter les conclusions à la base de faits
+                    marquer la règle      
+            */
+
         }
     }
 }

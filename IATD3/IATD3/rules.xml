@@ -3,7 +3,7 @@
     <Rule>
         <Fact presence ="true">Odour</Fact>
         <Implies>Monster</Implies>
-        <Location>Adjascent</Location>
+        <Location>Adjacent</Location>
     </Rule>
     <Rule>
         <Fact presence = "true">Light</Fact>
@@ -13,7 +13,7 @@
     <Rule>
         <Fact presence = "true">Wind</Fact>
         <Implies>Crevace</Implies>
-        <Location>Adjascent</Location>
+        <Location>Adjacent</Location>
     </Rule>
     <Rule>
         <Fact presence = "false">Throw Rock</Fact>

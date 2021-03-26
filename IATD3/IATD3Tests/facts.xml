@@ -1,5 +1,5 @@
 <FactTable>
   <Facts>
-    <Fact presence="true" value="high" locationX="1" locationY="4">Portal</Fact>
+    <Fact locationX="2" locationY="3">Portal</Fact>
   </Facts>
 </FactTable>

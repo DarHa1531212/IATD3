@@ -259,7 +259,29 @@ namespace IATD3Tests
             string expectedXml = "<FactTable><Facts><Factpresence='true'value='high'locationX='1'locationY='4'>Portal</Fact></Facts></FactTable>";
 
             Assert.AreEqual(text, expectedXml);
+        }
 
+        [TestMethod]
+        public void T_AddOrReplaceFactAtLocation_ReplaceFactNoAttributes()
+        {
+
+            XmlDocument xmldoc = new XmlDocument();
+            FileStream fs = new FileStream(@"../../facts.xml", FileMode.Open, FileAccess.ReadWrite);
+            xmldoc.LoadXml("<FactTable><Facts><Fact locationX='2' locationY='3'>Portal</Fact></Facts></FactTable>");
+            fs.SetLength(0);
+            xmldoc.Save(fs);
+            fs.Close();
+
+            Dictionary<string, string> attributes = new Dictionary<string, string>();
+
+            FactTableManager.AddOrReplaceFactAtLocation("Portal", 2, 3, attributes);
+
+            string text = File.ReadAllText(@"../../facts.xml");
+            text = text.Replace("\n", "").Replace("\r", "").Replace("\t", "").Replace("\"", "'").Replace(" ", "");
+
+            string expectedXml = "<FactTable><Facts><FactlocationX='2'locationY='3'>Portal</Fact></Facts></FactTable>";
+
+            Assert.AreEqual(text, expectedXml);
         }
         #endregion
     }

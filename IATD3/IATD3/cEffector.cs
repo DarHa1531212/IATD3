@@ -74,11 +74,16 @@ namespace IATD3
         private int launchPosX;
         private int launchPosY;
 
+        public cEffectorThrowRock(cEnvironment environment) : base(environment)
+        {
+
+        }
         public int LaunchPosX { get => launchPosX; set => launchPosX = value; }
         public int LaunchPosY { get => launchPosY; set => launchPosY = value; }
 
         public override int DoAction()
         {
+
             int cost = environment.Throw(launchPosY, launchPosX);
 
             // Add that there is no monster on selected cell (and delete other fact if exists)
@@ -93,7 +98,9 @@ namespace IATD3
 
     public class cEffectorUsePortal : cEffector
     {
-
+        public cEffectorUsePortal(cEnvironment environment) : base(environment)
+        {
+        }
         public override int DoAction()
         {
             return environment.UsePortal();

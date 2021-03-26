@@ -58,20 +58,21 @@ namespace IATD3
             XmlNode element = xmldoc.SelectSingleNode("//Fact[@locationX='"+locationX.ToString()+
                 "' and @locationY='"+locationY.ToString()+"' and text()='"+factName+"']");
 
-            if(element == null)
+            newAttributes.Add("locationX", locationX.ToString());
+            newAttributes.Add("locationY", locationY.ToString());
+
+            if (element == null)
             {
                 fs.Close();
-                newAttributes.Add("locationX", locationX.ToString());
-                newAttributes.Add("locationY", locationY.ToString());
                 AddFact(factName, newAttributes);
             } else
             {
                 XmlElement xmlElement = element as XmlElement;
+                xmlElement.RemoveAllAttributes();
                 foreach (string attribute in newAttributes.Keys)
                 {
                     xmlElement.SetAttribute(attribute, newAttributes[attribute]);
                 }
-                fs.SetLength(0);
                 fs.SetLength(0);
                 xmldoc.Save(fs);
                 fs.Close();
@@ -84,14 +85,16 @@ namespace IATD3
             FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
             xmldoc.Load(fs);
 
-            XmlNode element = xmldoc.SelectSingleNode("//Fact[@locationX='" + locationX.ToString() +
+            XmlNode element = xmldoc.SelectSingleNode("//Fact[@"+ attribute + " and @locationX='" + locationX.ToString() +
                 "' and @locationY='" + locationY.ToString() + "' and text()='" + factName + "']");
 
             if(element == null)
             {
-                return "";
+                fs.Close();
+                return null;
             }
             XmlElement xmlElement = element as XmlElement;
+            fs.Close();
             return xmlElement.GetAttribute(attribute);
         }
 
@@ -112,6 +115,7 @@ namespace IATD3
             xpath += " and text()='" + factName + "']";
 
             XmlNode element = xmldoc.SelectSingleNode(xpath);
+            fs.Close();
 
             return (element != null);
         }

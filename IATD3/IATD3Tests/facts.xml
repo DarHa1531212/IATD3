@@ -1,3 +1,5 @@
 <FactTable>
-  <Facts />
+  <Facts>
+    <Fact presence="true" value="high" locationX="1" locationY="4">Portal</Fact>
+  </Facts>
 </FactTable>

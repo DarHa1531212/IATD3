@@ -24,7 +24,7 @@ namespace IATD3Tests
             board[1, 1].HasOdour = false;
 
             // Act
-            po.Invoke("AdaptToNeighboursProperties", 1, 1);
+            po.Invoke("AdaptToNeighboursProperties", new object[] { 1, 1 });
 
             // Assert
             Assert.IsTrue(board[0, 1].HasMonster);
@@ -44,7 +44,7 @@ namespace IATD3Tests
             board[1, 1].HasOdour = false;
 
             // Act
-            po.Invoke("AdaptToNeighboursProperties", 1, 1);
+            po.Invoke("AdaptToNeighboursProperties", new object[] { 1, 1 });
 
             // Assert
             Assert.IsFalse(board[0, 1].HasMonster);
@@ -64,7 +64,7 @@ namespace IATD3Tests
             board[1, 1].HasOdour = false;
 
             // Act
-            po.Invoke("AdaptToNeighboursProperties", 1, 1);
+            po.Invoke("AdaptToNeighboursProperties", new object[] { 1, 1 });
 
             // Assert
             Assert.IsFalse(board[0, 1].HasMonster);
@@ -105,7 +105,7 @@ namespace IATD3Tests
             board[1, 0].HasWind = false;
 
             // Act
-            po.Invoke("AdaptToNeighboursProperties", 1, 0);
+            po.Invoke("AdaptToNeighboursProperties", new object[] { 1, 1 });
 
             // Assert
             Assert.IsFalse(board[1, 0].HasOdour, "There shouldn't be odour.");
@@ -124,7 +124,7 @@ namespace IATD3Tests
             board[1, 1].HasOdour = false;
 
             // Act
-            bool hasMonster = (bool)po.Invoke("CheckNeighboursMonsters", 1, 1);
+            bool hasMonster = (bool)po.Invoke("CheckNeighboursMonsters", new object[] { 1, 1 });
 
             // Assert
             Assert.IsTrue(hasMonster);
@@ -142,7 +142,7 @@ namespace IATD3Tests
             board[1, 1].HasOdour = false;
 
             // Act
-            bool hasMonster = (bool)po.Invoke("CheckNeighboursMonsters", 1, 1);
+            bool hasMonster = (bool)po.Invoke("CheckNeighboursMonsters", new object[] { 1, 1 });
 
             // Assert
             Assert.IsTrue(hasMonster);
@@ -160,7 +160,7 @@ namespace IATD3Tests
             board[1, 1].HasOdour = false;
 
             // Act
-            bool hasMonster = (bool)po.Invoke("CheckNeighboursMonsters", 1, 1);
+            bool hasMonster = (bool)po.Invoke("CheckNeighboursMonsters", new object[] { 1, 1 });
 
             // Assert
             Assert.IsFalse(hasMonster);
@@ -177,7 +177,7 @@ namespace IATD3Tests
             board[1, 0].HasOdour = false;
 
             // Act
-            bool hasMonster = (bool)po.Invoke("CheckNeighboursMonsters", 1, 0);
+            bool hasMonster = (bool)po.Invoke("CheckNeighboursMonsters", new object[] { 1, 0 });
 
             // Assert
             Assert.IsFalse(hasMonster);
@@ -212,7 +212,7 @@ namespace IATD3Tests
             board[1, 1].HasWind = false;
 
             // Act
-            bool hasAbyss = (bool)po.Invoke("CheckNeighboursAbysses", 1, 1);
+            bool hasAbyss = (bool)po.Invoke("CheckNeighboursAbysses", new object[] { 1, 1 });
 
             // Assert
             Assert.IsTrue(hasAbyss);
@@ -230,7 +230,7 @@ namespace IATD3Tests
             board[1, 1].HasWind = false;
 
             // Act
-            bool hasAbyss = (bool)po.Invoke("CheckNeighboursAbysses", 1, 1);
+            bool hasAbyss = (bool)po.Invoke("CheckNeighboursAbysses", new object[] { 1, 1 });
 
             // Assert
             Assert.IsTrue(hasAbyss);
@@ -248,7 +248,7 @@ namespace IATD3Tests
             board[1, 1].HasWind = false;
 
             // Act
-            bool hasAbyss = (bool)po.Invoke("CheckNeighboursAbysses", 1, 1);
+            bool hasAbyss = (bool)po.Invoke("CheckNeighboursAbysses", new object[] { 1, 1 });
 
             // Assert
             Assert.IsFalse(hasAbyss);
@@ -265,7 +265,7 @@ namespace IATD3Tests
             board[1, 0].HasWind = false;
 
             // Act
-            bool hasAbyss = (bool)po.Invoke("CheckNeighboursAbysses", 1, 0);
+            bool hasAbyss = (bool)po.Invoke("CheckNeighboursAbysses", new object[] { 1, 0 });
 
             // Assert
             Assert.IsFalse(hasAbyss);
@@ -300,7 +300,7 @@ namespace IATD3Tests
             board[1, 1].HasAbyss = true;
 
             // Act
-            po.Invoke("AdaptNeighboursWind", 1, 1);
+            po.Invoke("AdaptNeighboursWind", new object[] { 1, 1 });
 
             // Assert
             Assert.IsTrue(board[0, 1].HasWind, "Up propagation failed.");
@@ -318,7 +318,7 @@ namespace IATD3Tests
             board[1, 0].HasAbyss = true;
 
             // Act
-            po.Invoke("AdaptNeighboursWind", 1, 0);
+            po.Invoke("AdaptNeighboursWind", new object[] { 1, 0 });
 
             // Assert
             Assert.IsTrue(board[0, 0].HasWind);
@@ -353,7 +353,7 @@ namespace IATD3Tests
             board[1, 1].HasMonster = true;
 
             // Act
-            po.Invoke("AdaptNeighboursMonster", 1, 1);
+            po.Invoke("AdaptNeighboursMonster", new object[] { 1, 1 });
 
             // Assert
             Assert.IsTrue(board[0, 1].HasOdour, "Up propagation failed.");
@@ -371,7 +371,7 @@ namespace IATD3Tests
             board[1, 0].HasMonster = true;
 
             // Act
-            po.Invoke("AdaptNeighboursMonster", 1, 0);
+            po.Invoke("AdaptNeighboursMonster", new object[] { 1, 0 });
 
             // Assert
             Assert.IsTrue(board[0, 0].HasOdour);

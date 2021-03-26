@@ -6,8 +6,13 @@ using System.Threading.Tasks;
 
 namespace IATD3
 {
+    //TODO refactor effector as agent can tp
     public abstract class cEffector
     {
+        public cEffector(cEnvironment _environment)
+        {
+            environment = _environment;
+        }
         protected cEnvironment environment = new cEnvironment();
 
         /// <summary>
@@ -21,6 +26,9 @@ namespace IATD3
 
     public class cEffectorUp : cEffector
     {
+        public cEffectorUp(cEnvironment environment) : base(environment)
+        {
+        }
         public override int DoAction()
         {
             return environment.Move(0, -1);
@@ -29,7 +37,9 @@ namespace IATD3
 
     public class cEffectorRight : cEffector
     {
-
+        public cEffectorRight(cEnvironment environment) : base(environment)
+        {
+        }
         public override int DoAction()
         {
             return environment.Move(1, 0);
@@ -39,7 +49,9 @@ namespace IATD3
 
     public class cEffectorLeft : cEffector
     {
-
+        public cEffectorLeft(cEnvironment environment) : base(environment)
+        {
+        }
         public override int DoAction()
         {
             return environment.Move(-1, 0);
@@ -48,6 +60,9 @@ namespace IATD3
 
     public class cEffectorDown : cEffector
     {
+        public cEffectorDown(cEnvironment environment) : base(environment)
+        {
+        }
         public override int DoAction()
         {
             return environment.Move(0, 1);

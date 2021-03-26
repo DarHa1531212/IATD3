@@ -30,7 +30,7 @@ namespace IATD3
             { "Agent", Color.LimeGreen }
         };
 
-        cEnvironment environment;
+        static cEnvironment environment;
         private int boardCpt;
 
         public Form1()
@@ -40,7 +40,7 @@ namespace IATD3
             environment = new cEnvironment();
             Board.AutoSize = true;
             boardCpt = 0;
-            cAgent agent = new cAgent();
+            cAgent agent = new cAgent(environment);
             agent.UseSensors();
             agent.ThrowRock();
 
@@ -124,8 +124,8 @@ namespace IATD3
             img.SizeMode = PictureBoxSizeMode.Zoom;
             img.Location = location;
             img.BackColor = colors[pictureKey];
-            img.Size = fullSize 
-                ? new Size(parent.Size.Width, parent.Size.Height) 
+            img.Size = fullSize
+                ? new Size(parent.Size.Width, parent.Size.Height)
                 : new Size(parent.Size.Width / 2, parent.Size.Height / 2);
             new ToolTip().SetToolTip(img, pictureKey);
             parent.Controls.Add(img);
@@ -139,9 +139,9 @@ namespace IATD3
         private void bMove_Click(object sender, EventArgs e)
         {
             createLabels(); // maj de l'affichage
-            //agent will move
-            //test death
-                //reset agent position
+                            //agent will move
+                            //test death
+                            //reset agent position
 
             //test end condition
             //if end reached, generate new board

@@ -30,7 +30,7 @@ namespace IATD3
 
         List<cInference> inferences;
 
-        public cAgent()
+        public cAgent(cEnvironment environment  )
         {
             // Instantiate effectors
             effectorDown = new cEffectorDown();
@@ -41,9 +41,9 @@ namespace IATD3
             effectorUsePortal = new cEffectorUsePortal();
 
             // Instantiate sensors
-            sensorLight = new cSensorLight();
-            sensorOdour = new cSensorOdour();
-            sensorWind = new cSensorWind();
+            sensorLight = new cSensorLight(environment);
+            sensorOdour = new cSensorOdour(environment);
+            sensorWind = new cSensorWind(environment);
 
             // Relative location
             relativeLocationX = 0;

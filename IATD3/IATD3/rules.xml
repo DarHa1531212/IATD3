@@ -1,23 +1,16 @@
 <?xml version="1.0"?>
 <Rules>
     <Rule>
-        <Fact presence ="true">Odour</Fact>
-        <Implies>Monster</Implies>
-        <Location>Adjacent</Location>
+        <Fact presence="false" locationX="" locationY="">Monster</Fact>
+        <Fact presence="false" locationX="" locationY="">Abyss</Fact>
+		<Implies presence="true" locationX="" locationY="">Safe</Implies>
     </Rule>
-    <Rule>
-        <Fact presence = "true">Light</Fact>
-        <Implies>Portal</Implies>
-        <Location>Current</Location>
-    </Rule>
-    <Rule>
-        <Fact presence = "true">Wind</Fact>
-        <Implies>Crevace</Implies>
-        <Location>Adjacent</Location>
-    </Rule>
-    <Rule>
-        <Fact presence = "false">Throw Rock</Fact>
-        <Implies>Monster</Implies>
-        <Location>RockThrowLocation</Location>
-    </Rule>
+	<Rule>
+		<Fact presence="true" locationX="" locationY="">Odour</Fact>
+		<Implies presence="true" locationX="" locationY="" probability="">Monster</Implies>
+	</Rule>
+	<Rule>
+		<Fact presence="true" locationX="" locationY="">Wind</Fact>
+		<Implies presence="true" locationX="" locationY="" probability="">Abyss</Implies>
+	</Rule>
 </Rules>

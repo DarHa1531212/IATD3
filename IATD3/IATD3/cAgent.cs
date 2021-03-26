@@ -12,10 +12,7 @@ namespace IATD3
     class cAgent
     {
         // Effectors
-        cEffectorDown effectorDown;
-        cEffectorUp effectorUp;
-        cEffectorLeft effectorLeft;
-        cEffectorRight effectorRight;
+        cEffectorMove effectorMove;
         cEffectorUsePortal effectorUsePortal;
         cEffectorThrowRock effectorThrowRock;
 
@@ -30,15 +27,12 @@ namespace IATD3
 
         List<cInference> inferences;
 
-        public cAgent(cEnvironment environment  )
+        public cAgent(cEnvironment environment)
         {
             // Instantiate effectors
-            effectorDown = new cEffectorDown();
-            effectorLeft = new cEffectorLeft();
-            effectorRight = new cEffectorRight();
-            effectorThrowRock = new cEffectorThrowRock();
-            effectorUp = new cEffectorUp();
-            effectorUsePortal = new cEffectorUsePortal();
+            effectorMove = new cEffectorMove(environment);
+            effectorThrowRock = new cEffectorThrowRock(environment);
+            effectorUsePortal = new cEffectorUsePortal(environment);
 
             // Instantiate sensors
             sensorLight = new cSensorLight(environment);

@@ -28,6 +28,8 @@ namespace IATD3
         private int agentPosX;
         private int agentPosY;
 
+        private cAgent agent;
+
         internal cCell[,] Board { get => board; set => board = value; }
         public int BoardSize { get => boardSize; set => boardSize = value; }
         public bool SizeToBeAdapted { get => sizeToBeAdapted; set => sizeToBeAdapted = value; }
@@ -173,7 +175,6 @@ namespace IATD3
         {
             return board[line, column].HasPortal;
         }
-
         // Smell and wind
         private bool IsCellSmelly(int line, int column)
         {
@@ -201,12 +202,14 @@ namespace IATD3
 
         public int Move(int lineMovement, int columnMovement)
         {
-            agentPosX += columnMovement;
-            agentPosY += lineMovement;
+            agentPosX = columnMovement;
+            agentPosY = lineMovement;
 
             if(IsDeadlyCell(agentPosY, agentPosX))
             {
-                // TODO : make the agent die
+                agent.Die(board[agentPosY, agentPosX].HasMonster, board[agentPosY, agentPosX].HasAbyss);
+                agentPosX = 0;
+                agentPosY = 0;
                 return _movementCost + _deathCostPerCell * (boardSize * boardSize);
             }
             return _movementCost;

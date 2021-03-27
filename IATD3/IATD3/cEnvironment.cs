@@ -49,6 +49,7 @@ namespace IATD3
 
         private void AdaptSize(int size)
         {
+            // Put agent back to 0, 0
             boardSize = size;
             board = new cCell[boardSize, boardSize];
             InitializeEnvironment();

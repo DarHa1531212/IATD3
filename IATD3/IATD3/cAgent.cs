@@ -26,6 +26,8 @@ namespace IATD3
         int relativeLocationY;
 
         List<cInference> inferences;
+        List<Tuple<int, int>> knownCells;
+        List<Tuple<int, int>> scopeCells;
 
         public cAgent(cEnvironment environment)
         {
@@ -44,6 +46,9 @@ namespace IATD3
             relativeLocationY = 0;
 
             inferences = new List<cInference>();
+            knownCells = new List<Tuple<int, int>>();
+            scopeCells = new List<Tuple<int, int>>();
+
             loadRulesFile();
             FactTableManager.CreateFactFile();
         }
@@ -136,6 +141,17 @@ namespace IATD3
             attributes.Add("presence", isWindy.ToString());
             FactTableManager.AddOrReplaceFactAtLocation("Wind", relativeLocationX, relativeLocationY, attributes);
 
+            UpdateCellsKnowledge(relativeLocationX, relativeLocationY);
+        }
+
+        private void UpdateCellsKnowledge(int relativeLocationX, int relativeLocationY)
+        {
+            knownCells.Add(new Tuple<int, int>(relativeLocationX, relativeLocationY));
+
+            scopeCells.Add(new Tuple<int, int>(relativeLocationX - 1, relativeLocationY));
+            scopeCells.Add(new Tuple<int, int>(relativeLocationX, relativeLocationY - 1));
+            scopeCells.Add(new Tuple<int, int>(relativeLocationX + 1, relativeLocationY));
+            scopeCells.Add(new Tuple<int, int>(relativeLocationX, relativeLocationY + 1));
         }
 
         public void ThrowRock()
@@ -177,6 +193,45 @@ namespace IATD3
                     marquer la règle      
             */
 
+            //soit frontière
+            //de chaque case frontière, calculer le risque de monstre ou crevasse
+            //aller à l'emplacement le moins dangeureux
+
+            //int[,] percievedThreat = new int[x,x];
+            //
+        }
+
+        private void AdaptFacts()
+        {
+            foreach (var cell in scopeCells)
+            {
+                foreach (var inference in inferences)
+                {
+                    bool conditionsAreRespected = true;
+                    foreach (var fact in inference.Facts)
+                    {
+                        bool sameFact = true;
+                        foreach (var attribut in fact.Attributs)
+                        {
+                            String factAttribute = FactTableManager.GetAttributeOfFactAtLocation(fact.Element, cell.Item1, cell.Item2, attribut.Key);
+                            sameFact = sameFact && (factAttribute == attribut.Value);
+                        }
+                        conditionsAreRespected = conditionsAreRespected && sameFact;
+                    }
+                    if (conditionsAreRespected)
+                    {
+                        foreach (var implication in inference.Implies)
+                        {
+                            FactTableManager.AddOrReplaceFactAtLocation(
+                                implication.Element,
+                                relativeLocationX + Int32.Parse(implication.Attributs["locationX"]),
+                                relativeLocationY + Int32.Parse(implication.Attributs["locationY"]),
+                                implication.Attributs
+                            );
+                        }
+                    }
+                }
+            }
         }
     }
 }

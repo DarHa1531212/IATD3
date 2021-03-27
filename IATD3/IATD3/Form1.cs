@@ -139,6 +139,8 @@ namespace IATD3
         private void bMove_Click(object sender, EventArgs e)
         {
             createLabels(); // maj de l'affichage
+
+                            //mettre à jour les faits
                             //agent will move
                             //test death
                             //reset agent position

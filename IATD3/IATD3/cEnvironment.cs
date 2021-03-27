@@ -215,7 +215,6 @@ namespace IATD3
             return _movementCost;
         }
 
-
         // Sensor tests
         public bool IsAgentOnPortal()
         {

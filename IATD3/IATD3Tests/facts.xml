@@ -1,5 +1,6 @@
 <FactTable>
   <Facts>
-    <Fact velocity="high" type="sirocco" locationX="1" locationY="5">Wind</Fact>
+    <Fact presence="False" locationX="0" locationY="0">Monster</Fact>
+    <Fact presence="True" locationX="0" locationY="0">Abyss</Fact>
   </Facts>
 </FactTable>

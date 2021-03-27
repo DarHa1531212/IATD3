@@ -9,7 +9,7 @@ using System.IO;
 
 namespace IATD3
 {
-    class cAgent
+    public class cAgent
     {
         // Effectors
         cEffectorMove effectorMove;

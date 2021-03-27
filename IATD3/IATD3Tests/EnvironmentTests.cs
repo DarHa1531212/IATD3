@@ -456,5 +456,194 @@ namespace IATD3Tests
             Assert.IsFalse(isDeadlyCell);
         }
         #endregion
+
+        #region Move
+
+        #region OutOfBounds
+        [TestMethod]
+        public void T_Move_OutOfBounds_LineColumnInferior()
+        {
+            cEnvironment environment = new cEnvironment();
+            int result = environment.Move(-1, -1);
+
+            Assert.AreEqual(result, int.MinValue);
+        }
+
+        [TestMethod]
+        public void T_Move_OutOfBounds_LineInferiorColumnIn()
+        {
+            cEnvironment environment = new cEnvironment();
+            int result = environment.Move(-4, 1);
+
+            Assert.AreEqual(result, int.MinValue);
+        }
+
+        [TestMethod]
+        public void T_Move_OutOfBounds_LineInferiorColumnSuperior()
+        {
+            cEnvironment environment = new cEnvironment();
+            int result = environment.Move(-4, 6);
+
+            Assert.AreEqual(result, int.MinValue);
+        }
+
+        [TestMethod]
+        public void T_Move_OutOfBounds_LineInColumnInferior()
+        {
+            cEnvironment environment = new cEnvironment();
+            int result = environment.Move(1, -2);
+
+            Assert.AreEqual(result, int.MinValue);
+        }
+
+        [TestMethod]
+        public void T_Move_OutOfBounds_LineInColumnSuperior()
+        {
+            cEnvironment environment = new cEnvironment();
+            int result = environment.Move(1, 9);
+
+            Assert.AreEqual(result, int.MinValue);
+        }
+
+        [TestMethod]
+        public void T_Move_OutOfBounds_LineSuperiorColumnInferior()
+        {
+            cEnvironment environment = new cEnvironment();
+            int result = environment.Move(3, -3);
+
+            Assert.AreEqual(result, int.MinValue);
+        }
+
+        [TestMethod]
+        public void T_Move_OutOfBounds_LineSuperiorColumnIn()
+        {
+            cEnvironment environment = new cEnvironment();
+            int result = environment.Move(5, 0);
+
+            Assert.AreEqual(result, int.MinValue);
+        }
+
+        [TestMethod]
+        public void T_Move_OutOfBounds_LineSuperiorColumnSuperior()
+        {
+            cEnvironment environment = new cEnvironment();
+            int result = environment.Move(5, 7);
+
+            Assert.AreEqual(result, int.MinValue);
+        }
+        #endregion
+
+        #region InBounds
+
+        #region Safe
+        [TestMethod]
+        public void T_Move_InBoundsSafe()
+        {
+            cEnvironment environment = new cEnvironment();
+            PrivateObject po = new PrivateObject(environment);
+            cCell[,] board = (cCell[,])po.GetProperty("Board");
+            board[0, 1].HasMonster = false;
+
+            // Act
+            object utility = po.Invoke("Move", new object[] { 0, 1 });
+
+            // Assert
+            Assert.AreEqual((int)utility, -1);
+        }
+        #endregion
+
+        #region Deadly
+        [TestMethod]
+        public void T_Move_InBoundsMonsterSize3()
+        {
+            cEnvironment environment = new cEnvironment();
+            cAgent agent = new cAgent(environment);
+            environment.Agent = agent;
+            PrivateObject po = new PrivateObject(environment);
+            cCell[,] board = (cCell[,])po.GetProperty("Board");
+            board[2, 1].HasMonster = true;
+
+            // Act
+            object utility = po.Invoke("Move", new object[] { 2, 1 });
+
+            // Assert
+            Assert.AreEqual((int)utility, -91);
+        }
+
+        [TestMethod]
+        public void T_Move_InBoundsMonsterSize5()
+        {
+            cEnvironment environment = new cEnvironment();
+            cAgent agent = new cAgent(environment);
+            environment.Agent = agent;
+            PrivateObject po = new PrivateObject(environment);
+            po.Invoke("AdaptSize", new object[] { 5 });
+            cCell[,] board = (cCell[,])po.GetProperty("Board");
+            board[3, 4].HasMonster = true;
+
+            // Act
+            object utility = po.Invoke("Move", new object[] { 3, 4 });
+
+            // Assert
+            Assert.AreEqual((int)utility, -251);
+        }
+        [TestMethod]
+        public void T_Move_InBoundsAbyssSize4()
+        {
+            cEnvironment environment = new cEnvironment();
+            cAgent agent = new cAgent(environment);
+            environment.Agent = agent;
+            PrivateObject po = new PrivateObject(environment);
+            po.Invoke("AdaptSize", new object[] { 4 });
+            cCell[,] board = (cCell[,])po.GetProperty("Board");
+            board[0, 3].HasAbyss = true;
+
+            // Act
+            object utility = po.Invoke("Move", new object[] { 0, 3 });
+
+            // Assert
+            Assert.AreEqual((int)utility, -161);
+        }
+
+        [TestMethod]
+        public void T_Move_InBoundsAbyssSize7()
+        {
+            cEnvironment environment = new cEnvironment();
+            cAgent agent = new cAgent(environment);
+            environment.Agent = agent;
+            PrivateObject po = new PrivateObject(environment);
+            po.Invoke("AdaptSize", new object[] { 7 });
+            cCell[,] board = (cCell[,])po.GetProperty("Board");
+            board[6, 6].HasAbyss = true;
+
+            // Act
+            object utility = po.Invoke("Move", new object[] { 6, 6 });
+
+            // Assert
+            Assert.AreEqual((int)utility, -491);
+        }
+
+        [TestMethod]
+        public void T_Move_InBoundsMonsterAndAbyssSize8()
+        {
+            cEnvironment environment = new cEnvironment();
+            cAgent agent = new cAgent(environment);
+            environment.Agent = agent;
+            PrivateObject po = new PrivateObject(environment);
+            po.Invoke("AdaptSize", new object[] { 8 });
+            cCell[,] board = (cCell[,])po.GetProperty("Board");
+            board[5, 3].HasAbyss = true;
+
+            // Act
+            object utility = po.Invoke("Move", new object[] { 5, 3 });
+
+            // Assert
+            Assert.AreEqual((int)utility, -641);
+        }
+        #endregion
+
+        #endregion
+
+        #endregion
     }
 }

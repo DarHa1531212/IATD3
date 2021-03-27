@@ -30,6 +30,8 @@ namespace IATD3
 
         private cAgent agent;
 
+        public cAgent Agent { get => agent; set => agent = value; }
+
         internal cCell[,] Board { get => board; set => board = value; }
         public int BoardSize { get => boardSize; set => boardSize = value; }
         public bool SizeToBeAdapted { get => sizeToBeAdapted; set => sizeToBeAdapted = value; }
@@ -42,6 +44,7 @@ namespace IATD3
             agentPosX = 0;
             agentPosY = 0;
             AdaptSize(_boardSizeBeginning);
+            //agent = new cAgent(this);
         }
 
         private void AdaptSize(int size)
@@ -202,10 +205,18 @@ namespace IATD3
 
         public int Move(int lineMovement, int columnMovement)
         {
+            if(lineMovement < 0 
+                || lineMovement >= boardSize
+                || columnMovement < 0
+                || columnMovement >= boardSize)
+            {
+                return int.MinValue;
+            }
+
             agentPosX = columnMovement;
             agentPosY = lineMovement;
 
-            if(IsDeadlyCell(agentPosY, agentPosX))
+            if (IsDeadlyCell(agentPosY, agentPosX))
             {
                 agent.Die(board[agentPosY, agentPosX].HasMonster, board[agentPosY, agentPosX].HasAbyss);
                 agentPosX = 0;

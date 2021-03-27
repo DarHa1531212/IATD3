@@ -144,6 +144,10 @@ namespace IATD3
                 returnCode = 1;
             }
             xmlElement.SetAttribute(attribute, value);
+
+            fs.SetLength(0);
+            xmldoc.Save(fs);
+            fs.Close();
             return returnCode;
         }
     }

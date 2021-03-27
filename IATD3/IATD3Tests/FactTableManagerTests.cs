@@ -16,7 +16,56 @@ namespace IATD3Tests
     {
         #region AddOrChangeAttribute
         //TODO : do (comme le pokémon)
+        //TODO : add assert with fact table content
+        [TestMethod]
+        public void T_AddOrChangeAttribute_NoElement()
+        {
+            XmlDocument xmldoc = new XmlDocument();
+            FileStream fs = new FileStream(@"../../facts.xml", FileMode.Open, FileAccess.ReadWrite);
+            xmldoc.LoadXml("<FactTable><Facts><Fact locationX='1' locationY='3'>Monster</Fact></Facts></FactTable>");
+            fs.SetLength(0);
+            xmldoc.Save(fs);
+            fs.Close();
+
+            int result = FactTableManager.AddOrChangeAttribute("Monster", 2, 3, "presence", "true");
+
+            Assert.AreEqual(result, -1);
+
+        }
+
+        [TestMethod]
+        public void T_AddOrChangeAttribute_AddAttribute()
+        {
+            XmlDocument xmldoc = new XmlDocument();
+            FileStream fs = new FileStream(@"../../facts.xml", FileMode.Open, FileAccess.ReadWrite);
+            xmldoc.LoadXml("<FactTable><Facts><Fact locationX='2' locationY='4'>Wind</Fact></Facts></FactTable>");
+            fs.SetLength(0);
+            xmldoc.Save(fs);
+            fs.Close();
+
+            int result = FactTableManager.AddOrChangeAttribute("Wind", 2, 4, "presence", "false");
+
+            Assert.AreEqual(result, 0);
+
+        }
+
+        [TestMethod]
+        public void T_AddOrChangeAttribute_ChangeAttribute()
+        {
+            XmlDocument xmldoc = new XmlDocument();
+            FileStream fs = new FileStream(@"../../facts.xml", FileMode.Open, FileAccess.ReadWrite);
+            xmldoc.LoadXml("<FactTable><Facts><Fact locationX='0' locationY='0' zone='mountain'>Portal</Fact></Facts></FactTable>");
+            fs.SetLength(0);
+            xmldoc.Save(fs);
+            fs.Close();
+
+            int result = FactTableManager.AddOrChangeAttribute("Portal", 0, 0, "zone", "mountain");
+
+            Assert.AreEqual(result, 1);
+
+        }
         #endregion
+
         #region IsAttributeInTable
         [TestMethod]
         public void T_IsAttributeInTable_True()

@@ -12,6 +12,7 @@ namespace IATD3Tests
     [TestClass]
     public class EnvironmentTests
     {
+        #region AdaptToNeighboursProperties
         [TestMethod]
         public void T_AdaptToNeighboursProperties_MonsterUp()
         {
@@ -111,7 +112,9 @@ namespace IATD3Tests
             Assert.IsFalse(board[1, 0].HasOdour, "There shouldn't be odour.");
             Assert.IsFalse(board[1, 0].HasWind, "There shouldn't be wind.");
         }
+        #endregion
 
+        #region CheckNeighboursMonsters
         [TestMethod]
         public void T_CheckNeighboursMonsters_MonsterUp()
         {
@@ -199,7 +202,9 @@ namespace IATD3Tests
             // Assert
             Assert.IsFalse(hasMonster);
         }
+        #endregion
 
+        #region CheckNeighboursAbysses
         [TestMethod]
         public void T_CheckNeighboursAbysses_AbyssUp()
         {
@@ -287,7 +292,9 @@ namespace IATD3Tests
             // Assert
             Assert.IsFalse(hasAbyss);
         }
+        #endregion
 
+        #region AdaptNeighboursWind
         [TestMethod]
         public void T_AdaptNeighboursWind()
         {
@@ -340,7 +347,9 @@ namespace IATD3Tests
             // Assert
             Assert.IsTrue(board[0, 0].HasWind);
         }
+        #endregion
 
+        #region AdaptNeighboursMonster
         [TestMethod]
         public void T_AdaptNeighboursMonster()
         {
@@ -393,41 +402,9 @@ namespace IATD3Tests
             // Assert
             Assert.IsTrue(board[0, 0].HasOdour);
         }
-        /*
-        [TestMethod]
-        public void T_ThrowStone_OnMonster()
-        {
-            // Arrange
-            cEnvironment environment = new cEnvironment();
-            PrivateObject po = new PrivateObject(environment);
-            cCell[,] board = (cCell[,])po.GetProperty("Board");
-            board[2, 2].HasMonster = true;
+        #endregion
 
-            // Act
-            bool monsterKilled = environment.ThrowStone(2, 2);
-
-            // Assert
-            Assert.IsFalse(board[2, 2].HasMonster);
-            Assert.IsTrue(monsterKilled);
-        }
-        
-        [TestMethod]
-        public void T_ThrowStone_OnNothing()
-        {
-            // Arrange
-            cEnvironment environment = new cEnvironment();
-            PrivateObject po = new PrivateObject(environment);
-            cCell[,] board = (cCell[,])po.GetProperty("Board");
-            board[2, 2].HasMonster = false;
-
-            // Act
-            bool monsterKilled = environment.ThrowStone(2, 2);
-
-            // Assert
-            Assert.IsFalse(board[2, 2].HasMonster);
-            Assert.IsFalse(monsterKilled);
-        }
-        */
+        #region IsDeadlyCell
         [TestMethod]
         public void T_IsDeadlyCell_Monster()
         {
@@ -478,5 +455,6 @@ namespace IATD3Tests
             // Assert
             Assert.IsFalse(isDeadlyCell);
         }
+        #endregion
     }
 }

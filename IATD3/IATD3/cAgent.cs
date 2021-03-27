@@ -207,7 +207,7 @@ namespace IATD3
             {
                 foreach (var inference in inferences)
                 {
-                    bool conditionsAreRespected = true;
+                    /*bool conditionsAreRespected = true;
                     foreach (var fact in inference.Facts)
                     {
                         bool sameFact = true;
@@ -217,7 +217,14 @@ namespace IATD3
                             sameFact = sameFact && (factAttribute == attribut.Value);
                         }
                         conditionsAreRespected = conditionsAreRespected && sameFact;
-                    }
+                    }*/
+                    bool conditionsAreRespected = inference.Facts.All(
+                        fact =>
+                        fact.Attributs.All(
+                            attribute =>
+                            FactTableManager.GetAttributeOfFactAtLocation(fact.Element, cell.Item1, cell.Item2, attribute.Key) == attribute.Value
+                        )
+                    );
                     if (conditionsAreRespected)
                     {
                         foreach (var implication in inference.Implies)

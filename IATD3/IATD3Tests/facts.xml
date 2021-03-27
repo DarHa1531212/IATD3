@@ -1,5 +1,6 @@
 <FactTable>
   <Facts>
-    <Fact locationX="2" locationY="3">Portal</Fact>
+    <Fact presence="False" locationX="0" locationY="0">Monster</Fact>
+    <Fact presence="True" locationX="0" locationY="0">Abyss</Fact>
   </Facts>
 </FactTable>

@@ -1,5 +1,5 @@
 <FactTable>
   <Facts>
-    <Fact locationX="2" locationY="3">Portal</Fact>
+    <Fact velocity="high" type="sirocco" locationX="1" locationY="5">Wind</Fact>
   </Facts>
 </FactTable>

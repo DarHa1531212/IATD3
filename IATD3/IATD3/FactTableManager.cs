@@ -98,7 +98,7 @@ namespace IATD3
             return xmlElement.GetAttribute(attribute);
         }
 
-        public static bool IsAttributeInTable(string factName, int locationX, int locationY, Dictionary<string, string> attributes)
+        public static bool IsFactInTable(string factName, int locationX, int locationY, Dictionary<string, string> attributes)
         {
             XmlDocument xmldoc = new XmlDocument();
             FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
@@ -118,6 +118,33 @@ namespace IATD3
             fs.Close();
 
             return (element != null);
+        }
+
+        public static int AddOrChangeAttribute(string factName, int locationX, int locationY, string attribute, string value)
+        {
+            XmlDocument xmldoc = new XmlDocument();
+            FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
+            xmldoc.Load(fs);
+
+            string xpath = "//Fact[@locationX='" + locationX.ToString() +
+                "' and @locationY='" + locationY.ToString() + "' and text()= '" + factName + "']";
+
+            XmlNode element = xmldoc.SelectSingleNode(xpath);
+
+            if(element == null)
+            {
+                fs.Close();
+                return -1;
+            }
+            int returnCode = 0;
+
+            XmlElement xmlElement = element as XmlElement;
+            if (xmlElement.HasAttribute(attribute))
+            {
+                returnCode = 1;
+            }
+            xmlElement.SetAttribute(attribute, value);
+            return returnCode;
         }
     }
 }

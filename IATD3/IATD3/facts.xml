@@ -1,7 +1,4 @@
 <FactTable>
   <Facts>
-    <Fact locationX="0" locationY="0" hasOdour="False" hasWind="False" hasPortal="False">Known</Fact>
-    <Fact locationX="1" locationY="0">Scope</Fact>
-    <Fact locationX="0" locationY="1">Scope</Fact>
   </Facts>
 </FactTable>

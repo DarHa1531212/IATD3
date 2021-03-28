@@ -51,4 +51,17 @@ namespace IATD3
             return environment.IsAgentCellWindy();
         }
     }
+    public class cSensorNeighbours
+    {
+        protected cEnvironment environment = new cEnvironment();
+        public cSensorNeighbours(cEnvironment _environment)
+        {
+            environment = _environment;
+        }
+
+        public List<Tuple<int, int>> Get(int posX, int posY)
+        {
+            return environment.GetNeighbouringPositions(posX, posY);
+        }
+    }
 }

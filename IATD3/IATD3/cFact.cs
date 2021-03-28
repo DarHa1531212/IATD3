@@ -20,5 +20,18 @@ namespace IATD3
             element = e;
             attributs = new Dictionary<String, String>();
         }
+
+        /*public bool CorrespondsTo(cFact other)
+        {
+            bool correspondsTo = true;
+            foreach (var attribut in Attributs)
+            {
+                if (attribut.Key != "locationX" && attribut.Key != "locationY")
+                {
+                    correspondsTo = correspondsTo && (attribut.Value == other.Attributs[attribut.Key]);
+                }
+            }
+            return correspondsTo;
+        }*/
     }
 }

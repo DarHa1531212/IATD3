@@ -20,6 +20,7 @@ namespace IATD3
         cSensorLight sensorLight;
         cSensorWind sensorWind;
         cSensorOdour sensorOdour;
+        cSensorNeighbours sensorNeighbours;
 
         // Relative location
         int relativeLocationX;
@@ -40,6 +41,7 @@ namespace IATD3
             sensorLight = new cSensorLight(environment);
             sensorOdour = new cSensorOdour(environment);
             sensorWind = new cSensorWind(environment);
+            sensorNeighbours = new cSensorNeighbours(environment);
 
             // Relative location
             relativeLocationX = 0;
@@ -53,8 +55,23 @@ namespace IATD3
             FactTableManager.CreateFactFile();
         }
 
+        private void UpdateFacts()
+        {
+            FactTableManager.AddOrReplaceFactAtLocation("Known", relativeLocationX, relativeLocationY, new Dictionary<String, String>());
+            Tuple<int, int> currentCell = new Tuple<int, int>(relativeLocationX, relativeLocationY);
+            knownCells.Add(currentCell);
+            scopeCells.Remove(currentCell);
+
+            foreach (var neighbourPos in sensorNeighbours.Get(relativeLocationX, relativeLocationY))
+            {
+                FactTableManager.AddOrReplaceFactAtLocation("Scope", neighbourPos.Item1, neighbourPos.Item2, new Dictionary<String, String>());
+                scopeCells.Add(new Tuple<int, int>(neighbourPos.Item1, neighbourPos.Item2));
+            }
+        }
+
         private void loadRulesFile()
         {
+            inferences.Clear();
             XmlDocument xmldoc = new XmlDocument();
             XmlNodeList xmlnode;
             int i = 0;
@@ -97,6 +114,7 @@ namespace IATD3
 
                     inference.Implies.Add(implie);
                 }
+                inferences.Add(inference);
             }
             fs.Close();
         }
@@ -117,6 +135,8 @@ namespace IATD3
         /// </summary>
         public void UseSensors()
         {
+            UpdateFacts();
+
             bool isWindy = sensorWind.Sense();
             bool isSmelly = sensorOdour.Sense();
             bool isBright = sensorLight.Sense();
@@ -129,29 +149,11 @@ namespace IATD3
             // Location would be a relative location (agent only knows what moves he did, not where he is exactly)
             // But we assume each are cell sizes are equal
 
-            Dictionary<string, string> attributes = new Dictionary<string, string>();
-            attributes.Add("presence", isSmelly.ToString());
-            FactTableManager.AddOrReplaceFactAtLocation("Smell", relativeLocationX, relativeLocationY, attributes);
-            
-            attributes = new Dictionary<string, string>();
-            attributes.Add("presence", isBright.ToString());
-            FactTableManager.AddOrReplaceFactAtLocation("Portal", relativeLocationX, relativeLocationY, attributes);
+            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasOdour", isSmelly.ToString());
+            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasWind", isWindy.ToString());
+            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasPortal", isBright.ToString());
 
-            attributes = new Dictionary<string, string>();
-            attributes.Add("presence", isWindy.ToString());
-            FactTableManager.AddOrReplaceFactAtLocation("Wind", relativeLocationX, relativeLocationY, attributes);
-
-            UpdateCellsKnowledge(relativeLocationX, relativeLocationY);
-        }
-
-        private void UpdateCellsKnowledge(int relativeLocationX, int relativeLocationY)
-        {
-            knownCells.Add(new Tuple<int, int>(relativeLocationX, relativeLocationY));
-
-            scopeCells.Add(new Tuple<int, int>(relativeLocationX - 1, relativeLocationY));
-            scopeCells.Add(new Tuple<int, int>(relativeLocationX, relativeLocationY - 1));
-            scopeCells.Add(new Tuple<int, int>(relativeLocationX + 1, relativeLocationY));
-            scopeCells.Add(new Tuple<int, int>(relativeLocationX, relativeLocationY + 1));
+            UpdateFactsFromRules();
         }
 
         public void ThrowRock()
@@ -162,13 +164,8 @@ namespace IATD3
 
         public void Die(bool hadMonster, bool hadAbyss)
         {
-            Dictionary<string, string> attributes = new Dictionary<string, string>();
-            attributes.Add("presence", hadMonster.ToString());
-            FactTableManager.AddOrReplaceFactAtLocation("Monster", relativeLocationX, relativeLocationY, attributes);
-
-            attributes = new Dictionary<string, string>();
-            attributes.Add("presence", hadAbyss.ToString());
-            FactTableManager.AddOrReplaceFactAtLocation("Abyss", relativeLocationX, relativeLocationY, attributes);
+            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasMonster", hadMonster.ToString());
+            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasAbyss", hadMonster.ToString());
 
             relativeLocationX = 0;
             relativeLocationY = 0;
@@ -201,40 +198,37 @@ namespace IATD3
             //
         }
 
-        private void AdaptFacts()
+        private void UpdateFactsFromRules()
         {
-            foreach (var cell in scopeCells)
+            List<Tuple<int, int>> cellsToCheck = new List<Tuple<int, int>>();
+            cellsToCheck.Concat(knownCells).Concat(scopeCells);
+            foreach (var cell in cellsToCheck)
             {
                 foreach (var inference in inferences)
                 {
-                    /*bool conditionsAreRespected = true;
-                    foreach (var fact in inference.Facts)
-                    {
-                        bool sameFact = true;
-                        foreach (var attribut in fact.Attributs)
-                        {
-                            String factAttribute = FactTableManager.GetAttributeOfFactAtLocation(fact.Element, cell.Item1, cell.Item2, attribut.Key);
-                            sameFact = sameFact && (factAttribute == attribut.Value);
-                        }
-                        conditionsAreRespected = conditionsAreRespected && sameFact;
-                    }*/
                     bool conditionsAreRespected = inference.Facts.All(
                         fact =>
                         fact.Attributs.All(
-                            attribute =>
-                            FactTableManager.GetAttributeOfFactAtLocation(fact.Element, cell.Item1, cell.Item2, attribute.Key) == attribute.Value
+                            attribute => 
+                            (attribute.Key == "locationX") || (attribute.Key == "locationY") ||
+                            (FactTableManager.GetAttributeAtLocation(cell.Item1, cell.Item2, attribute.Key) == attribute.Value)
                         )
                     );
                     if (conditionsAreRespected)
                     {
                         foreach (var implication in inference.Implies)
                         {
-                            FactTableManager.AddOrReplaceFactAtLocation(
-                                implication.Element,
-                                relativeLocationX + Int32.Parse(implication.Attributs["locationX"]),
-                                relativeLocationY + Int32.Parse(implication.Attributs["locationY"]),
-                                implication.Attributs
-                            );
+                            foreach(var attribute in implication.Attributs)
+                            {
+                                // /!\ Il y a toujours la mise à jour de tous les attributs (écrasement) de la case alors qu'il ne faut pas forcément
+                                // → Il faut retenir l'information la plus importante (la plus sure et utile) plutôt que la dernière
+                                FactTableManager.AddOrChangeAttribute(
+                                    relativeLocationX + Int32.Parse(implication.Attributs["locationX"]),
+                                    relativeLocationY + Int32.Parse(implication.Attributs["locationY"]),
+                                    attribute.Key,
+                                    attribute.Value
+                                );
+                            }
                         }
                     }
                 }

@@ -42,7 +42,7 @@ namespace IATD3
             boardCpt = 0;
             cAgent agent = new cAgent(environment);
             agent.UseSensors();
-            agent.ThrowRock();
+            //agent.ThrowRock();
 
             if (environment.SizeToBeAdapted)
             {

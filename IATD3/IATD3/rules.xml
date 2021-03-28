@@ -1,26 +1,35 @@
 <?xml version="1.0"?>
 <Rules>
     <Rule>
-        <Fact presence="false" locationX="0" locationY="0">Monster</Fact>
-        <Fact presence="false" locationX="0" locationY="0">Abyss</Fact>
-		<Implies presence="true" locationX="0" locationY="0">Safe</Implies>
+		<Fact locationX="0" locationY="0" hasMonster="False" hasAbyss="False"></Fact>
+		<Implies locationX="0" locationY="0" isSafe="True" probability="100"></Implies>
     </Rule>
 	<Rule>
-		<Fact presence="true" locationX="0" locationY="0">Odour</Fact>
-		<Implies presence="true" locationX="1" locationY="0">Monster</Implies>
-		<Implies presence="true" locationX="-1" locationY="0">Monster</Implies>
-		<Implies presence="true" locationX="0" locationY="1">Monster</Implies>
-		<Implies presence="true" locationX="0" locationY="-1">Monster</Implies>
+		<Fact locationX="0" locationY="0" hasOdour="True"></Fact>
+		<Implies locationX="1" locationY="0" hasMonster="True" probabilityMonster="100"></Implies>
+		<Implies locationX="-1" locationY="0" hasMonster="True" probabilityMonster="100"></Implies>
+		<Implies locationX="0" locationY="1" hasMonster="True" probabilityMonster="100"></Implies>
+		<Implies locationX="0" locationY="-1" hasMonster="True" probabilityMonster="100"></Implies>
 	</Rule>
 	<Rule>
-		<Fact presence="false" locationX="0" locationY="0">Odour</Fact>
-		<Implies presence="false" locationX="1" locationY="0" probability="100">Monster</Implies>
-		<Implies presence="false" locationX="-1" locationY="0" probability="100">Monster</Implies>
-		<Implies presence="false" locationX="0" locationY="1" probability="100">Monster</Implies>
-		<Implies presence="false" locationX="0" locationY="-1" probability="100">Monster</Implies>
+		<Fact locationX="0" locationY="0" hasOdour="False"></Fact>
+		<Implies locationX="1" locationY="0" probabilityMonster="100" hasMonster="False"></Implies>
+		<Implies locationX="-1" locationY="0" probabilityMonster="100" hasMonster="False"></Implies>
+		<Implies locationX="0" locationY="1" probabilityMonster="100" hasMonster="False"></Implies>
+		<Implies locationX="0" locationY="-1" probabilityMonster="100" hasMonster="False"></Implies>
 	</Rule>
 	<Rule>
-		<Fact presence="true" locationX="" locationY="">Wind</Fact>
-		<Implies presence="true" locationX="" locationY="">Abyss</Implies>
+		<Fact locationX="0" locationY="0" hasWind="True"></Fact>
+		<Implies locationX="1" locationY="0" hasAbyss="True" probabilityAbyss="100"></Implies>
+		<Implies locationX="-1" locationY="0" hasAbyss="True" probabilityAbyss="100"></Implies>
+		<Implies locationX="0" locationY="1" hasAbyss="True" probabilityAbyss="100"></Implies>
+		<Implies locationX="0" locationY="-1" hasAbyss="True" probabilityAbyss="100"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="0" locationY="0" hasWind="False"></Fact>
+		<Implies locationX="1" locationY="0" probabilityAbyss="100" hasAbyss="False"></Implies>
+		<Implies locationX="-1" locationY="0" probabilityAbyss="100" hasAbyss="False"></Implies>
+		<Implies locationX="0" locationY="1" probabilityAbyss="100" hasAbyss="False"></Implies>
+		<Implies locationX="0" locationY="-1" probabilityAbyss="100" hasAbyss="False"></Implies>
 	</Rule>
 </Rules>

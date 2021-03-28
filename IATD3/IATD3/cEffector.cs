@@ -60,11 +60,8 @@ namespace IATD3
             int cost = environment.Throw(launchPosY, launchPosX);
 
             // Add that there is no monster on selected cell (and delete other fact if exists)
-            Dictionary<string, string> attributes = new Dictionary<string, string>();
 
-            attributes.Add("presence", "False");
-
-            FactTableManager.AddOrReplaceFactAtLocation("Monster", launchPosX, launchPosY, attributes);
+            FactTableManager.AddOrChangeAttribute(launchPosX, launchPosY, "presence", "false");
             return cost;
         }
     }

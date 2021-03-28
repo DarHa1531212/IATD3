@@ -68,7 +68,7 @@ namespace IATD3
             } else
             {
                 XmlElement xmlElement = element as XmlElement;
-                xmlElement.RemoveAllAttributes();
+                //xmlElement.RemoveAllAttributes();
                 foreach (string attribute in newAttributes.Keys)
                 {
                     xmlElement.SetAttribute(attribute, newAttributes[attribute]);
@@ -85,8 +85,27 @@ namespace IATD3
             FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
             xmldoc.Load(fs);
 
-            XmlNode element = xmldoc.SelectSingleNode("//Fact[@"+ attribute + " and @locationX='" + locationX.ToString() +
+            XmlNode element = xmldoc.SelectSingleNode("//Fact[@" + attribute + " and @locationX='" + locationX.ToString() +
                 "' and @locationY='" + locationY.ToString() + "' and text()='" + factName + "']");
+
+            if (element == null)
+            {
+                fs.Close();
+                return null;
+            }
+            XmlElement xmlElement = element as XmlElement;
+            fs.Close();
+            return xmlElement.GetAttribute(attribute);
+        }
+
+        public static string GetAttributeAtLocation(int locationX, int locationY, string attribute)
+        {
+            XmlDocument xmldoc = new XmlDocument();
+            FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
+            xmldoc.Load(fs);
+
+            XmlNode element = xmldoc.SelectSingleNode("//Fact[@"+ attribute + " and @locationX='" + locationX.ToString() +
+                "' and @locationY='" + locationY.ToString() + "']");
 
             if(element == null)
             {
@@ -120,14 +139,14 @@ namespace IATD3
             return (element != null);
         }
 
-        public static int AddOrChangeAttribute(string factName, int locationX, int locationY, string attribute, string value)
+        public static int AddOrChangeAttribute(int locationX, int locationY, string attribute, string value)
         {
             XmlDocument xmldoc = new XmlDocument();
             FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
             xmldoc.Load(fs);
 
             string xpath = "//Fact[@locationX='" + locationX.ToString() +
-                "' and @locationY='" + locationY.ToString() + "' and text()= '" + factName + "']";
+                "' and @locationY='" + locationY.ToString() + "']";
 
             XmlNode element = xmldoc.SelectSingleNode(xpath);
 

@@ -241,5 +241,27 @@ namespace IATD3
         {
             return IsCellWindy(agentPosY, agentPosX);
         }
+
+        public List<Tuple<int, int>> GetNeighbouringPositions(int posX, int posY)
+        {
+            List<Tuple<int, int>> neighbours = new List<Tuple<int, int>>();
+            if (posX - 1 >= 0)
+            {
+                neighbours.Add(new Tuple<int, int>(posX - 1, posY));
+            }
+            if (posY - 1 >= 0)
+            {
+                neighbours.Add(new Tuple<int, int>(posX, posY - 1));
+            }
+            if (posX + 1 < boardSize)
+            {
+                neighbours.Add(new Tuple<int, int>(posX + 1, posY));
+            }
+            if (posY + 1 < boardSize)
+            {
+                neighbours.Add(new Tuple<int, int>(posX, posY + 1));
+            }
+            return neighbours;
+        }
     }
 }

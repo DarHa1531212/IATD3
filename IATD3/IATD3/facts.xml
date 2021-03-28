@@ -1,7 +1,7 @@
 <FactTable>
   <Facts>
-	  <Fact presence="False" locationX="0" locationY="0">Smell</Fact>
-	  <Fact presence="True" locationX="0" locationY="0">Portal</Fact>
-	  <Fact presence="False" locationX="0" locationY="0">Wind</Fact>
+    <Fact locationX="0" locationY="0" hasOdour="False" hasWind="False" hasPortal="False">Known</Fact>
+    <Fact locationX="1" locationY="0">Scope</Fact>
+    <Fact locationX="0" locationY="1">Scope</Fact>
   </Facts>
 </FactTable>

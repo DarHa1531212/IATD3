@@ -27,7 +27,7 @@ namespace IATD3Tests
             xmldoc.Save(fs);
             fs.Close();
 
-            int result = FactTableManager.AddOrChangeAttribute("Monster", 2, 3, "presence", "true");
+            int result = FactTableManager.AddOrChangeAttribute(2, 3, "presence", "true");
 
             Assert.AreEqual(result, -1);
 
@@ -43,7 +43,7 @@ namespace IATD3Tests
             xmldoc.Save(fs);
             fs.Close();
 
-            int result = FactTableManager.AddOrChangeAttribute("Wind", 2, 4, "presence", "false");
+            int result = FactTableManager.AddOrChangeAttribute(2, 4, "presence", "false");
 
             Assert.AreEqual(result, 0);
 
@@ -59,7 +59,7 @@ namespace IATD3Tests
             xmldoc.Save(fs);
             fs.Close();
 
-            int result = FactTableManager.AddOrChangeAttribute("Portal", 0, 0, "zone", "mountain");
+            int result = FactTableManager.AddOrChangeAttribute(0, 0, "zone", "mountain");
 
             Assert.AreEqual(result, 1);
 

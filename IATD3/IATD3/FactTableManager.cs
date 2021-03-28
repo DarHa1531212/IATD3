@@ -169,5 +169,28 @@ namespace IATD3
             fs.Close();
             return returnCode;
         }
+
+        private static void AddOrCreateFactsId(int id)
+        {
+            XmlDocument xmldoc = new XmlDocument();
+            FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
+            xmldoc.Load(fs);
+
+            XmlNode element = xmldoc.SelectSingleNode("//Facts[@id='" + id + "']");
+            if(element != null)
+            {
+                fs.Close();
+                return;
+            }
+            XmlNode facts = xmldoc.CreateElement("Facts");
+            XmlElement factsElement = facts as XmlElement;
+            factsElement.SetAttribute("id", id.ToString());
+            xmldoc.DocumentElement.AppendChild(facts);
+
+            fs.SetLength(0);
+            xmldoc.Save(fs);
+            fs.Close();
+
+        }
     }
 }

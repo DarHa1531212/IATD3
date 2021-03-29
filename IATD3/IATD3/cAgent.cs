@@ -55,6 +55,20 @@ namespace IATD3
             FactTableManager.CreateFactFile();
         }
 
+        public Tuple<int, int> Move()
+        {
+            foreach (var position in scopeCells)
+            {
+                Dictionary<string, string> attributes = new Dictionary<string, string>();
+                attributes.Add("isSafe", "True");
+                if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
+                {
+                    return position;
+                }
+            }
+            return new Tuple<int, int>(0, 0);
+        }
+
         private void UpdateFacts()
         {
             FactTableManager.AddOrReplaceFactAtLocation("Known", relativeLocationX, relativeLocationY, new Dictionary<String, String>());

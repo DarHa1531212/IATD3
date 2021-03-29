@@ -32,4 +32,8 @@
 		<Implies locationX="0" locationY="1" probabilityAbyss="100" hasAbyss="False"></Implies>
 		<Implies locationX="0" locationY="-1" probabilityAbyss="100" hasAbyss="False"></Implies>
 	</Rule>
+	<Rule>
+		<Fact locationX="0" locationY="0" hasMonster="False" probabilityMonster="100" hasAbyss="False" probabilityAbyss="100"></Fact>
+		<Implies locationX="0" locationY="0" isSafe="True" probability="100"></Implies>
+	</Rule>
 </Rules>

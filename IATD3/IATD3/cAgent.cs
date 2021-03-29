@@ -66,6 +66,7 @@ namespace IATD3
                     return position;
                 }
             }
+            // Si aucune case safe, sélectionner la plus safe
             return new Tuple<int, int>(0, 0);
         }
 

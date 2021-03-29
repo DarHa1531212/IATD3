@@ -44,10 +44,15 @@
 	<Rule>
 		<Fact onLocationX="0" onLocationY="0"></Fact>
 		<Action name="MoveTo" params="locationX,locationY"></Action>
-		<Implies onLocationX="locationX" onLocationY="locationX"></Implies>
+		<Implies onLocationX="locationX" onLocationY="locationY"></Implies>
 	</Rule>
 	<Rule>
-		<Fact onLocationX="0" onLocationY="0"></Fact>
+		<Fact locationX="0" locationY="0" hasMonster="true" hasAbyss="false" isSafe="false"></Fact>
+		<Action name="ThrowStone" params="locationX,locationY"></Action>
+		<Implies locationX="0" locationY="0" hasMonster="false" isSafe="true"></Implies>
+	</Rule>
+	<Rule>
+		<Fact onLocationX="0" onLocationY="0">AgentPosition</Fact>
 		<Fact locationX="0" locationY="0" isSafe="true" hasPortal="true"></Fact>
 		<Action name="UsePortal"></Action>
 		<Implies cleared="true"></Implies>

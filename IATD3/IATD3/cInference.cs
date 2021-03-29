@@ -11,9 +11,14 @@ namespace IATD3
     {
         private List<cFact> facts;
         private List<cFact> implies;
+        private List<cAction> actions;
 
         public List<cFact> Facts { get => facts; set => facts = value; }
         public List<cFact> Implies { get => implies; set => implies = value; }
+        public List<cAction> Actions { get => actions; set => actions = value; }
+
+        private bool isActionInference;
+        public bool IsActionInference { get => isActionInference; set => isActionInference = value; }
 
         public cInference()
         {

@@ -78,7 +78,7 @@ namespace IATD3
         public int MoveTo()
         {
             Tuple<int, int> newPosition = Move();
-            if(newPosition == null)
+            if (newPosition == null)
             {
                 return int.MinValue;
             }
@@ -92,9 +92,11 @@ namespace IATD3
             return effectorUsePortal.DoAction();
         }
 
-        public int ThrowStoneTo()
+        public int ThrowStoneTo(int locationX, int locationY)
         {
-            return effectorUsePortal.DoAction();
+            effectorThrowRock.LaunchPosX = locationX;
+            effectorThrowRock.LaunchPosY = locationY;
+            return effectorThrowRock.DoAction();
         }
 
         public int Act()
@@ -106,7 +108,7 @@ namespace IATD3
                 return UsePortal();
             }
             int moveResult = MoveTo();
-            if(moveResult != int.MinValue)
+            if (moveResult != int.MinValue)
             {
                 return moveResult;
             }
@@ -141,6 +143,7 @@ namespace IATD3
             {
                 XmlNodeList facts = ((XmlElement)xmlnode[i]).GetElementsByTagName("Fact");
                 XmlNodeList implies = ((XmlElement)xmlnode[i]).GetElementsByTagName("Implies");
+                XmlNodeList actions = ((XmlElement)xmlnode[i]).GetElementsByTagName("Action");
 
                 cInference inference = new cInference();
                 for (var j = 0; j < facts.Count; j++)
@@ -172,6 +175,27 @@ namespace IATD3
                     }
 
                     inference.Implies.Add(implie);
+                }
+                inference.IsActionInference = false;
+                if (actions.Count > 0)
+                {
+                    foreach (var action in actions)
+                    {
+                        cAction ourAction = new cAction();
+                        XmlElement xmlElement = action as XmlElement;
+                        // Récupérer son nom
+                        ourAction.Name = xmlElement.GetAttribute("name");
+
+                        // Récupérer ses paramètres
+                        string attributs = xmlElement.GetAttribute("parameters");
+                        ourAction.getParameters(attributs);
+
+                        // L'ajouter à l'inférence   
+                        inference.Actions.Add(ourAction);
+
+                    }
+                    // L'inférence est une inférence d'action
+                    inference.IsActionInference = true;
                 }
                 inferences.Add(inference);
             }
@@ -231,32 +255,6 @@ namespace IATD3
             // Reset la position en (0,0)
         }
 
-        private void ChainageAvant()
-        {
-            // loadRulesFile();
-            //obtenir les faits initiaux
-
-            //tant que  (pas ternimé et il reste au moins une règle non marquée)
-            /*
-                faire
-                    sélectionner les règles applicables
-                        celles non marquées
-                        si une des règles est en contraciction
-                            marquer la règle
-                        celles dont les conditions existent dans la base de faits
-                    choisir la règle à appliquer
-                    appliquer la règle: ajouter les conclusions à la base de faits
-                    marquer la règle      
-            */
-
-            //soit frontière
-            //de chaque case frontière, calculer le risque de monstre ou crevasse
-            //aller à l'emplacement le moins dangeureux
-
-            //int[,] percievedThreat = new int[x,x];
-            //
-        }
-
         private void UpdateFactsFromRules()
         {
             List<Tuple<int, int>> cellsToCheck = new List<Tuple<int, int>>();
@@ -265,10 +263,14 @@ namespace IATD3
             {
                 foreach (var inference in inferences)
                 {
+                    if (inference.IsActionInference)
+                    {
+                        continue;
+                    }
                     bool conditionsAreRespected = inference.Facts.All(
                         fact =>
                         fact.Attributs.All(
-                            attribute => 
+                            attribute =>
                             (attribute.Key == "locationX") || (attribute.Key == "locationY") ||
                             (FactTableManager.GetAttributeAtLocation(cell.Item1, cell.Item2, attribute.Key) == attribute.Value)
                         )
@@ -277,7 +279,7 @@ namespace IATD3
                     {
                         foreach (var implication in inference.Implies)
                         {
-                            foreach(var attribute in implication.Attributs)
+                            foreach (var attribute in implication.Attributs)
                             {
                                 // /!\ Il y a toujours la mise à jour de tous les attributs (écrasement) de la case alors qu'il ne faut pas forcément
                                 // → Il faut retenir l'information la plus importante (la plus sure et utile) plutôt que la dernière
@@ -292,6 +294,11 @@ namespace IATD3
                     }
                 }
             }
+        }
+
+        private void MoveToLocation(int locationX, int locationY)
+        {
+            //do stuff
         }
 
         private void ChainageArriere()
@@ -319,7 +326,64 @@ namespace IATD3
                    Marquer la règle
                    3.4 Si
                    pile_buts est vide alors le processus est terminé
-             */ 
+             */
+        }
+
+        private void GoToPortal()
+        {
+            UpdateFactsFromRules();
+
+            //pile de buts
+            Stack<cFact> goalsStack = new Stack<cFact>();
+            cFact finalGoal = new cFact("");
+            finalGoal.Attributs.Add("cleared", "true");
+            goalsStack.Push(finalGoal);
+
+            // Appeler chainage arrière qui renvoie une action.
+            // Si non nulle, l'effectuer.
+        }
+
+
+        public void GoToSafeCell()
+        {
+            UpdateFactsFromRules();
+
+            //pile de buts
+            Stack<cFact> goalsStack = new Stack<cFact>();
+            cFact safeCell = new cFact("");
+            safeCell.Attributs.Add("isSafe", "true");
+            safeCell.Attributs.Add("locationX", "0");
+            safeCell.Attributs.Add("locationY", "0");
+            goalsStack.Push(safeCell);
+
+            cFact agentOnSafeCell = new cFact("AgentPosition");
+            agentOnSafeCell.Attributs.Add("onLocationX", "0");
+            agentOnSafeCell.Attributs.Add("onLocationY", "0");
+            goalsStack.Push(agentOnSafeCell);
+
+            // Appeler chainage arrière qui renvoie une action.
+            // Si non nulle, l'effectuer.
+        }
+
+
+        private void ExecuteAction(cAction actionParams)
+        {
+            string[] parameters = actionParams.Parameters;
+            switch (actionParams.Name)
+            {
+                case "UsePortal":
+                    UsePortal();
+                    break;
+                case "MoveTo":
+                    MoveToLocation(Convert.ToInt32(parameters[0]), Convert.ToInt32(parameters[1]));
+                    break;
+                case "ThrowStone":
+                    ThrowStoneTo(Convert.ToInt32(parameters[0]), Convert.ToInt32(parameters[1]));
+                    break;
+
+
+            }
+
         }
     }
 }

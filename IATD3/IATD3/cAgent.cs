@@ -293,5 +293,33 @@ namespace IATD3
                 }
             }
         }
+
+        private void ChainageArriere()
+        {
+            /*
+             * 1. Charger les faits initiaux
+               2. Empiler le but dans une pile
+               pile_buts
+               3. Tant que
+               Pas Terminé faire
+                   3.1 Sélectionner les règles applicables et non marquées
+                   -
+                   celles dont la conclusion = au sommet de la pile_buts
+                   -
+                   si pas de règles applicables. Dépiler la pile_buts , et la pile_regles
+                   3.2 Choisir la règle à appliquer
+                   -
+                   ajouter les autres règles dans la pile sélectionnée ( pile_regles
+                   3.3 Appliquer la règle
+                   -
+                   Ajouter les conditions au sommet de la pile_buts
+                   -
+                   Empiler la règle dans pile_regles
+                   -
+                   Marquer la règle
+                   3.4 Si
+                   pile_buts est vide alors le processus est terminé
+             */ 
+        }
     }
 }

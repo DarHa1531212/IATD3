@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="cAction.cs" />
     <Compile Include="cAgent.cs" />
     <Compile Include="cCell.cs" />
     <Compile Include="cEffector.cs" />

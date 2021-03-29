@@ -35,6 +35,15 @@ namespace IATD3
         public int MovementPosX { get => movementPosX; set => movementPosX = value; }
         public int MovementPosY { get => movementPosY; set => movementPosY = value; }
 
+        public int DoAction(int posX, int posY)
+        {
+            movementPosX = posX;
+            movementPosY = posY;
+            return DoAction();
+        }
+
+
+        //todo remove this function if possible. Exists only due to the override requirement
         public override int DoAction()
         {
             int cost = environment.Move(movementPosY, movementPosX);

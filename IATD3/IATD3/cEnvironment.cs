@@ -105,7 +105,6 @@ namespace IATD3
                     ? board[line, column - 1].HasMonster
                     : false
             );
-            Console.WriteLine(line + " " + column + " " + hasMonsterUp + " " + hasMonsterLeft);
             return hasMonsterUp || hasMonsterLeft;
         }
 

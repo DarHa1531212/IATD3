@@ -131,8 +131,13 @@ namespace IATD3
                 xpath += " and @" + attribute + "='" + attributes[attribute] + "'";
             }
 
-            xpath += " and text()='" + factName + "']";
+            if (factName != String.Empty)
+            {
+                xpath += " and text()='" + factName + "'";
+            }
+            xpath += "]";
 
+            //error here. XML functions are badly implemented
             XmlNode element = xmldoc.SelectSingleNode(xpath);
             fs.Close();
 
@@ -141,6 +146,12 @@ namespace IATD3
 
         public static int AddOrChangeAttribute(int locationX, int locationY, string attribute, string value)
         {
+
+            if (attribute == "isSafe")
+            {
+                Console.WriteLine("breakpoint jr");
+            }
+
             XmlDocument xmldoc = new XmlDocument();
             FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
             xmldoc.Load(fs);
@@ -161,6 +172,10 @@ namespace IATD3
             if (xmlElement.HasAttribute(attribute))
             {
                 returnCode = 1;
+            }
+            if (attribute == "isSafe")
+            {
+                Console.WriteLine("breakpoint");
             }
             xmlElement.SetAttribute(attribute, value);
 

@@ -31,6 +31,7 @@ namespace IATD3
         };
 
         static cEnvironment environment;
+        private cAgent formAgent;
         private int boardCpt;
 
         public Form1()
@@ -40,9 +41,7 @@ namespace IATD3
             environment = new cEnvironment();
             Board.AutoSize = true;
             boardCpt = 0;
-            cAgent agent = new cAgent(environment);
-            agent.UseSensors();
-            //agent.ThrowRock();
+            formAgent = new cAgent(environment);
 
             if (environment.SizeToBeAdapted)
             {
@@ -138,13 +137,13 @@ namespace IATD3
 
         private void bMove_Click(object sender, EventArgs e)
         {
-            createLabels(); // maj de l'affichage
+            Console.WriteLine(environment.AgentPosX + " " + environment.AgentPosY);
+            AdaptSize(); // maj de l'affichage
 
-                            //mettre à jour les faits
-                            //agent will move
-                            //test death
-                            //reset agent position
 
+            formAgent.UseSensors();    //mettre à jour les faits
+
+            formAgent.Act(); //l'agent fait une action
             //test end condition
             //if end reached, generate new board
         }

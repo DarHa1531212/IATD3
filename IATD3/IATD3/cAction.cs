@@ -18,7 +18,7 @@ namespace IATD3
         {
         }
 
-        public void getParameters(string actionParams)
+        public void SetParameters(string actionParams)
         {
             parameters = actionParams.Split(',');
         }

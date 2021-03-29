@@ -24,6 +24,7 @@ namespace IATD3
         {
             facts = new List<cFact>();
             implies = new List<cFact>();
+            actions = new List<cAction>();
         }
     }
 }

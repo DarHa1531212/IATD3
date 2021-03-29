@@ -26,6 +26,8 @@ namespace IATD3
         int relativeLocationX;
         int relativeLocationY;
 
+
+
         List<cInference> inferences;
         List<Tuple<int, int>> knownCells;
         List<Tuple<int, int>> scopeCells;
@@ -55,38 +57,6 @@ namespace IATD3
             FactTableManager.CreateFactFile();
         }
 
-        // Ajouter la condition du portail aussi ? Par exemple si on a trouvé un portail, 
-        // la première chose à faire c'est de rentrer dedans
-
-        public Tuple<int, int> Move()
-        {
-            foreach (var position in scopeCells)
-            {
-                Dictionary<string, string> attributes = new Dictionary<string, string>();
-                attributes.Add("isSafe", "True");
-                if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
-                {
-                    return position;
-                }
-            }
-            // Si aucune case safe, sélectionner la plus safe (ou lancer une pierre)
-            return new Tuple<int, int>(0, 0);
-
-            // Si aucune case safe au dessus d'un seuil, retourner null
-        }
-
-        public int MoveTo()
-        {
-            Tuple<int, int> newPosition = Move();
-            if (newPosition == null)
-            {
-                return int.MinValue;
-            }
-            effectorMove.MovementPosX = newPosition.Item1;
-            effectorMove.MovementPosY = newPosition.Item2;
-            return effectorMove.DoAction();
-        }
-
         public int UsePortal()
         {
             return effectorUsePortal.DoAction();
@@ -102,18 +72,90 @@ namespace IATD3
         public int Act()
         {
             Dictionary<string, string> attributes = new Dictionary<string, string>();
-            attributes.Add("hasPortal", "true");
-            if (FactTableManager.IsFactInTable("", relativeLocationX, relativeLocationY, attributes))
+            attributes.Add("hasPortal", "True");
+
+            //comparring the created attributes to the ones in the fact table. AKA, are we on a portal? 
+            if (FactTableManager.IsFactInTable(string.Empty, relativeLocationX, relativeLocationY, attributes))
             {
                 return UsePortal();
             }
-            int moveResult = MoveTo();
-            if (moveResult != int.MinValue)
+
+            //Finding and executing safest move
+            Tuple<int, int> position = FindSafestPositionToGoTo();
+            if (position.Item1 == 0 && position.Item2 == 0)
             {
-                return moveResult;
+                Tuple<int, int> rockThrowPosition = FindWhereToThrowRock();
+                if (rockThrowPosition != null)
+                {
+                    ThrowStoneTo(rockThrowPosition.Item1, rockThrowPosition.Item2);
+                    return 10;
+                }
+                else
+                {
+                    //if no location is truely safe and if there is no place to throw a rock (suppose the monsters are in crevaces, it's not worth to throw a rock) 
+                    //we'll move to a random location and hope for the best. This is a worst case scenario
+                    position = MoveToRandomLocationInScope();
+                }
+
             }
-            // Throw a rock
-            return 0;
+            return MoveToLocation(position.Item1, position.Item2);
+        }
+
+        public void UseSensors()
+        {
+            UpdateFacts();
+
+            bool isWindy = sensorWind.Sense();
+            bool isSmelly = sensorOdour.Sense();
+            bool isBright = sensorLight.Sense();
+
+            // Add facts to the facts tables
+            // I propose facts to be in this form :
+
+            // <Fact locationX="x" locationY="y" presence="true/false">FactName</Fact>
+
+            // Location would be a relative location (agent only knows what moves he did, not where he is exactly)
+            // But we assume each are cell sizes are equal
+
+            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasOdour", isSmelly.ToString());
+            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasWind", isWindy.ToString());
+            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasPortal", isBright.ToString());
+
+            UpdateFactsFromRules();
+        }
+
+        public void Die(bool hadMonster, bool hadAbyss)
+        {
+            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasMonster", hadMonster.ToString());
+            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasAbyss", hadMonster.ToString());
+
+            relativeLocationX = 0;
+            relativeLocationY = 0;
+            // Reset la position en (0,0)
+        }
+
+        private Tuple<int, int> MoveToRandomLocationInScope()
+        {
+            Random rng = new Random();
+            return scopeCells.ElementAt(rng.Next(0, scopeCells.Count()));
+
+        }
+
+        private Tuple<int, int> FindWhereToThrowRock()
+        {
+            foreach (var position in scopeCells)
+            {
+                Dictionary<string, string> attributes = new Dictionary<string, string>();
+                attributes.Add("hasMonster", "True");
+                attributes.Add("hasAbyss", "False");
+                attributes.Add("probabilityAbyss", "100");
+                if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
+                {
+                    return position;
+                }
+            }
+
+            return null;
         }
 
         private void UpdateFacts()
@@ -188,9 +230,9 @@ namespace IATD3
 
                         // Récupérer ses paramètres
                         string attributs = xmlElement.GetAttribute("parameters");
-                        ourAction.getParameters(attributs);
+                        ourAction.SetParameters(attributs);
 
-                        // L'ajouter à l'inférence   
+                        // L'ajouter à l'inférence  // 
                         inference.Actions.Add(ourAction);
 
                     }
@@ -202,6 +244,22 @@ namespace IATD3
             fs.Close();
         }
 
+        private Tuple<int, int> FindSafestPositionToGoTo()
+        {
+            foreach (var position in scopeCells)
+            {
+                Dictionary<string, string> attributes = new Dictionary<string, string>();
+                attributes.Add("isSafe", "True");
+                if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
+                {
+                    return position;
+                }
+            }
+            // Si aucune case safe, sélectionner la plus safe (ou lancer une pierre)
+            return new Tuple<int, int>(0, 0);
+
+            // Si aucune case safe au dessus d'un seuil, retourner null
+        }
 
         private void createXmlFile()
         {
@@ -216,49 +274,13 @@ namespace IATD3
         /// <summary>
         ///    Uses each sensor to add facts to fact table.
         /// </summary>
-        public void UseSensors()
-        {
-            UpdateFacts();
 
-            bool isWindy = sensorWind.Sense();
-            bool isSmelly = sensorOdour.Sense();
-            bool isBright = sensorLight.Sense();
-
-            // Add facts to the facts tables
-            // I propose facts to be in this form :
-
-            // <Fact locationX="x" locationY="y" presence="true/false">FactName</Fact>
-
-            // Location would be a relative location (agent only knows what moves he did, not where he is exactly)
-            // But we assume each are cell sizes are equal
-
-            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasOdour", isSmelly.ToString());
-            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasWind", isWindy.ToString());
-            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasPortal", isBright.ToString());
-
-            UpdateFactsFromRules();
-        }
-
-        public void ThrowRock()
-        {
-            effectorThrowRock.LaunchPosX = 1;
-            effectorThrowRock.DoAction();
-        }
-
-        public void Die(bool hadMonster, bool hadAbyss)
-        {
-            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasMonster", hadMonster.ToString());
-            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasAbyss", hadMonster.ToString());
-
-            relativeLocationX = 0;
-            relativeLocationY = 0;
-            // Reset la position en (0,0)
-        }
 
         private void UpdateFactsFromRules()
         {
             List<Tuple<int, int>> cellsToCheck = new List<Tuple<int, int>>();
-            cellsToCheck.Concat(knownCells).Concat(scopeCells);
+            cellsToCheck.AddRange(knownCells);
+            cellsToCheck.AddRange(scopeCells);
             foreach (var cell in cellsToCheck)
             {
                 foreach (var inference in inferences)
@@ -281,14 +303,15 @@ namespace IATD3
                         {
                             foreach (var attribute in implication.Attributs)
                             {
+                                int xPos = cell.Item1 + Int32.Parse(implication.Attributs["locationX"]);
+                                int yPos = cell.Item2 + Int32.Parse(implication.Attributs["locationY"]);
                                 // /!\ Il y a toujours la mise à jour de tous les attributs (écrasement) de la case alors qu'il ne faut pas forcément
                                 // → Il faut retenir l'information la plus importante (la plus sure et utile) plutôt que la dernière
-                                FactTableManager.AddOrChangeAttribute(
-                                    relativeLocationX + Int32.Parse(implication.Attributs["locationX"]),
-                                    relativeLocationY + Int32.Parse(implication.Attributs["locationY"]),
-                                    attribute.Key,
-                                    attribute.Value
-                                );
+                                Console.WriteLine("*******************");
+                                Console.WriteLine(xPos);
+                                Console.WriteLine(yPos);
+                                Console.WriteLine(attribute.Key + " " + attribute.Value);
+                                FactTableManager.AddOrChangeAttribute(xPos, yPos, attribute.Key, attribute.Value);
                             }
                         }
                     }
@@ -296,9 +319,10 @@ namespace IATD3
             }
         }
 
-        private void MoveToLocation(int locationX, int locationY)
+        //Déplace l'agent à l'emplacement spéciffié en paramêtre d'entrée
+        private int MoveToLocation(int locationX, int locationY)
         {
-            //do stuff
+            return effectorMove.DoAction(locationX, locationY);
         }
 
         private void ChainageArriere()
@@ -343,7 +367,6 @@ namespace IATD3
             // Si non nulle, l'effectuer.
         }
 
-
         public void GoToSafeCell()
         {
             UpdateFactsFromRules();
@@ -365,7 +388,6 @@ namespace IATD3
             // Si non nulle, l'effectuer.
         }
 
-
         private void ExecuteAction(cAction actionParams)
         {
             string[] parameters = actionParams.Parameters;
@@ -381,9 +403,21 @@ namespace IATD3
                     ThrowStoneTo(Convert.ToInt32(parameters[0]), Convert.ToInt32(parameters[1]));
                     break;
 
-
             }
 
         }
+
+        /*  public int MoveTo()
+          {
+              Tuple<int, int> newPosition = Move();
+
+              if (newPosition == null)
+              {
+                  return int.MinValue;
+              }
+              effectorMove.MovementPosX = newPosition.Item1;
+              effectorMove.MovementPosY = newPosition.Item2;
+              return effectorMove.DoAction();
+          }*/
     }
 }

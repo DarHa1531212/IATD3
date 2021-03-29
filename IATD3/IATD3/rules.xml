@@ -6,10 +6,10 @@
     </Rule>
 	<Rule>
 		<Fact locationX="0" locationY="0" hasOdour="True"></Fact>
-		<Implies locationX="1" locationY="0" hasMonster="True" probabilityMonster="100"></Implies>
-		<Implies locationX="-1" locationY="0" hasMonster="True" probabilityMonster="100"></Implies>
-		<Implies locationX="0" locationY="1" hasMonster="True" probabilityMonster="100"></Implies>
-		<Implies locationX="0" locationY="-1" hasMonster="True" probabilityMonster="100"></Implies>
+		<Implies locationX="1" locationY="0" hasMonster="True" probabilityMonster="25"></Implies>
+		<Implies locationX="-1" locationY="0" hasMonster="True" probabilityMonster="25"></Implies>
+		<Implies locationX="0" locationY="1" hasMonster="True" probabilityMonster="25"></Implies>
+		<Implies locationX="0" locationY="-1" hasMonster="True" probabilityMonster="25"></Implies>
 	</Rule>
 	<Rule>
 		<Fact locationX="0" locationY="0" hasOdour="False"></Fact>
@@ -20,10 +20,10 @@
 	</Rule>
 	<Rule>
 		<Fact locationX="0" locationY="0" hasWind="True"></Fact>
-		<Implies locationX="1" locationY="0" hasAbyss="True" probabilityAbyss="100"></Implies>
-		<Implies locationX="-1" locationY="0" hasAbyss="True" probabilityAbyss="100"></Implies>
-		<Implies locationX="0" locationY="1" hasAbyss="True" probabilityAbyss="100"></Implies>
-		<Implies locationX="0" locationY="-1" hasAbyss="True" probabilityAbyss="100"></Implies>
+		<Implies locationX="1" locationY="0" hasAbyss="True" probabilityAbyss="25"></Implies>
+		<Implies locationX="-1" locationY="0" hasAbyss="True" probabilityAbyss="25"></Implies>
+		<Implies locationX="0" locationY="1" hasAbyss="True" probabilityAbyss="25"></Implies>
+		<Implies locationX="0" locationY="-1" hasAbyss="True" probabilityAbyss="25"></Implies>
 	</Rule>
 	<Rule>
 		<Fact locationX="0" locationY="0" hasWind="False"></Fact>
@@ -35,5 +35,21 @@
 	<Rule>
 		<Fact locationX="0" locationY="0" hasMonster="False" probabilityMonster="100" hasAbyss="False" probabilityAbyss="100"></Fact>
 		<Implies locationX="0" locationY="0" isSafe="True" probability="100"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="0" locationY="0" hasMonster="True"></Fact>
+		<Action name="ThrowStone" params="0,0"></Action>
+		<Implies locationX="0" locationY="0"></Implies>
+	</Rule>
+	<Rule>
+		<Fact onLocationX="0" onLocationY="0"></Fact>
+		<Action name="MoveTo" params="locationX,locationY"></Action>
+		<Implies onLocationX="locationX" onLocationY="locationX"></Implies>
+	</Rule>
+	<Rule>
+		<Fact onLocationX="0" onLocationY="0"></Fact>
+		<Fact locationX="0" locationY="0" isSafe="true" hasPortal="true"></Fact>
+		<Action name="UsePortal"></Action>
+		<Implies cleared="true"></Implies>
 	</Rule>
 </Rules>

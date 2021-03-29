@@ -69,8 +69,49 @@ namespace IATD3
                     return position;
                 }
             }
-            // Si aucune case safe, sélectionner la plus safe
+            // Si aucune case safe, sélectionner la plus safe (ou lancer une pierre)
             return new Tuple<int, int>(0, 0);
+
+            // Si aucune case safe au dessus d'un seuil, retourner null
+        }
+
+        public int MoveTo()
+        {
+            Tuple<int, int> newPosition = Move();
+            if(newPosition == null)
+            {
+                return int.MinValue;
+            }
+            effectorMove.MovementPosX = newPosition.Item1;
+            effectorMove.MovementPosY = newPosition.Item2;
+            return effectorMove.DoAction();
+        }
+
+        public int UsePortal()
+        {
+            return effectorUsePortal.DoAction();
+        }
+
+        public int ThrowStoneTo()
+        {
+            return effectorUsePortal.DoAction();
+        }
+
+        public int Act()
+        {
+            Dictionary<string, string> attributes = new Dictionary<string, string>();
+            attributes.Add("hasPortal", "true");
+            if (FactTableManager.IsFactInTable("", relativeLocationX, relativeLocationY, attributes))
+            {
+                return UsePortal();
+            }
+            int moveResult = MoveTo();
+            if(moveResult != int.MinValue)
+            {
+                return moveResult;
+            }
+            // Throw a rock
+            return 0;
         }
 
         private void UpdateFacts()

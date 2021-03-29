@@ -55,6 +55,9 @@ namespace IATD3
             FactTableManager.CreateFactFile();
         }
 
+        // Ajouter la condition du portail aussi ? Par exemple si on a trouvé un portail, 
+        // la première chose à faire c'est de rentrer dedans
+
         public Tuple<int, int> Move()
         {
             foreach (var position in scopeCells)

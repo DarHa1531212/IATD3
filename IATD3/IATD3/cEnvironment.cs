@@ -218,12 +218,19 @@ namespace IATD3
 
             if (IsDeadlyCell(agentPosY, agentPosX))
             {
-                agent.Die(board[agentPosY, agentPosX].HasMonster, board[agentPosY, agentPosX].HasAbyss);
-                agentPosX = 0;
-                agentPosY = 0;
-                return _movementCost + _deathCostPerCell * (boardSize * boardSize);
+                return killAgent();
             }
+
+            agent.UpdatePosition(agentPosX, agentPosY);
             return _movementCost;
+        }
+
+        public int killAgent()
+        {
+            agent.Die(board[agentPosY, agentPosX].HasMonster, board[agentPosY, agentPosX].HasAbyss);
+            agentPosX = 0;
+            agentPosY = 0;
+            return _movementCost + _deathCostPerCell * (boardSize * boardSize);
         }
 
         // Sensor tests

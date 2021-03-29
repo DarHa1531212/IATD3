@@ -70,7 +70,8 @@ namespace IATD3
 
             // Add that there is no monster on selected cell (and delete other fact if exists)
 
-            FactTableManager.AddOrChangeAttribute(launchPosX, launchPosY, "presence", "false");
+            FactTableManager.AddOrChangeAttribute(launchPosX, launchPosY, "hasMonster", "False");
+            FactTableManager.AddOrChangeAttribute(launchPosX, launchPosY, "probabilityMonster", "100");
             return cost;
         }
     }

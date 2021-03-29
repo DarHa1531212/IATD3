@@ -55,8 +55,8 @@ namespace IATD3
             FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
             xmldoc.Load(fs);
 
-            XmlNode element = xmldoc.SelectSingleNode("//Fact[@locationX='"+locationX.ToString()+
-                "' and @locationY='"+locationY.ToString()+"' and text()='"+factName+"']");
+            XmlNode element = xmldoc.SelectSingleNode("//Fact[@locationX='" + locationX.ToString() +
+                "' and @locationY='" + locationY.ToString()+"' and text()='" + factName + "']");
 
             newAttributes.Add("locationX", locationX.ToString());
             newAttributes.Add("locationY", locationY.ToString());
@@ -73,6 +73,7 @@ namespace IATD3
                 {
                     xmlElement.SetAttribute(attribute, newAttributes[attribute]);
                 }
+                xmlElement.InnerText = factName;
                 fs.SetLength(0);
                 xmldoc.Save(fs);
                 fs.Close();
@@ -146,12 +147,6 @@ namespace IATD3
 
         public static int AddOrChangeAttribute(int locationX, int locationY, string attribute, string value)
         {
-
-            if (attribute == "isSafe")
-            {
-                Console.WriteLine("breakpoint jr");
-            }
-
             XmlDocument xmldoc = new XmlDocument();
             FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
             xmldoc.Load(fs);
@@ -172,10 +167,6 @@ namespace IATD3
             if (xmlElement.HasAttribute(attribute))
             {
                 returnCode = 1;
-            }
-            if (attribute == "isSafe")
-            {
-                Console.WriteLine("breakpoint");
             }
             xmlElement.SetAttribute(attribute, value);
 

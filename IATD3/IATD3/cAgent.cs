@@ -26,8 +26,6 @@ namespace IATD3
         int relativeLocationX;
         int relativeLocationY;
 
-
-
         List<cInference> inferences;
         List<Tuple<int, int>> knownCells;
         List<Tuple<int, int>> scopeCells;
@@ -95,6 +93,7 @@ namespace IATD3
                     //if no location is truely safe and if there is no place to throw a rock (suppose the monsters are in crevaces, it's not worth to throw a rock) 
                     //we'll move to a random location and hope for the best. This is a worst case scenario
                     position = MoveToRandomLocationInScope();
+                    Console.WriteLine(position);
                 }
 
             }
@@ -129,16 +128,22 @@ namespace IATD3
             FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasMonster", hadMonster.ToString());
             FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasAbyss", hadMonster.ToString());
 
-            relativeLocationX = 0;
-            relativeLocationY = 0;
+            /*relativeLocationX = 0;
+            relativeLocationY = 0;*/
+            UpdatePosition(0, 0);
             // Reset la position en (0,0)
+        }
+
+        public void UpdatePosition(int posX, int posY)
+        {
+            relativeLocationX = posX;
+            relativeLocationY = posY;
         }
 
         private Tuple<int, int> MoveToRandomLocationInScope()
         {
             Random rng = new Random();
             return scopeCells.ElementAt(rng.Next(0, scopeCells.Count()));
-
         }
 
         private Tuple<int, int> FindWhereToThrowRock()
@@ -303,14 +308,15 @@ namespace IATD3
                         {
                             foreach (var attribute in implication.Attributs)
                             {
+                                if ((attribute.Key == "locationX") || (attribute.Key == "locationY"))
+                                {
+                                    continue;
+                                }
+
                                 int xPos = cell.Item1 + Int32.Parse(implication.Attributs["locationX"]);
                                 int yPos = cell.Item2 + Int32.Parse(implication.Attributs["locationY"]);
                                 // /!\ Il y a toujours la mise à jour de tous les attributs (écrasement) de la case alors qu'il ne faut pas forcément
                                 // → Il faut retenir l'information la plus importante (la plus sure et utile) plutôt que la dernière
-                                Console.WriteLine("*******************");
-                                Console.WriteLine(xPos);
-                                Console.WriteLine(yPos);
-                                Console.WriteLine(attribute.Key + " " + attribute.Value);
                                 FactTableManager.AddOrChangeAttribute(xPos, yPos, attribute.Key, attribute.Value);
                             }
                         }
@@ -319,7 +325,7 @@ namespace IATD3
             }
         }
 
-        //Déplace l'agent à l'emplacement spéciffié en paramêtre d'entrée
+        //Déplace l'agent à l'emplacement spécifié en paramètre d'entrée
         private int MoveToLocation(int locationX, int locationY)
         {
             return effectorMove.DoAction(locationX, locationY);

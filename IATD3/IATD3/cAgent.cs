@@ -55,15 +55,18 @@ namespace IATD3
             FactTableManager.CreateFactFile();
         }
 
-        public int UsePortal()
+        private int UsePortal()
         {
             knownCells.Clear();
             scopeCells.Clear();
             FactTableManager.CreateFactFile();
+
+            relativeLocationX = 0;
+            relativeLocationY = 0;
             return effectorUsePortal.DoAction();
         }
 
-        public int ThrowStoneTo(int locationX, int locationY)
+        private int ThrowStoneTo(int locationX, int locationY)
         {
             effectorThrowRock.LaunchPosX = locationX;
             effectorThrowRock.LaunchPosY = locationY;
@@ -88,8 +91,7 @@ namespace IATD3
                 Tuple<int, int> rockThrowPosition = FindWhereToThrowRock();
                 if (rockThrowPosition != null)
                 {
-                    ThrowStoneTo(rockThrowPosition.Item1, rockThrowPosition.Item2);
-                    return 10;
+                    return ThrowStoneTo(rockThrowPosition.Item1, rockThrowPosition.Item2);
                 }
                 else
                 {
@@ -168,10 +170,20 @@ namespace IATD3
 
         private void UpdateFacts()
         {
-            FactTableManager.AddOrReplaceFactAtLocation("Scope", relativeLocationX, relativeLocationY, new Dictionary<String, String>(), "Known");
+            int result = FactTableManager.ChangeInnerTextAtLocation("Known", relativeLocationX, relativeLocationY);
+            if (result == 0)
+            {
+                return;
+            }
+            if( result == -1)
+            {
+                FactTableManager.AddOrReplaceFactAtLocation("Scope", relativeLocationX, relativeLocationY, new Dictionary<String, String>(), "Known");
+            }
             Tuple<int, int> currentCell = new Tuple<int, int>(relativeLocationX, relativeLocationY);
             knownCells.Add(currentCell);
             scopeCells.Remove(currentCell);
+
+            
 
             foreach (var neighbourPos in sensorNeighbours.Get(relativeLocationX, relativeLocationY))
             {

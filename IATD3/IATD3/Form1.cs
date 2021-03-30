@@ -131,10 +131,6 @@ namespace IATD3
             parent.Controls.Add(img);
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
 
         private void bMove_Click(object sender, EventArgs e)
         {

@@ -47,6 +47,17 @@ namespace IATD3
             //agent = new cAgent(this);
         }
 
+        public void RemoveDeadMonsterOdour(int deadMonsterlocationX, int deadMonsterlocationY)
+        {
+            foreach (var neighbour in GetNeighbouringPositions(deadMonsterlocationX, deadMonsterlocationY))
+            {
+                board[neighbour.Item1, neighbour.Item2].HasOdour = 
+                    GetNeighbouringPositions(neighbour.Item1, neighbour.Item2).Any(
+                        neighbours => board[neighbours.Item1, neighbours.Item2].HasMonster
+                    );
+            }
+        }
+
         private void AdaptSize(int size)
         {
             // Put agent back to 0, 0
@@ -69,7 +80,8 @@ namespace IATD3
                     {
                         board[line, column] = new cCell(line, column, true);
                         AdaptToNeighboursProperties(line, column);
-                    } else
+                    }
+                    else
                     {
                         bool hasMonster = rng.Next(0, 100) <= _percentageRateMonster;
                         bool hasAbyss = rng.Next(0, 100) <= _percentageRateAbyss && !hasMonster;
@@ -103,6 +115,22 @@ namespace IATD3
             bool hasMonsterLeft = (
                 (column - 1) >= 0
                     ? board[line, column - 1].HasMonster
+                    : false
+            );
+            return hasMonsterUp || hasMonsterLeft;
+        }
+
+
+        public bool CheckNeighboursMonstersReverse(int line, int column)
+        {
+            bool hasMonsterUp = (
+                (line + 1) >= 0
+                    ? board[line + 1, column].HasMonster
+                    : false
+            );
+            bool hasMonsterLeft = (
+                (column + 1) >= 0
+                    ? board[line, column + 1].HasMonster
                     : false
             );
             return hasMonsterUp || hasMonsterLeft;
@@ -200,12 +228,14 @@ namespace IATD3
         {
             int returnTotal = _portalCostPerCell * boardSize * boardSize;
             GenerateNextBoard();
+            agentPosX = 0;
+            agentPosY = 0;
             return returnTotal;
         }
 
         public int Move(int lineMovement, int columnMovement)
         {
-            if(lineMovement < 0 
+            if (lineMovement < 0
                 || lineMovement >= boardSize
                 || columnMovement < 0
                 || columnMovement >= boardSize)

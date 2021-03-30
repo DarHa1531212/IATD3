@@ -252,8 +252,8 @@ namespace IATD3
             FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
             xmldoc.Load(fs);
 
-            XmlNode element = xmldoc.SelectSingleNode("//Facts[@id='" + id + "']");
-            if(element != null)
+            XmlNode element = xmldoc.SelectSingleNode("//Fact[@id='" + id + "']");
+            if(element == null)
             {
                 fs.Close();
                 return;
@@ -266,6 +266,34 @@ namespace IATD3
             fs.SetLength(0);
             xmldoc.Save(fs);
             fs.Close();
+        }
+
+        public static int ChangeInnerTextAtLocation(string newInnerText, int locationX, int locationY)
+        {
+
+            XmlDocument xmldoc = new XmlDocument();
+            FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
+            xmldoc.Load(fs);
+
+            XmlNode element = xmldoc.SelectSingleNode("//Fact[@locationX='" + locationX.ToString()+
+                "' and @locationY='" + locationY.ToString() + "']");
+            if (element == null)
+            {
+                fs.Close();
+                return -1;
+            }
+            XmlElement fact = element as XmlElement;
+            String oldInnerText = fact.InnerText;
+            fact.InnerText = newInnerText;
+            fs.SetLength(0);
+            xmldoc.Save(fs);
+            fs.Close();
+
+            if (newInnerText != oldInnerText)
+            {
+                return 1;
+            }
+            return 0;
         }
     }
 }

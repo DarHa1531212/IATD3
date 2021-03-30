@@ -1,11 +1,10 @@
 <FactTable>
   <Facts>
-    <Fact locationX="2" locationY="4" hasOdour="True" hasWind="False" hasPortal="False">Known</Fact>
-    <Fact locationX="1" locationY="4" hasMonster="False" probabilityMonster="100" probabilityAbyss="100" hasAbyss="False">Scope</Fact>
-    <Fact locationX="2" locationY="3" hasMonster="True" probabilityMonster="25" probabilityAbyss="100" hasAbyss="False">Scope</Fact>
-    <Fact locationX="3" locationY="4" hasMonster="True" probabilityMonster="25" probabilityAbyss="100" hasAbyss="False">Scope</Fact>
-    <Fact locationX="2" locationY="5" hasMonster="True" probabilityMonster="25" probabilityAbyss="100" hasAbyss="False">Scope</Fact>
-    <Fact locationX="2" locationY="4">Known</Fact>
-    <Fact locationX="2" locationY="4">Known</Fact>
+    <Fact locationX="0" locationY="0" hasOdour="False" hasWind="False" hasPortal="False" hasMonster="True" probabilityMonster="25" probabilityAbyss="100" hasAbyss="False">Known</Fact>
+    <Fact locationX="1" locationY="0" probabilityMonster="100" hasMonster="False" probabilityAbyss="100" hasAbyss="False" isSafe="True" probability="100" hasOdour="True" hasWind="False" hasPortal="False">Known</Fact>
+    <Fact locationX="0" locationY="1" probabilityMonster="100" hasMonster="False" probabilityAbyss="100" hasAbyss="False" isSafe="True" probability="100" hasOdour="True" hasWind="False" hasPortal="False">Known</Fact>
+    <Fact locationX="2" locationY="0" hasMonster="False" probabilityMonster="100" probabilityAbyss="100" hasAbyss="False">Scope</Fact>
+    <Fact locationX="1" locationY="1" hasMonster="True" probabilityMonster="25" probabilityAbyss="100" hasAbyss="False">Scope</Fact>
+    <Fact locationX="0" locationY="2" hasMonster="True" probabilityMonster="25" probabilityAbyss="100" hasAbyss="False">Scope</Fact>
   </Facts>
 </FactTable>

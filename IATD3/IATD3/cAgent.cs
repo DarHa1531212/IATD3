@@ -57,6 +57,9 @@ namespace IATD3
 
         public int UsePortal()
         {
+            knownCells.Clear();
+            scopeCells.Clear();
+            FactTableManager.CreateFactFile();
             return effectorUsePortal.DoAction();
         }
 
@@ -165,15 +168,18 @@ namespace IATD3
 
         private void UpdateFacts()
         {
-            FactTableManager.AddOrReplaceFactAtLocation("Known", relativeLocationX, relativeLocationY, new Dictionary<String, String>());
+            FactTableManager.AddOrReplaceFactAtLocation("Scope", relativeLocationX, relativeLocationY, new Dictionary<String, String>(), "Known");
             Tuple<int, int> currentCell = new Tuple<int, int>(relativeLocationX, relativeLocationY);
             knownCells.Add(currentCell);
             scopeCells.Remove(currentCell);
 
             foreach (var neighbourPos in sensorNeighbours.Get(relativeLocationX, relativeLocationY))
             {
-                FactTableManager.AddOrReplaceFactAtLocation("Scope", neighbourPos.Item1, neighbourPos.Item2, new Dictionary<String, String>());
-                scopeCells.Add(new Tuple<int, int>(neighbourPos.Item1, neighbourPos.Item2));
+                if (!knownCells.Contains(neighbourPos))
+                {
+                    FactTableManager.AddOrReplaceFactAtLocation("Scope", neighbourPos.Item1, neighbourPos.Item2, new Dictionary<String, String>());
+                    scopeCells.Add(new Tuple<int, int>(neighbourPos.Item1, neighbourPos.Item2));
+                }
             }
         }
 

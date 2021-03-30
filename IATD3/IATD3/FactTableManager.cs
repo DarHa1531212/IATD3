@@ -45,11 +45,11 @@ namespace IATD3
             fs.Close();
         }
 
-
         public static void AddOrReplaceFactAtLocation(string factName,
             int locationX, 
             int locationY, 
-            Dictionary<string, string> newAttributes)
+            Dictionary<string, string> newAttributes,
+            string newFactName = null)
         {
             XmlDocument xmldoc = new XmlDocument();
             FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
@@ -64,16 +64,56 @@ namespace IATD3
             if (element == null)
             {
                 fs.Close();
-                AddFact(factName, newAttributes);
+                AddFact(newFactName != null ? newFactName : factName, newAttributes);
             } else
             {
                 XmlElement xmlElement = element as XmlElement;
-                //xmlElement.RemoveAllAttributes();
+                if (newFactName != null)
+                {
+                    xmlElement.RemoveAllAttributes();
+                    xmlElement.InnerText = newFactName;
+                }
                 foreach (string attribute in newAttributes.Keys)
                 {
                     xmlElement.SetAttribute(attribute, newAttributes[attribute]);
                 }
-                xmlElement.InnerText = factName;
+                fs.SetLength(0);
+                xmldoc.Save(fs);
+                fs.Close();
+            }
+        }
+
+        public static void AddOrReplaceFactStatusAtLocation(
+            string oldFactName,
+            string newFactName,
+            int locationX,
+            int locationY,
+            Dictionary<string, string> newAttributes)
+        {
+            XmlDocument xmldoc = new XmlDocument();
+            FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
+            xmldoc.Load(fs);
+
+            XmlNode element = xmldoc.SelectSingleNode("//Fact[@locationX='" + locationX.ToString() +
+                "' and @locationY='" + locationY.ToString() + "' and text()='" + oldFactName + "']");
+
+            newAttributes.Add("locationX", locationX.ToString());
+            newAttributes.Add("locationY", locationY.ToString());
+
+            if (element == null)
+            {
+                fs.Close();
+                AddFact(newFactName, newAttributes);
+            }
+            else
+            {
+                XmlElement xmlElement = element as XmlElement;
+                xmlElement.RemoveAllAttributes();
+                foreach (string attribute in newAttributes.Keys)
+                {
+                    xmlElement.SetAttribute(attribute, newAttributes[attribute]);
+                }
+                xmlElement.InnerText = newFactName;
                 fs.SetLength(0);
                 xmldoc.Save(fs);
                 fs.Close();

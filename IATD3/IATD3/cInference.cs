@@ -18,7 +18,9 @@ namespace IATD3
         public List<cAction> Actions { get => actions; set => actions = value; }
 
         private bool isActionInference;
+        private bool isMarked;
         public bool IsActionInference { get => isActionInference; set => isActionInference = value; }
+        public bool IsMarked { get => isMarked; set => isMarked = value; }
 
         public cInference()
         {

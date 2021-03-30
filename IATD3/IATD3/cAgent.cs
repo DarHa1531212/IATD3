@@ -337,22 +337,131 @@ namespace IATD3
             return effectorMove.DoAction(locationX, locationY);
         }
 
-        private void ChainageArriere()
+        private List<cInference> CheckInferencesThatCompletesGoals(cFact goalToInfer)
         {
+            List<cInference> markedInferences = new List<cInference>();
+            foreach(cInference inference in inferences)
+            {
+                if(inference.IsMarked)
+                {
+                    continue;
+                }
+                foreach(cFact implie in inference.Implies)
+                {
+                    if(goalToInfer.Element != implie.Element)
+                    {
+                        break;
+                    }
+                    foreach(var attribute in goalToInfer.Attributs)
+                    {
+                        String valueInImplie;
+                        bool isValueIn = implie.Attributs.TryGetValue(attribute.Key, out valueInImplie);
+                        if(isValueIn && valueInImplie == attribute.Value)
+                        {
+                            markedInferences.Add(inference);
+                        }
+
+                    }
+                }
+
+
+            }
+            return markedInferences;
+        }
+
+
+        private bool CheckIfFactIsPartiallyInList(List<cFact> facts, cFact factToCheck)
+        {
+            foreach(cFact factProven in facts)
+            {
+                if(factProven.Element != factToCheck.Element)
+                {
+                    continue;
+                }
+
+                bool areAllAttributesIn = true;
+                foreach(var attribute in factToCheck.Attributs)
+                {
+                    String valueInProvenFact;
+                    bool isValueIn = factProven.Attributs.TryGetValue(attribute.Key, out valueInProvenFact);
+                    if (!isValueIn || valueInProvenFact != attribute.Value)
+                    {
+                        areAllAttributesIn = false;
+                        break;
+                    }
+                }
+                if (areAllAttributesIn)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private cAction ChainageArriere(List<cFact> initialGoals)
+        {
+            // 1.Charger les faits initiaux
+            // 2.Empiler le but dans une pile pile_buts
+            Stack<cFact> goalsStack = new Stack<cFact>();
+            Stack<cInference> rulesStack = new Stack<cInference>();
+            Stack<cAction> actions = new Stack<cAction>();
+
+            List<cFact> goalsMet = new List<cFact>();
+
+            foreach(cFact initialGoal in initialGoals)
+            {
+                goalsStack.Push(initialGoal);
+            }
+
+            bool isCompleted = false;
+
+            // 3. Tant que Pas Terminé faire
+            while (!isCompleted)
+            {
+                if(goalsStack.Count == 0)
+                {
+                    break;
+                }
+                cFact goalOfThisLoop = goalsStack.Peek();
+                // Si le but a été atteint via une autre règle, c'est bien
+                if(CheckIfFactIsPartiallyInList(goalsMet, goalOfThisLoop))
+                {
+                    goalsStack.Pop();
+                    continue;
+                }
+                // Si le but est déjà dans la table des faits c'est bien aussi.
+                if(FactTableManager.IsFactInTable(goalOfThisLoop))
+                {
+                    goalsStack.Pop();
+                    continue;
+                }
+
+                // 3.1 Sélectionner les règles applicables et non marquées
+                // - celles dont la conclusion = au sommet de la pile_buts
+                List<cInference> possibleInferences = CheckInferencesThatCompletesGoals(goalsStack.Peek());
+                // si pas de règles applicables. Dépiler la pile_buts , et la pile_regles
+                if(possibleInferences.Count == 0)
+                {
+                    for(int i = 0; i < rulesStack.Peek().Facts.Count; ++i)
+                    {
+                        goalsStack.Pop();
+                    }
+                    if (rulesStack.Count > 0)
+                    {
+                        rulesStack.Pop();
+                    }
+                }
+                //3.2 Choisir la règle à appliquer
+                //ajouter les autres règles dans la pile sélectionnée(pile_regles
+                foreach (cInference inferenceToApply in possibleInferences)
+                {
+                    rulesStack.Push(inferenceToApply);
+                }
+            }
             /*
-             * 1. Charger les faits initiaux
-               2. Empiler le but dans une pile
-               pile_buts
-               3. Tant que
-               Pas Terminé faire
-                   3.1 Sélectionner les règles applicables et non marquées
                    -
-                   celles dont la conclusion = au sommet de la pile_buts
-                   -
-                   si pas de règles applicables. Dépiler la pile_buts , et la pile_regles
-                   3.2 Choisir la règle à appliquer
-                   -
-                   ajouter les autres règles dans la pile sélectionnée ( pile_regles
+                   
+                   
                    3.3 Appliquer la règle
                    -
                    Ajouter les conditions au sommet de la pile_buts
@@ -363,6 +472,7 @@ namespace IATD3
                    3.4 Si
                    pile_buts est vide alors le processus est terminé
              */
+            return null;
         }
 
         private void GoToPortal()
@@ -370,10 +480,18 @@ namespace IATD3
             UpdateFactsFromRules();
 
             //pile de buts
-            Stack<cFact> goalsStack = new Stack<cFact>();
+            
             cFact finalGoal = new cFact("");
             finalGoal.Attributs.Add("cleared", "true");
-            goalsStack.Push(finalGoal);
+
+            List<cFact> goals = new List<cFact>();
+            goals.Add(finalGoal);
+            cAction actionToDo = ChainageArriere(goals);
+
+            if(actionToDo != null)
+            {
+                ExecuteAction(actionToDo);
+            }
 
             // Appeler chainage arrière qui renvoie une action.
             // Si non nulle, l'effectuer.
@@ -384,17 +502,24 @@ namespace IATD3
             UpdateFactsFromRules();
 
             //pile de buts
-            Stack<cFact> goalsStack = new Stack<cFact>();
             cFact safeCell = new cFact("");
             safeCell.Attributs.Add("isSafe", "true");
             safeCell.Attributs.Add("locationX", "0");
             safeCell.Attributs.Add("locationY", "0");
-            goalsStack.Push(safeCell);
 
             cFact agentOnSafeCell = new cFact("AgentPosition");
             agentOnSafeCell.Attributs.Add("onLocationX", "0");
             agentOnSafeCell.Attributs.Add("onLocationY", "0");
-            goalsStack.Push(agentOnSafeCell);
+
+            List<cFact> goals = new List<cFact>();
+            goals.Add(safeCell);
+            goals.Add(agentOnSafeCell);
+            cAction actionToDo = ChainageArriere(goals);
+
+            if (actionToDo != null)
+            {
+                ExecuteAction(actionToDo);
+            }
 
             // Appeler chainage arrière qui renvoie une action.
             // Si non nulle, l'effectuer.

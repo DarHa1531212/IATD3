@@ -185,6 +185,36 @@ namespace IATD3
             return (element != null);
         }
 
+        public static bool IsFactInTable(cFact fact)
+        {
+            XmlDocument xmldoc = new XmlDocument();
+            FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
+            xmldoc.Load(fs);
+
+            string xpath = "//Fact[";
+
+            bool isFirstAttribute = true;
+            foreach (string attribute in fact.Attributs.Keys)
+            {
+                if(!isFirstAttribute)
+                {
+                    xpath += "and";
+                }
+                xpath += " @" + attribute + "='" + fact.Attributs[attribute] + "'";
+                if(isFirstAttribute)
+                {
+                    isFirstAttribute = false;
+                }
+            }
+
+            xpath += "]";
+
+            XmlNode element = xmldoc.SelectSingleNode(xpath);
+            fs.Close();
+
+            return (element != null);
+        }
+
         public static int AddOrChangeAttribute(int locationX, int locationY, string attribute, string value)
         {
             XmlDocument xmldoc = new XmlDocument();
@@ -236,7 +266,6 @@ namespace IATD3
             fs.SetLength(0);
             xmldoc.Save(fs);
             fs.Close();
-
         }
     }
 }

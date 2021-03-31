@@ -37,12 +37,21 @@ namespace IATD3
         public Form1()
         {
             InitializeComponent();
+            InitObject();
+        }
+
+        private void InitObject()
+        {
             this.AutoSize = true;
-            environment = new cEnvironment();
+            environment = new cEnvironment(this.actionsLog, this.bMove, this.gameOverMsg);
             Board.AutoSize = true;
             boardCpt = 0;
+            boardNumber.Text = String.Empty;
+            actionsLog.Text = String.Empty;
             formAgent = new cAgent(environment);
             environment.Agent = formAgent;
+            gameOverMsg.Visible = false;
+            bMove.Visible = true;
 
             if (environment.SizeToBeAdapted)
             {
@@ -115,6 +124,12 @@ namespace IATD3
             createLabels();
             environment.SizeToBeAdapted = false;
             boardNumber.Text = "Board number " + boardCpt;
+
+            Tuple<bool, int> agentDeath = environment.CheckAgentDeath();
+            if (agentDeath.Item1)
+            {
+                // score += agentDeath.Item2;
+            }
         }
 
         private void createPictureBox(string pictureKey, Label parent, Point location, bool fullSize = false)
@@ -136,11 +151,16 @@ namespace IATD3
         {
             formAgent.UseSensors();    //mettre à jour les faits
 
-            formAgent.Act(); //l'agent fait une action
+            int actionCost = formAgent.Act(); //l'agent fait une action
             //test end condition
             //if end reached, generate new board
 
             AdaptSize(); // maj de l'affichage
+        }
+
+        private void bReset_Click(object sender, EventArgs e)
+        {
+            InitObject();
         }
     }
 }

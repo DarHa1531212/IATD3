@@ -148,7 +148,12 @@ namespace IATD3
         private Tuple<int, int> MoveToRandomLocationInScope()
         {
             Random rng = new Random();
-            return scopeCells.ElementAt(rng.Next(0, scopeCells.Count()));
+            Tuple<int, int> newPos;
+            do
+            {
+                newPos = scopeCells.ElementAt(rng.Next(0, scopeCells.Count()));
+            } while (newPos.Item1 == relativeLocationX && newPos.Item2 == relativeLocationY);
+            return newPos;
         }
 
         private Tuple<int, int> FindWhereToThrowRock()

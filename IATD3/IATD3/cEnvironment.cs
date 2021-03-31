@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace IATD3
 {
@@ -28,6 +29,9 @@ namespace IATD3
         private int agentPosX;
         private int agentPosY;
 
+        Label actionsLog;
+        Button bMove;
+        Label gameOverMsg;
         private cAgent agent;
 
         public cAgent Agent { get => agent; set => agent = value; }
@@ -39,12 +43,15 @@ namespace IATD3
         public int AgentPosX { get => agentPosX; }
         public int AgentPosY { get => agentPosY; }
 
-        public cEnvironment()
+        public cEnvironment(Label log = null, Button move = null, Label gameOver = null)
         {
             agentPosX = 0;
             agentPosY = 0;
             AdaptSize(_boardSizeBeginning);
             //agent = new cAgent(this);
+            actionsLog = log;
+            bMove = move;
+            gameOverMsg = gameOver;
         }
 
         public void RemoveDeadMonsterOdour(int deadMonsterlocationX, int deadMonsterlocationY)
@@ -190,8 +197,22 @@ namespace IATD3
             AdaptSize(boardSize + 1);
         }
 
+        private void LogAction(String action, Tuple<int, int> pos)
+        {
+            if (actionsLog != null)
+            {
+                String text =
+                    action +
+                    (pos != null ? " at (" + pos.Item1 + ", " + pos.Item2 + ")" : "") +
+                    "\n";
+                actionsLog.Text += text;
+            }
+        }
+
         private bool ThrowStone(int line, int column)
         {
+            LogAction("ThrowStone", new Tuple<int, int>(line, column));
+
             bool hadMonster = board[line, column].HasMonster;
             board[line, column].HasMonster = false;
             return hadMonster;
@@ -226,15 +247,29 @@ namespace IATD3
 
         public int UsePortal()
         {
+            LogAction("UsePortal", new Tuple<int, int>(agentPosX, agentPosY));
+
             int returnTotal = _portalCostPerCell * boardSize * boardSize;
             GenerateNextBoard();
             agentPosX = 0;
             agentPosY = 0;
+
             return returnTotal;
+        }
+
+        public Tuple<bool, int> CheckAgentDeath()
+        {
+            if (IsDeadlyCell(agentPosY, agentPosX))
+            {
+                return new Tuple<bool, int>(true, killAgent());
+            }
+            return new Tuple<bool, int>(false, 0);
         }
 
         public int Move(int lineMovement, int columnMovement)
         {
+            LogAction("Move", new Tuple<int, int>(lineMovement, columnMovement));
+
             if (lineMovement < 0
                 || lineMovement >= boardSize
                 || columnMovement < 0
@@ -246,9 +281,14 @@ namespace IATD3
             agentPosX = columnMovement;
             agentPosY = lineMovement;
 
-            if (IsDeadlyCell(agentPosY, agentPosX))
+            /*if (IsDeadlyCell(agentPosY, agentPosX))
             {
                 return killAgent();
+            }*/
+            Tuple<bool, int> agentDeath = CheckAgentDeath();
+            if (agentDeath.Item1)
+            {
+                return agentDeath.Item2;
             }
 
             agent.UpdatePosition(agentPosX, agentPosY);
@@ -257,6 +297,10 @@ namespace IATD3
 
         public int killAgent()
         {
+            LogAction("killAgent", new Tuple<int, int>(agentPosY, agentPosX));
+            gameOverMsg.Visible = true;
+            bMove.Visible = false;
+
             agent.Die(board[agentPosY, agentPosX].HasMonster, board[agentPosY, agentPosX].HasAbyss);
             agentPosX = 0;
             agentPosY = 0;

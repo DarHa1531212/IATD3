@@ -149,6 +149,7 @@ namespace IATD3
 
         private void bMove_Click(object sender, EventArgs e)
         {
+            Console.WriteLine("NEW MOVE ACTION *****************");
             formAgent.UseSensors();    //mettre à jour les faits
 
             int actionCost = formAgent.Act(); //l'agent fait une action

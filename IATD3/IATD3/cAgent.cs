@@ -91,7 +91,10 @@ namespace IATD3
                 Tuple<int, int> rockThrowPosition = FindWhereToThrowRock();
                 if (rockThrowPosition != null)
                 {
-                    return ThrowStoneTo(rockThrowPosition.Item1, rockThrowPosition.Item2);
+
+                    int throwStoneCost = ThrowStoneTo(rockThrowPosition.Item1, rockThrowPosition.Item2);
+                    UpdateFactsFromRules();
+                    return (throwStoneCost);
                 }
                 else
                 {
@@ -180,7 +183,7 @@ namespace IATD3
             {
                 return;
             }
-            if( result == -1)
+            if (result == -1)
             {
                 FactTableManager.AddOrReplaceFactAtLocation("Scope", relativeLocationX, relativeLocationY, new Dictionary<String, String>(), "Known");
             }
@@ -188,11 +191,9 @@ namespace IATD3
             knownCells.Add(currentCell);
             scopeCells.Remove(currentCell);
 
-            
-
             foreach (var neighbourPos in sensorNeighbours.Get(relativeLocationX, relativeLocationY))
             {
-                if (!knownCells.Contains(neighbourPos))
+                if (!knownCells.Contains(neighbourPos) && !scopeCells.Contains(neighbourPos))
                 {
                     FactTableManager.AddOrReplaceFactAtLocation("Scope", neighbourPos.Item1, neighbourPos.Item2, new Dictionary<String, String>());
                     scopeCells.Add(new Tuple<int, int>(neighbourPos.Item1, neighbourPos.Item2));
@@ -340,6 +341,8 @@ namespace IATD3
                                 int yPos = cell.Item2 + Int32.Parse(implication.Attributs["locationY"]);
                                 // /!\ Il y a toujours la mise à jour de tous les attributs (écrasement) de la case alors qu'il ne faut pas forcément
                                 // → Il faut retenir l'information la plus importante (la plus sure et utile) plutôt que la dernière
+
+                                Console.WriteLine(xPos + " " + yPos + " " + attribute.Key + " " + attribute.Value);
                                 FactTableManager.AddOrChangeAttribute(xPos, yPos, attribute.Key, attribute.Value);
                             }
                         }
@@ -357,23 +360,23 @@ namespace IATD3
         private List<cInference> CheckInferencesThatCompletesGoals(cFact goalToInfer)
         {
             List<cInference> markedInferences = new List<cInference>();
-            foreach(cInference inference in inferences)
+            foreach (cInference inference in inferences)
             {
-                if(inference.IsMarked)
+                if (inference.IsMarked)
                 {
                     continue;
                 }
-                foreach(cFact implie in inference.Implies)
+                foreach (cFact implie in inference.Implies)
                 {
-                    if(goalToInfer.Element != implie.Element)
+                    if (goalToInfer.Element != implie.Element)
                     {
                         break;
                     }
-                    foreach(var attribute in goalToInfer.Attributs)
+                    foreach (var attribute in goalToInfer.Attributs)
                     {
                         String valueInImplie;
                         bool isValueIn = implie.Attributs.TryGetValue(attribute.Key, out valueInImplie);
-                        if(isValueIn && valueInImplie == attribute.Value)
+                        if (isValueIn && valueInImplie == attribute.Value)
                         {
                             markedInferences.Add(inference);
                         }
@@ -389,15 +392,15 @@ namespace IATD3
 
         private bool CheckIfFactIsPartiallyInList(List<cFact> facts, cFact factToCheck)
         {
-            foreach(cFact factProven in facts)
+            foreach (cFact factProven in facts)
             {
-                if(factProven.Element != factToCheck.Element)
+                if (factProven.Element != factToCheck.Element)
                 {
                     continue;
                 }
 
                 bool areAllAttributesIn = true;
-                foreach(var attribute in factToCheck.Attributs)
+                foreach (var attribute in factToCheck.Attributs)
                 {
                     String valueInProvenFact;
                     bool isValueIn = factProven.Attributs.TryGetValue(attribute.Key, out valueInProvenFact);
@@ -425,7 +428,7 @@ namespace IATD3
 
             List<cFact> goalsMet = new List<cFact>();
 
-            foreach(cFact initialGoal in initialGoals)
+            foreach (cFact initialGoal in initialGoals)
             {
                 goalsStack.Push(initialGoal);
             }
@@ -435,19 +438,19 @@ namespace IATD3
             // 3. Tant que Pas Terminé faire
             while (!isCompleted)
             {
-                if(goalsStack.Count == 0)
+                if (goalsStack.Count == 0)
                 {
                     break;
                 }
                 cFact goalOfThisLoop = goalsStack.Peek();
                 // Si le but a été atteint via une autre règle, c'est bien
-                if(CheckIfFactIsPartiallyInList(goalsMet, goalOfThisLoop))
+                if (CheckIfFactIsPartiallyInList(goalsMet, goalOfThisLoop))
                 {
                     goalsStack.Pop();
                     continue;
                 }
                 // Si le but est déjà dans la table des faits c'est bien aussi.
-                if(FactTableManager.IsFactInTable(goalOfThisLoop))
+                if (FactTableManager.IsFactInTable(goalOfThisLoop))
                 {
                     goalsStack.Pop();
                     continue;
@@ -457,9 +460,9 @@ namespace IATD3
                 // - celles dont la conclusion = au sommet de la pile_buts
                 List<cInference> possibleInferences = CheckInferencesThatCompletesGoals(goalsStack.Peek());
                 // si pas de règles applicables. Dépiler la pile_buts , et la pile_regles
-                if(possibleInferences.Count == 0)
+                if (possibleInferences.Count == 0)
                 {
-                    for(int i = 0; i < rulesStack.Peek().Facts.Count; ++i)
+                    for (int i = 0; i < rulesStack.Peek().Facts.Count; ++i)
                     {
                         goalsStack.Pop();
                     }
@@ -497,7 +500,7 @@ namespace IATD3
             UpdateFactsFromRules();
 
             //pile de buts
-            
+
             cFact finalGoal = new cFact("");
             finalGoal.Attributs.Add("cleared", "true");
 
@@ -505,7 +508,7 @@ namespace IATD3
             goals.Add(finalGoal);
             cAction actionToDo = ChainageArriere(goals);
 
-            if(actionToDo != null)
+            if (actionToDo != null)
             {
                 ExecuteAction(actionToDo);
             }

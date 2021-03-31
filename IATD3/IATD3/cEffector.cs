@@ -66,12 +66,12 @@ namespace IATD3
         public override int DoAction()
         {
 
-            int cost = environment.Throw(launchPosY, launchPosX);
+            int cost = environment.Throw(launchPosY, launchPosX );
 
             // Add that there is no monster on selected cell (and delete other fact if exists)
 
-            FactTableManager.AddOrChangeAttribute(launchPosX, launchPosY, "hasMonster", "False");
-            FactTableManager.AddOrChangeAttribute(launchPosX, launchPosY, "probabilityMonster", "100");
+            FactTableManager.AddOrChangeAttribute(launchPosY, launchPosX, "hasMonster", "False");
+            FactTableManager.AddOrChangeAttribute(launchPosY, launchPosX, "probabilityMonster", "100");
             return cost;
         }
     }

@@ -52,7 +52,8 @@ namespace IATD3
             environment.Agent = formAgent;
             gameOverMsg.Visible = false;
             bMove.Visible = true;
-
+            resetScoreLabel();
+            resetHistory();
             if (environment.SizeToBeAdapted)
             {
                 AdaptSize();
@@ -121,6 +122,10 @@ namespace IATD3
 
         private void AdaptSize()
         {
+            if(environment.SizeToBeAdapted)
+            {
+                resetScoreLabel();
+            }
             createLabels();
             environment.SizeToBeAdapted = false;
             boardNumber.Text = "Board number " + boardCpt;
@@ -153,6 +158,11 @@ namespace IATD3
             formAgent.UseSensors();    //mettre à jour les faits
 
             int actionCost = formAgent.Act(); //l'agent fait une action
+            updateScoreLabel(actionCost);
+            if (actionCost > 0)
+            {
+                addScoreToHistory();
+            }
             //test end condition
             //if end reached, generate new board
 
@@ -162,6 +172,53 @@ namespace IATD3
         private void bReset_Click(object sender, EventArgs e)
         {
             InitObject();
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void currentScore_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void updateScoreLabel(int addedScore)
+        {
+            int currentScore = int.Parse(this.currentScore.Text);
+            this.currentScore.Text = (currentScore + addedScore).ToString();
+        }
+
+        private void resetScoreLabel()
+        {
+            this.currentScore.Text = "0";
+        }
+
+        private void addScoreToHistory()
+        {
+            if(this.scoreHistory.Text=="")
+            {
+                this.scoreHistory.Text += this.currentScore.Text;
+            }else
+            {
+                this.scoreHistory.Text += ", " + this.currentScore.Text;
+            }
+        }
+
+        private void resetHistory()
+        {
+            this.scoreHistory.Text = "";
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

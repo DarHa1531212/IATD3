@@ -540,6 +540,8 @@ namespace IATD3Tests
         public void T_Move_InBoundsSafe()
         {
             cEnvironment environment = new cEnvironment();
+            cAgent agent = new cAgent(environment);
+            environment.Agent = agent;
             PrivateObject po = new PrivateObject(environment);
             cCell[,] board = (cCell[,])po.GetProperty("Board");
             board[0, 1].HasMonster = false;

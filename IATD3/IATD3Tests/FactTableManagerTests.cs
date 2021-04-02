@@ -355,7 +355,7 @@ namespace IATD3Tests
             string text = File.ReadAllText(@"../../facts.xml");
             text = text.Replace("\n", "").Replace("\r", "").Replace("\t", "").Replace("\"", "'").Replace(" ", "");
 
-            string expectedXml = "<FactTable><Facts><Factvelocity='high'locationX='0'locationY='7'>Wind</Fact></Facts></FactTable>";
+            string expectedXml = "<FactTable><Facts><FactlocationX='0'locationY='7'velocity='high'>Wind</Fact></Facts></FactTable>";
 
             Assert.AreEqual(text, expectedXml);
         }
@@ -379,7 +379,7 @@ namespace IATD3Tests
             string text = File.ReadAllText(@"../../facts.xml");
             text = text.Replace("\n", "").Replace("\r", "").Replace("\t", "").Replace("\"", "'").Replace(" ", "");
 
-            string expectedXml = "<FactTable><Facts><Factzone='forest'locationX='2'locationY='2'>Portal</Fact></Facts></FactTable>";
+            string expectedXml = "<FactTable><Facts><FactlocationX='2'locationY='2'zone='forest'>Portal</Fact></Facts></FactTable>";
 
             Assert.AreEqual(text, expectedXml);
         }
@@ -403,7 +403,7 @@ namespace IATD3Tests
             string text = File.ReadAllText(@"../../facts.xml");
             text = text.Replace("\n", "").Replace("\r", "").Replace("\t", "").Replace("\"", "'").Replace(" ", "");
 
-            string expectedXml = "<FactTable><Facts><Factdangerosity='medium'locationX='4'locationY='0'>Monster</Fact></Facts></FactTable>";
+            string expectedXml = "<FactTable><Facts><FactlocationX='4'locationY='0'presence='true'dangerosity='medium'>Monster</Fact></Facts></FactTable>";
 
             Assert.AreEqual(text, expectedXml);
         }
@@ -428,7 +428,7 @@ namespace IATD3Tests
             string text = File.ReadAllText(@"../../facts.xml");
             text = text.Replace("\n", "").Replace("\r", "").Replace("\t", "").Replace("\"", "'").Replace(" ", "");
 
-            string expectedXml = "<FactTable><Facts><Factvelocity='high'type='sirocco'locationX='1'locationY='5'>Wind</Fact></Facts></FactTable>";
+            string expectedXml = "<FactTable><Facts><FactlocationX='1'locationY='5'presence='true'velocity='high'type='sirocco'>Wind</Fact></Facts></FactTable>";
 
             Assert.AreEqual(text, expectedXml);
         }

@@ -1,4 +1,3 @@
 <FactTable>
-  <Fact locationX="2" locationY="1" presence="false" value="high">Monster</Fact>
-  <Fact locationX="1" locationY="0" presence="true" velocity="slow">Wind</Fact>
+  <Facts />
 </FactTable>

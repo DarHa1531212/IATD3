@@ -64,4 +64,28 @@ namespace IATD3
             return environment.GetNeighbouringPositions(posX, posY);
         }
     }
+
+    public class cSensorAbyss : cSensor
+    {
+        public cSensorAbyss(cEnvironment _environment) : base(_environment)
+        {
+
+        }
+        public override bool Sense()
+        {
+            return environment.IsAgentOnAbyss();
+        }
+    }
+
+    public class cSensorMonster : cSensor
+    {
+        public cSensorMonster(cEnvironment _environment) : base(_environment)
+        {
+
+        }
+        public override bool Sense()
+        {
+            return environment.IsAgentOnMonster();
+        }
+    }
 }

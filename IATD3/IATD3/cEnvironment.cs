@@ -83,8 +83,8 @@ namespace IATD3
             int portalPosY = rng.Next(0, boardSize);
             // delete l.82
             // delete l.83
-            portalPosX = 2;
-            portalPosY = 2;
+            //portalPosX = 2;
+            //portalPosY = 2;
 
             for (int posX = 0; posX < boardSize; posX++)
             {
@@ -101,10 +101,17 @@ namespace IATD3
                         bool hasAbyss = rng.Next(0, 100) <= _percentageRateAbyss && !hasMonster;
 
                         // TODO : delete le if
-                        if((posX == 0 && posY == 1) || (posX == 1 && posY == 2))
+                        
+                        if((posX == 0 && posY == 1) || (posX == 1 && posY == 0))
+                        {
+                            hasMonster = false;
+                            hasAbyss = false;
+                        }
+
+                        if(posX == 1 && posY == 1)
                         {
                             hasMonster = true;
-                            hasAbyss = false;
+                            hasAbyss = false ;
                         }
 
                         board[posX, posY] = new cCell(posX, posY, hasAbyss, hasMonster);
@@ -337,6 +344,16 @@ namespace IATD3
         public bool IsAgentCellWindy()
         {
             return IsCellWindy(agentPosX, agentPosY);
+        }
+
+        public bool IsAgentOnAbyss()
+        {
+            return board[agentPosX, agentPosY].HasAbyss;
+        }
+
+        public bool IsAgentOnMonster()
+        {
+            return board[agentPosX, agentPosY].HasMonster;
         }
 
         public List<Tuple<int, int>> GetNeighbouringPositions(int posX, int posY)

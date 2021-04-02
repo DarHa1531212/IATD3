@@ -1,9 +1,13 @@
 <?xml version="1.0"?>
 <Rules>
 	<Rule>
-		<Fact locationX="0" locationY="0" hasMonsterProbability="0" hasAbyssProbability="0"></Fact>
-		<Implies locationX="0" locationY="0" isSafe="True" isSafeProbability="100"></Implies>
+		<Fact locationX="0" locationY="0" hasOdour="False"></Fact>
+		<Implies locationX="1" locationY="0" hasMonsterProbability="0"></Implies>
+		<Implies locationX="-1" locationY="0" hasMonsterProbability="0"></Implies>
+		<Implies locationX="0" locationY="1" hasMonsterProbability="0"></Implies>
+		<Implies locationX="0" locationY="-1" hasMonsterProbability="0"></Implies>
 	</Rule>
+	<!--1 case proche-->
 	<Rule>
 		<Fact locationX="0" locationY="0" hasOdour="True"></Fact>
 		<Implies locationX="1" locationY="0" hasMonsterProbability="25"></Implies>
@@ -11,6 +15,7 @@
 		<Implies locationX="0" locationY="1" hasMonsterProbability="25"></Implies>
 		<Implies locationX="0" locationY="-1" hasMonsterProbability="25"></Implies>
 	</Rule>
+
 	<Rule>
 		<Fact locationX="0" locationY="0" hasOdour="False"></Fact>
 		<Implies locationX="1" locationY="0" hasMonsterProbability="0"></Implies>
@@ -18,6 +23,75 @@
 		<Implies locationX="0" locationY="1" hasMonsterProbability="0"></Implies>
 		<Implies locationX="0" locationY="-1" hasMonsterProbability="0"></Implies>
 	</Rule>
+	<!--2 cases proches-->
+	<Rule>
+		<Fact locationX="0" locationY="1" hasOdour="True"></Fact>
+		<Fact locationX="0" locationY="-1" hasOdour="True"></Fact>
+		<Implies locationX="0" locationY="0" hasMonsterProbability="25"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="1" locationY="0" hasOdour="True"></Fact>
+		<Fact locationX="-1" locationY="0" hasOdour="True"></Fact>
+		<Implies locationX="0" locationY="0" hasMonsterProbability="25"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="0" locationY="1" hasOdour="True"></Fact>
+		<Fact locationX="1" locationY="0" hasOdour="True"></Fact>
+		<Implies locationX="0" locationY="0" hasMonsterProbability="50"></Implies>
+		<Implies locationX="1" locationY="1" hasMonsterProbability="50"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="0" locationY="-1" hasOdour="True"></Fact>
+		<Fact locationX="-1" locationY="0" hasOdour="True"></Fact>
+		<Implies locationX="0" locationY="0" hasMonsterProbability="50"></Implies>
+		<Implies locationX="-1" locationY="-1" hasMonsterProbability="50"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="0" locationY="1" hasOdour="True"></Fact>
+		<Fact locationX="-1" locationY="0" hasOdour="True"></Fact>
+		<Implies locationX="0" locationY="0" hasMonsterProbability="50"></Implies>
+		<Implies locationX="-1" locationY="1" hasMonsterProbability="50"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="1" locationY="0" hasOdour="True"></Fact>
+		<Fact locationX="0" locationY="-1" hasOdour="True"></Fact>
+		<Implies locationX="0" locationY="0" hasMonsterProbability="50"></Implies>
+		<Implies locationX="1" locationY="-1" hasMonsterProbability="50"></Implies>
+	</Rule>
+	<!--3 cases proches-->
+	<Rule>
+		<Fact locationX="0" locationY="1" hasOdour="True"></Fact>
+		<Fact locationX="1" locationY="0" hasOdour="True"></Fact>
+		<Fact locationX="-1" locationY="0" hasOdour="True"></Fact>
+		<Implies locationX="0" locationY="0" hasMonsterProbability="75"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="0" locationY="-1" hasOdour="True"></Fact>
+		<Fact locationX="1" locationY="0" hasOdour="True"></Fact>
+		<Fact locationX="-1" locationY="0" hasOdour="True"></Fact>
+		<Implies locationX="0" locationY="0" hasMonsterProbability="75"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="0" locationY="1" hasOdour="True"></Fact>
+		<Fact locationX="0" locationY="-1" hasOdour="True"></Fact>
+		<Fact locationX="-1" locationY="0" hasOdour="True"></Fact>
+		<Implies locationX="0" locationY="0" hasMonsterProbability="75"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="0" locationY="1" hasOdour="True"></Fact>
+		<Fact locationX="1" locationY="0" hasOdour="True"></Fact>
+		<Fact locationX="0" locationY="-1" hasOdour="True"></Fact>
+		<Implies locationX="0" locationY="0" hasMonsterProbability="75"></Implies>
+	</Rule>
+	<!--4 cases-->
+	<Rule>
+		<Fact locationX="0" locationY="0" hasWind="False"></Fact>
+		<Implies locationX="1" locationY="0" hasAbyssProbability="0"></Implies>
+		<Implies locationX="-1" locationY="0" hasAbyssProbability="0"></Implies>
+		<Implies locationX="0" locationY="1" hasAbyssProbability="0"></Implies>
+		<Implies locationX="0" locationY="-1" hasAbyssProbability="0"></Implies>
+	</Rule>
+	<!--1 case proche-->
 	<Rule>
 		<Fact locationX="0" locationY="0" hasWind="True"></Fact>
 		<Implies locationX="1" locationY="0" hasAbyssProbability="25"></Implies>
@@ -26,10 +100,84 @@
 		<Implies locationX="0" locationY="-1" hasAbyssProbability="25"></Implies>
 	</Rule>
 	<Rule>
-		<Fact locationX="0" locationY="0" hasWind="False"></Fact>
-		<Implies locationX="1" locationY="0" hasAbyssProbability="0"></Implies>
-		<Implies locationX="-1" locationY="0" hasAbyssProbability="0"></Implies>
-		<Implies locationX="0" locationY="1" hasAbyssProbability="0"></Implies>
-		<Implies locationX="0" locationY="-1" hasAbyssProbability="0"></Implies>
+		<Fact locationX="0" locationY="1" hasOdour="True"></Fact>
+		<Fact locationX="1" locationY="0" hasOdour="True"></Fact>
+		<Fact locationX="0" locationY="-1" hasOdour="True"></Fact>
+		<Fact locationX="-1" locationY="0" hasOdour="True"></Fact>
+		<Implies locationX="0" locationY="0" hasMonsterProbability="100"></Implies>
+	</Rule>
+	<!--2 cases proches-->
+	<Rule>
+		<Fact locationX="0" locationY="1" hasWind="True"></Fact>
+		<Fact locationX="0" locationY="-1" hasWind="True"></Fact>
+		<Implies locationX="0" locationY="0" hasAbyssProbability="25"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="1" locationY="0" hasWind="True"></Fact>
+		<Fact locationX="-1" locationY="0" hasWind="True"></Fact>
+		<Implies locationX="0" locationY="0" hasAbyssProbability="25"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="0" locationY="1" hasWind="True"></Fact>
+		<Fact locationX="1" locationY="0" hasWind="True"></Fact>
+		<Implies locationX="0" locationY="0" hasAbyssProbability="50"></Implies>
+		<Implies locationX="1" locationY="1" hasAbyssProbability="50"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="0" locationY="-1" hasWind="True"></Fact>
+		<Fact locationX="-1" locationY="0" hasWind="True"></Fact>
+		<Implies locationX="0" locationY="0" hasAbyssProbability="50"></Implies>
+		<Implies locationX="-1" locationY="-1" hasAbyssProbability="50"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="0" locationY="1" hasWind="True"></Fact>
+		<Fact locationX="-1" locationY="0" hasWind="True"></Fact>
+		<Implies locationX="0" locationY="0" hasAbyssProbability="50"></Implies>
+		<Implies locationX="-1" locationY="1" hasAbyssProbability="50"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="1" locationY="0" hasWind="True"></Fact>
+		<Fact locationX="0" locationY="-1" hasWind="True"></Fact>
+		<Implies locationX="0" locationY="0" hasAbyssProbability="50"></Implies>
+		<Implies locationX="1" locationY="-1" hasAbyssProbability="50"></Implies>
+	</Rule>
+	<!--3 cases proches-->
+	<Rule>
+		<Fact locationX="0" locationY="1" hasWind="True"></Fact>
+		<Fact locationX="1" locationY="0" hasWind="True"></Fact>
+		<Fact locationX="-1" locationY="0" hasWind="True"></Fact>
+		<Implies locationX="0" locationY="0" hasAbyssProbability="75"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="0" locationY="-1" hasWind="True"></Fact>
+		<Fact locationX="1" locationY="0" hasWind="True"></Fact>
+		<Fact locationX="-1" locationY="0" hasWind="True"></Fact>
+		<Implies locationX="0" locationY="0" hasAbyssProbability="75"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="0" locationY="1" hasWind="True"></Fact>
+		<Fact locationX="0" locationY="-1" hasWind="True"></Fact>
+		<Fact locationX="-1" locationY="0" hasWind="True"></Fact>
+		<Implies locationX="0" locationY="0" hasAbyssProbability="75"></Implies>
+	</Rule>
+	<Rule>
+		<Fact locationX="0" locationY="1" hasWind="True"></Fact>
+		<Fact locationX="1" locationY="0" hasWind="True"></Fact>
+		<Fact locationX="0" locationY="-1" hasWind="True"></Fact>
+		<Implies locationX="0" locationY="0" hasAbyssProbability="75"></Implies>
+	</Rule>
+	<!--4 cases-->
+	<Rule>
+		<Fact locationX="0" locationY="1" hasWind="True"></Fact>
+		<Fact locationX="1" locationY="0" hasWind="True"></Fact>
+		<Fact locationX="0" locationY="-1" hasWind="True"></Fact>
+		<Fact locationX="-1" locationY="0" hasWind="True"></Fact>
+		<Implies locationX="0" locationY="0" hasAbyssProbability="100"></Implies>
+	</Rule>
+	
+	<!--Safety-->
+	<Rule>
+		<Fact locationX="0" locationY="0" hasMonsterProbability="0" hasAbyssProbability="0"></Fact>
+		<Implies locationX="0" locationY="0" isSafe="True" isSafeProbability="100"></Implies>
 	</Rule>
 </Rules>

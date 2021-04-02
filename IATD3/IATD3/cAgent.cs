@@ -18,6 +18,8 @@ namespace IATD3
         cSensorWind sensorWind;
         cSensorOdour sensorOdour;
         cSensorNeighbours sensorNeighbours;
+        cSensorAbyss sensorAbyss;
+        cSensorMonster sensorMonster;
 
         // Relative location
         int relativeLocationX;
@@ -39,6 +41,8 @@ namespace IATD3
             sensorOdour = new cSensorOdour(environment);
             sensorWind = new cSensorWind(environment);
             sensorNeighbours = new cSensorNeighbours(environment);
+            sensorAbyss = new cSensorAbyss(environment);
+            sensorMonster = new cSensorMonster(environment);
 
             // Relative location
             relativeLocationX = 0;
@@ -133,6 +137,25 @@ namespace IATD3
             FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasWind", isWindy.ToString());
             FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasPortal", isBright.ToString());
 
+            if(sensorMonster.Sense())
+            {
+                FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasMonsterProbability", "100");
+            } else
+            {
+                FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasMonsterProbability", "0");
+
+            }
+            if (sensorAbyss.Sense())
+            {
+                FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasAbyssProbability", "100");
+            }
+            else
+            {
+                FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasAbyssProbability", "0");
+
+            }
+            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasAbyssProbability", "0");
+
             UpdateFactsFromRules();
         }
 
@@ -181,31 +204,53 @@ namespace IATD3
 
         private Tuple<int, int> FindWhereToThrowStone()
         {
+            Tuple<int, int> bestCell = null;
+            int minAbyssProba = int.MaxValue;
+            int monsterProba = int.MinValue;
+
+            int monsterProbability;
+            int abyssProbability;
             foreach (var position in scopeCells)
             {
-                String monsterProbability = FactTableManager.GetAttributeOfFactAtLocation(
-                    "Scope", position.Item1, position.Item2, "hasMonsterProbability");
+                try
+                {
+                    monsterProbability = Convert.ToInt32(FactTableManager.GetAttributeOfFactAtLocation(
+                        "Scope", position.Item1, position.Item2, "hasMonsterProbability"));
+                }
+                catch (FormatException)
+                {
+                    monsterProbability = 0;
+                }
 
-                if(monsterProbability == null || monsterProbability == "")
+                try
+                {
+                    abyssProbability = Convert.ToInt32(FactTableManager.GetAttributeOfFactAtLocation(
+                        "Scope", position.Item1, position.Item2, "hasAbyssProbability"));
+                }
+                catch (FormatException)
+                {
+                    abyssProbability = 0;
+                }
+                if (monsterProbability == 0)
                 {
                     continue;
                 }
-                int monsterProba = Int32.Parse(monsterProbability);
-                if(monsterProba >= 25)
+                if (abyssProbability < minAbyssProba)
                 {
-                    return position;
+                    minAbyssProba = abyssProbability;
+                    monsterProba = monsterProbability;
+                    bestCell = position;
                 }
-                /*
-                Dictionary<string, string> attributes = new Dictionary<string, string>();
-                attributes.Add("hasMonsterProbability", "100");
-                //attributes.Add("hasAbyss", "False");
-                if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
+                if (abyssProbability == minAbyssProba)
                 {
-                    return position;
-                }*/
+                    if (monsterProbability > monsterProba)
+                    {
+                        bestCell = position;
+                        monsterProba = monsterProbability;
+                    }
+                }
             }
-
-            return null;
+            return bestCell;
         }
 
         private void UpdateFacts()
@@ -431,21 +476,35 @@ namespace IATD3
             List<Tuple<int, int>> cellsToCheck = new List<Tuple<int, int>>();
             cellsToCheck.AddRange(knownCells);
             cellsToCheck.AddRange(scopeCells);
+
+            //delete
+            int i = 0;
             foreach (var cell in cellsToCheck)
             {
                 foreach (var inference in inferences)
                 {
+                    if (i == 26)
+                    {
+                        Console.WriteLine(":D");
+                    }
+                    ++i;
                     if (inference.IsActionInference)
                     {
                         continue;
                     }
+
                     bool conditionsAreRespected = inference.Facts.All(
                         fact =>
-                        fact.Attributs.All(
-                            attribute =>
-                            (attribute.Key == "locationX") || (attribute.Key == "locationY") ||
-                            (FactTableManager.GetAttributeAtLocation(cell.Item1, cell.Item2, attribute.Key) == attribute.Value)
-                        )
+                        {
+                            int posX = cell.Item1 + Int32.Parse(fact.Attributs["locationX"]);
+                            int posY = cell.Item2 + Int32.Parse(fact.Attributs["locationY"]);
+                            return fact.Attributs.All(
+                                attribute =>
+                                    (attribute.Key == "locationX") || (attribute.Key == "locationY") ||
+                                    (FactTableManager.GetAttributeAtLocation(posX, posY, attribute.Key) == attribute.Value)
+                            );
+                        }
+
                     );
                     if (conditionsAreRespected)
                     {
@@ -464,10 +523,11 @@ namespace IATD3
                                 {
                                     continue;
                                 }
-                                if(attribute.Key.Contains("Probability"))
+                                if (attribute.Key.Contains("Probability"))
                                 {
                                     FactTableManager.UpdateProbability(xPos, yPos, attribute.Key, attribute.Value);
-                                } else
+                                }
+                                else
                                 {
                                     FactTableManager.AddOrChangeAttribute(xPos, yPos, attribute.Key, attribute.Value);
                                 }

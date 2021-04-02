@@ -293,20 +293,20 @@ namespace IATD3
                 return 100.0f;
             }
 
-            float abyssProbability = 0;
-            float monsterProbability = 0;
+            float abyssProbability = 0.0f;
+            float monsterProbability = 0.0f;
             string hasMonsterValue = FactTableManager.GetAttributeAtLocation(positionX, positionY, "hasMonster");
-            if (hasMonsterValue == "true")
+            if (hasMonsterValue != null && hasMonsterValue == "True")
             {
-                monsterProbability = float.Parse(FactTableManager.GetAttributeAtLocation(positionX, positionY, "monsterProbabilty"));
+                monsterProbability = (float)int.Parse(FactTableManager.GetAttributeAtLocation(positionX, positionY, "hasMonsterProbability"));
             }
             string hasAbyssValue = FactTableManager.GetAttributeAtLocation(positionX, positionY, "hasAbyss");
-            if (hasAbyssValue == "true")
+            if (hasAbyssValue != null && hasAbyssValue == "True")
             {
-                abyssProbability = float.Parse(FactTableManager.GetAttributeAtLocation(positionX, positionY, "abyssProbabilty"));
+                abyssProbability = (float)int.Parse(FactTableManager.GetAttributeAtLocation(positionX, positionY, "hasAbyssProbability"));
             }
 
-            return ((100f - monsterProbability) * (100f - abyssProbability)) / 100f;
+            return ((100.0f - monsterProbability) * (100.0f - abyssProbability)) / 100.0f;
 
         }
 

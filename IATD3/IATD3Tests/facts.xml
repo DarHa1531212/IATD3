@@ -1,3 +1,5 @@
 <FactTable>
-  <Facts />
+  <Facts>
+    <Fact locationX="2" locationY="5" hasMonster="True" hasMonsterProbability="50" hasAbyss="True" hasAbyssProbability="25">Scope</Fact>
+  </Facts>
 </FactTable>

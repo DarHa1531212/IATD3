@@ -46,7 +46,7 @@ namespace IATD3
         //todo remove this function if possible. Exists only due to the override requirement
         public override int DoAction()
         {
-            int cost = environment.Move(movementPosY, movementPosX);
+            int cost = environment.Move(movementPosX, movementPosY);
             return cost;
         }
     }
@@ -67,7 +67,7 @@ namespace IATD3
         public override int DoAction()
         {
             //int cost = environment.Throw(launchPosY, launchPosX);
-            int cost = environment.Throw(launchPosY, launchPosX);
+            int cost = environment.Throw(launchPosX, launchPosY);
 
             // Add that there is no monster on selected cell (and delete other fact if exists)
             return cost;

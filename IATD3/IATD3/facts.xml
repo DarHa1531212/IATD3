@@ -1,9 +1,7 @@
 <FactTable>
   <Facts>
-    <Fact locationX="0" locationY="0" hasOdour="False" hasWind="False" hasPortal="False" hasMonster="False" hasMonsterProbability="100" hasAbyss="True" hasAbyssProbability="25">Known</Fact>
-    <Fact locationX="1" locationY="0" hasMonster="False" hasMonsterProbability="100" hasAbyss="False" hasAbyssProbability="100" isSafe="True" isSafeProbability="100">Scope</Fact>
-    <Fact locationX="0" locationY="1" hasMonster="False" hasMonsterProbability="100" hasAbyss="False" hasAbyssProbability="100" isSafe="True" isSafeProbability="100" hasOdour="False" hasWind="True" hasPortal="False">Known</Fact>
-    <Fact locationX="1" locationY="1" hasMonster="False" hasMonsterProbability="100" hasAbyss="True" hasAbyssProbability="25">Scope</Fact>
-    <Fact locationX="0" locationY="2" hasMonster="False" hasMonsterProbability="100" hasAbyss="True" hasAbyssProbability="25">Scope</Fact>
+    <Fact locationX="0" locationY="0" hasOdour="True" hasWind="False" hasPortal="False" hasMonster="True" hasAbyss="True">Known</Fact>
+    <Fact locationX="1" locationY="0" hasMonster="True" hasMonsterProbability="100" hasAbyss="False" hasAbyssProbability="100">Scope</Fact>
+    <Fact locationX="0" locationY="1" hasMonster="True" hasMonsterProbability="100" hasAbyss="False" hasAbyssProbability="100">Scope</Fact>
   </Facts>
 </FactTable>

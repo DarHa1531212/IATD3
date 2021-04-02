@@ -78,6 +78,11 @@ namespace IATD3
             Random rng = new Random();
             int portalPosX = rng.Next(0, boardSize);
             int portalPosY = rng.Next(0, boardSize);
+            // delete l.82
+            // delete l.83
+            portalPosX = 2;
+            portalPosY = 2;
+
             for (int posX = 0; posX < boardSize; posX++)
             {
                 for (int posY = 0; posY < boardSize; posY++)
@@ -91,6 +96,14 @@ namespace IATD3
                     {
                         bool hasMonster = rng.Next(0, 100) <= _percentageRateMonster;
                         bool hasAbyss = rng.Next(0, 100) <= _percentageRateAbyss && !hasMonster;
+
+                        // TODO : delete le if
+                        if((posX == 0 && posY == 1) || (posX == 1 && posY == 2))
+                        {
+                            hasMonster = true;
+                            hasAbyss = false;
+                        }
+
                         board[posX, posY] = new cCell(posX, posY, hasAbyss, hasMonster);
                         AdaptToNeighboursProperties(posX, posY);
                         AdaptNeighboursProperties(posX, posY, hasAbyss, hasMonster);
@@ -202,9 +215,16 @@ namespace IATD3
             return hadMonster;
         }
 
-        public bool IsDeadlyCell(int posX, int posY)
+        public String IsDeadlyCell(int posX, int posY)
         {
-            return board[posX, posY].HasMonster || board[posX, posY].HasAbyss;
+            if (board[posX, posY].HasMonster) {
+                return "hasMonster";
+            }
+            else if (board[posX, posY].HasAbyss)
+            {
+                return "hasAbyss";
+            }
+            return String.Empty;
         }
 
         public bool IsPortal(int posX, int posY)
@@ -243,8 +263,10 @@ namespace IATD3
 
         public Tuple<bool, int> CheckAgentDeath()
         {
-            if (IsDeadlyCell(agentPosX, agentPosY))
+            String isDeadlyCell = IsDeadlyCell(agentPosX, agentPosY);
+            if (isDeadlyCell != String.Empty)
             {
+                agent.UpdateCellDeath(agentPosX, agentPosY, isDeadlyCell);
                 return new Tuple<bool, int>(true, killAgent());
             }
             return new Tuple<bool, int>(false, 0);
@@ -297,17 +319,17 @@ namespace IATD3
         // Sensor tests
         public bool IsAgentOnPortal()
         {
-            return IsPortal(agentPosY, agentPosX);
+            return IsPortal(agentPosX, agentPosY);
         }
 
         public bool IsAgentCellSmelly()
         {
-            return IsCellSmelly(agentPosY, agentPosX);
+            return IsCellSmelly(agentPosX, agentPosY);
         }
 
         public bool IsAgentCellWindy()
         {
-            return IsCellWindy(agentPosY, agentPosX);
+            return IsCellWindy(agentPosX, agentPosY);
         }
 
         public List<Tuple<int, int>> GetNeighbouringPositions(int posX, int posY)

@@ -87,7 +87,7 @@ namespace IATD3
 
                     if (debugMode)
                     {
-                        if (environment.AgentPosX == posY && environment.AgentPosY == posX)
+                        if (environment.AgentPosX == posX && environment.AgentPosY == posY)
                         {
                             createPictureBox("Agent", label, new Point(label.Size.Width / 4, label.Size.Width / 4));
                             label.BringToFront();
@@ -155,7 +155,6 @@ namespace IATD3
 
         private void bMove_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("NEW MOVE ACTION *****************");
             int actionCost = formAgent.Act(); //l'agent fait une action
             updateScoreLabel(actionCost);
             if (actionCost > 0)

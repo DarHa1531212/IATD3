@@ -348,5 +348,41 @@ namespace IATD3
             }
             return 0;
         }
+
+        public static void UpdateProbability(int locationX, int locationY, String attributeName, String newProbability)
+        {
+            String oldProbability = GetAttributeAtLocation(locationX, locationY, attributeName);
+
+            // Cas l'attribut n'existe pas
+            if (oldProbability == null || oldProbability == "")
+            {
+                AddOrChangeAttribute(locationX, locationY, attributeName, newProbability);
+                return;
+            }
+
+            // Cas la probabilité était de 0
+            if (oldProbability == "0")
+            {
+                return;
+            }
+
+            // Cas où la probabilité n'était pas de 0
+
+            // Cas où la nouvelle probabilité est de 0
+            if (newProbability == "0")
+            {
+                AddOrChangeAttribute(locationX, locationY, attributeName, newProbability);
+            }
+            else
+            {
+                int oldProba = Int32.Parse(oldProbability);
+                int newProba = Int32.Parse(newProbability);
+
+                if(newProba > oldProba)
+                {
+                    AddOrChangeAttribute(locationX, locationY, attributeName, newProbability);
+                }
+            }
+        }
     }
 }

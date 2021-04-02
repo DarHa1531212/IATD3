@@ -1,7 +1,7 @@
 <FactTable>
   <Facts>
-    <Fact locationX="0" locationY="0" hasOdour="True" hasWind="False" hasPortal="False" hasMonster="True" hasAbyss="True">Known</Fact>
-    <Fact locationX="1" locationY="0" hasMonster="True" hasMonsterProbability="100" hasAbyss="False" hasAbyssProbability="100">Scope</Fact>
-    <Fact locationX="0" locationY="1" hasMonster="True" hasMonsterProbability="100" hasAbyss="False" hasAbyssProbability="100">Scope</Fact>
+    <Fact locationX="0" locationY="0" hasOdour="True" hasWind="False" hasPortal="False">Known</Fact>
+    <Fact locationX="1" locationY="0">Scope</Fact>
+    <Fact locationX="0" locationY="1">Scope</Fact>
   </Facts>
 </FactTable>

@@ -27,9 +27,6 @@ namespace IATD3
         List<Tuple<int, int>> knownCells;
         List<Tuple<int, int>> scopeCells;
 
-        float safetyThreshold;
-        int lastLevelUtility;
-
         public cAgent(cEnvironment environment)
         {
             // Instantiate effectors
@@ -53,10 +50,6 @@ namespace IATD3
 
             loadRulesFile();
             FactTableManager.CreateFactFile();
-
-            // Init safety threshold
-            safetyThreshold = 80.0f;
-            lastLevelUtility = 0;
         }
 
         private int UsePortal()
@@ -67,9 +60,7 @@ namespace IATD3
 
             relativeLocationX = 0;
             relativeLocationY = 0;
-            int utility = effectorUsePortal.DoAction();
-            modifySafetyThreshold();
-            return utility;
+            return effectorUsePortal.DoAction();
         }
 
         private int ThrowStoneTo(int locationX, int locationY)
@@ -77,8 +68,7 @@ namespace IATD3
             effectorThrowRock.LaunchPosX = locationX;
             effectorThrowRock.LaunchPosY = locationY;
 
-            FactTableManager.AddOrChangeAttribute(locationX, locationY, "hasMonster", "False");
-            FactTableManager.AddOrChangeAttribute(locationX, locationY, "hasMonsterProbability", "100");
+            FactTableManager.UpdateProbability(locationX, locationY, "hasMonsterProbability", "0");
 
             return effectorThrowRock.DoAction();
         }
@@ -86,7 +76,7 @@ namespace IATD3
         public void UpdateCellDeath(int locationX, int locationY, String isDeadlyCell)
         {
             FactTableManager.AddOrChangeAttribute(locationX, locationY, isDeadlyCell, "True");
-            FactTableManager.AddOrChangeAttribute(locationX, locationY, isDeadlyCell+"Probability", "100");
+            //FactTableManager.AddOrChangeAttribute(locationX, locationY, isDeadlyCell + "Probability", "100");
         }
 
         public int Act()
@@ -148,9 +138,24 @@ namespace IATD3
 
         public void Die(bool hadMonster, bool hadAbyss)
         {
-            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasMonster", hadMonster.ToString());
-            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasAbyss", hadMonster.ToString());
+            if (hadMonster == true)
+            {
+                FactTableManager.UpdateProbability(relativeLocationX, relativeLocationY, "hasMonsterProbability", "100");
+            }
+            else
+            {
+                FactTableManager.UpdateProbability(relativeLocationX, relativeLocationY, "hasMonsterProbability", "0");
+            }
 
+            if (hadAbyss == true)
+            {
+                FactTableManager.UpdateProbability(relativeLocationX, relativeLocationY, "hasAbyssProbability", "100");
+            }
+            else
+            {
+                FactTableManager.UpdateProbability(relativeLocationX, relativeLocationY, "hasAbyssProbability", "0");
+
+            }
             /*relativeLocationX = 0;
             relativeLocationY = 0;*/
             UpdatePosition(0, 0);
@@ -179,8 +184,8 @@ namespace IATD3
             foreach (var position in scopeCells)
             {
                 Dictionary<string, string> attributes = new Dictionary<string, string>();
-                attributes.Add("hasMonster", "True");
-                attributes.Add("hasAbyss", "False");
+                attributes.Add("hasMonsterProbability", "100");
+                //attributes.Add("hasAbyss", "False");
                 if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
                 {
                     return position;
@@ -287,38 +292,13 @@ namespace IATD3
             fs.Close();
         }
 
-        private float GetSafetyProbability(int positionX, int positionY)
-        {
-            Dictionary<string, string> attributes = new Dictionary<string, string>();
-            attributes.Add("isSafe", "True");
-            if (FactTableManager.IsFactInTable("Scope", positionX, positionY, attributes))
-            {
-                return 100.0f;
-            }
-
-            float abyssProbability = 0.0f;
-            float monsterProbability = 0.0f;
-            string hasMonsterValue = FactTableManager.GetAttributeAtLocation(positionX, positionY, "hasMonster");
-            if (hasMonsterValue != null && hasMonsterValue == "True")
-            {
-                monsterProbability = (float)int.Parse(FactTableManager.GetAttributeAtLocation(positionX, positionY, "hasMonsterProbability"));
-            }
-            string hasAbyssValue = FactTableManager.GetAttributeAtLocation(positionX, positionY, "hasAbyss");
-            if (hasAbyssValue != null && hasAbyssValue == "True")
-            {
-                abyssProbability = (float)int.Parse(FactTableManager.GetAttributeAtLocation(positionX, positionY, "hasAbyssProbability"));
-            }
-
-            return ((100.0f - monsterProbability) * (100.0f - abyssProbability)) / 100.0f;
-
-        }
-
         private Tuple<int, int> FindSafestPositionToGoTo()
         {
             foreach (var position in scopeCells)
             {
-                float safety = GetSafetyProbability(position.Item1, position.Item2);
-                if(safety >= safetyThreshold)
+                Dictionary<string, string> attributes = new Dictionary<string, string>();
+                attributes.Add("isSafe", "True");
+                if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
                 {
                     return position;
                 }
@@ -328,50 +308,91 @@ namespace IATD3
             int bestProbability = int.MaxValue;
             foreach (var position in scopeCells)
             {
-                Dictionary<string, string> attributes = new Dictionary<string, string>();
-                attributes.Add("hasMonster", "True");
-                if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
+                String monsterProbability = FactTableManager.GetAttributeOfFactAtLocation(
+                    "Scope", position.Item1, position.Item2, "hasMonsterProbabilty");
+                String abyssProbability = FactTableManager.GetAttributeOfFactAtLocation(
+                    "Scope", position.Item1, position.Item2, "hasAbyssProbabilty");
+
+                if (monsterProbability != null &&
+                    monsterProbability != "" &&
+                    Int32.Parse(monsterProbability) > 0)
                 {
                     // Besoin de lancer une pierre en premier avant de bouger
                     return null;
                 }
 
-                attributes.Clear();
-                attributes.Add("hasMonster", "False");
-                attributes.Add("hasAbyss", "True");
+                /* Code equivalent au dessus
+                 * 
+                Dictionary<string, string> attributes = new Dictionary<string, string>();
+                attributes.Add("hasMonsterProbabilty", "100");
                 if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
                 {
-                    int hasAbyssProbability = Int32.Parse(FactTableManager.GetAttributeOfFactAtLocation(
-                                                "Scope", 
-                                                position.Item1, position.Item2, 
-                                                "hasAbyssProbability"
-                                              ));
-                    if (bestProbability > hasAbyssProbability)
-                    {
-                        bestProbability = hasAbyssProbability;
-                        posWithBestProbability = position;
-                    }
-                    continue;
+                    // Besoin de lancer une pierre en premier avant de bouger
+                    return null;
+                }*/
+
+                if (abyssProbability == null || abyssProbability == "")
+                {
+                    abyssProbability = "0";
                 }
-                attributes.Clear();
-                attributes.Add("hasMonster", "False");
-                attributes.Add("hasAbyss", "False");
-                if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
+
+                if (abyssProbability == "0")
                 {
-                    int hasAbyssProbability = Int32.Parse(FactTableManager.GetAttributeOfFactAtLocation(
-                                                "Scope",
-                                                position.Item1, position.Item2,
-                                                "hasAbyssProbability"
-                                              ));
-                    int convertedHasAbyssProbability = 100 - hasAbyssProbability;
-                    if (bestProbability > convertedHasAbyssProbability)
+                    return position;
+                }
+                else
+                {
+                    int abyssProb = Int32.Parse(abyssProbability);
+                    if (bestProbability > abyssProb)
                     {
-                        bestProbability = hasAbyssProbability;
+                        bestProbability = abyssProb;
                         posWithBestProbability = position;
                     }
                 }
             }
             return posWithBestProbability;
+
+
+
+            /* Code équivalent au dessus
+             * 
+            //attributes.Clear();
+            //attributes.Add("hasMonster", "False");
+            //attributes.Add("hasMonsterProbability", "0");
+            //attributes.Add("hasAbyss", "True");
+
+
+            if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
+            {
+                int hasAbyssProbability = Int32.Parse(FactTableManager.GetAttributeOfFactAtLocation(
+                                            "Scope",
+                                            position.Item1, position.Item2,
+                                            "hasAbyssProbability"
+                                          ));
+                if (bestProbability > hasAbyssProbability)
+                {
+                    bestProbability = hasAbyssProbability;
+                    posWithBestProbability = position;
+                }
+                continue;
+            }
+            attributes.Clear();
+            attributes.Add("hasMonsterProbability", "0");
+            //attributes.Add("hasAbyss", "False");
+            if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
+            {
+                int hasAbyssProbability = Int32.Parse(FactTableManager.GetAttributeOfFactAtLocation(
+                                            "Scope",
+                                            position.Item1, position.Item2,
+                                            "hasAbyssProbability"
+                                          ));
+                int convertedHasAbyssProbability = 100 - hasAbyssProbability;
+                if (bestProbability > convertedHasAbyssProbability)
+                {
+                    bestProbability = hasAbyssProbability;
+                    posWithBestProbability = position;
+                }
+            }*/
             // Si aucune case safe, sélectionner la plus safe (ou lancer une pierre)
 
             // Si aucune case safe au dessus d'un seuil, retourner null
@@ -422,7 +443,12 @@ namespace IATD3
 
                             foreach (var attribute in implication.Attributs)
                             {
-                                if ((attribute.Key == "locationX") || (attribute.Key == "locationY") || 
+                                // At xPos, yPos, ajouter tous les attributs 
+                                
+                                //grâce à la méthode UpdateProbability si c'est une proba
+                                // grace à AddOrChangeAttribute sinon
+                                /*
+                                if ((attribute.Key == "locationX") || (attribute.Key == "locationY") ||
                                     attribute.Key.Contains("Probability"))
                                 {
                                     continue;
@@ -436,11 +462,11 @@ namespace IATD3
                                         attribute.Key, attribute.Value,
                                         attributeProbability, implication.Attributs[attributeProbability]
                                     );
-                                } 
+                                }
                                 else
                                 {
                                     FactTableManager.AddOrChangeAttribute(xPos, yPos, attribute.Key, attribute.Value);
-                                }
+                                }*/
                             }
 
                             /*foreach (var attribute in implication.Attributs)
@@ -669,22 +695,9 @@ namespace IATD3
                 case "ThrowStone":
                     ThrowStoneTo(Convert.ToInt32(parameters[0]), Convert.ToInt32(parameters[1]));
                     break;
-            }
-        }
 
-        public void SetUtility(int utility)
-        {
-            lastLevelUtility = utility;
-        }
-
-        // Prototype : Agent needs to know its utility
-        private void modifySafetyThreshold()
-        {
-            // Change safety threshold with lastLevelUtility
-            if(lastLevelUtility < 0)
-            {
-                // Do something
             }
+
         }
 
         /*  public int MoveTo()

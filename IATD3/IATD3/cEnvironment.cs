@@ -259,7 +259,7 @@ namespace IATD3
 
             int returnTotal = _portalCostPerCell * boardSize * boardSize;
             currentAgentScore += returnTotal;
-            agent.SetUtility(currentAgentScore);
+            //agent.SetUtility(currentAgentScore);
             GenerateNextBoard();
             agentPosX = 0;
             agentPosY = 0;

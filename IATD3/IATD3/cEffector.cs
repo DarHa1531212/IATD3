@@ -60,18 +60,16 @@ namespace IATD3
         {
 
         }
+
         public int LaunchPosX { get => launchPosX; set => launchPosX = value; }
         public int LaunchPosY { get => launchPosY; set => launchPosY = value; }
 
         public override int DoAction()
         {
-
-            int cost = environment.Throw(launchPosY, launchPosX );
+            //int cost = environment.Throw(launchPosY, launchPosX);
+            int cost = environment.Throw(launchPosY, launchPosX);
 
             // Add that there is no monster on selected cell (and delete other fact if exists)
-
-            FactTableManager.AddOrChangeAttribute(launchPosY, launchPosX, "hasMonster", "False");
-            FactTableManager.AddOrChangeAttribute(launchPosY, launchPosX, "probabilityMonster", "100");
             return cost;
         }
     }

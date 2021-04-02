@@ -2,35 +2,35 @@
 <Rules>
     <Rule>
 		<Fact locationX="0" locationY="0" hasMonster="False" hasAbyss="False"></Fact>
-		<Implies locationX="0" locationY="0" isSafe="True" probability="100"></Implies>
+		<Implies locationX="0" locationY="0" isSafe="True" isSafeProbability="100"></Implies>
     </Rule>
 	<Rule>
 		<Fact locationX="0" locationY="0" hasOdour="True"></Fact>
-		<Implies locationX="1" locationY="0" hasMonster="True" probabilityMonster="25"></Implies>
-		<Implies locationX="-1" locationY="0" hasMonster="True" probabilityMonster="25"></Implies>
-		<Implies locationX="0" locationY="1" hasMonster="True" probabilityMonster="25"></Implies>
-		<Implies locationX="0" locationY="-1" hasMonster="True" probabilityMonster="25"></Implies>
+		<Implies locationX="1" locationY="0" hasMonster="True" hasMonsterProbability="25"></Implies>
+		<Implies locationX="-1" locationY="0" hasMonster="True" hasMonsterProbability="25"></Implies>
+		<Implies locationX="0" locationY="1" hasMonster="True" hasMonsterProbability="25"></Implies>
+		<Implies locationX="0" locationY="-1" hasMonster="True" hasMonsterProbability="25"></Implies>
 	</Rule>
 	<Rule>
 		<Fact locationX="0" locationY="0" hasOdour="False"></Fact>
-		<Implies locationX="1" locationY="0" probabilityMonster="100" hasMonster="False"></Implies>
-		<Implies locationX="-1" locationY="0" probabilityMonster="100" hasMonster="False"></Implies>
-		<Implies locationX="0" locationY="1" probabilityMonster="100" hasMonster="False"></Implies>
-		<Implies locationX="0" locationY="-1" probabilityMonster="100" hasMonster="False"></Implies>
+		<Implies locationX="1" locationY="0" hasMonsterProbability="100" hasMonster="False"></Implies>
+		<Implies locationX="-1" locationY="0" hasMonsterProbability="100" hasMonster="False"></Implies>
+		<Implies locationX="0" locationY="1" hasMonsterProbability="100" hasMonster="False"></Implies>
+		<Implies locationX="0" locationY="-1" hasMonsterProbability="100" hasMonster="False"></Implies>
 	</Rule>
 	<Rule>
 		<Fact locationX="0" locationY="0" hasWind="True"></Fact>
-		<Implies locationX="1" locationY="0" hasAbyss="True" probabilityAbyss="25"></Implies>
-		<Implies locationX="-1" locationY="0" hasAbyss="True" probabilityAbyss="25"></Implies>
-		<Implies locationX="0" locationY="1" hasAbyss="True" probabilityAbyss="25"></Implies>
-		<Implies locationX="0" locationY="-1" hasAbyss="True" probabilityAbyss="25"></Implies>
+		<Implies locationX="1" locationY="0" hasAbyss="True" hasAbyssProbability="25"></Implies>
+		<Implies locationX="-1" locationY="0" hasAbyss="True" hasAbyssProbability="25"></Implies>
+		<Implies locationX="0" locationY="1" hasAbyss="True" hasAbyssProbability="25"></Implies>
+		<Implies locationX="0" locationY="-1" hasAbyss="True" hasAbyssProbability="25"></Implies>
 	</Rule>
 	<Rule>
 		<Fact locationX="0" locationY="0" hasWind="False"></Fact>
-		<Implies locationX="1" locationY="0" probabilityAbyss="100" hasAbyss="False"></Implies>
-		<Implies locationX="-1" locationY="0" probabilityAbyss="100" hasAbyss="False"></Implies>
-		<Implies locationX="0" locationY="1" probabilityAbyss="100" hasAbyss="False"></Implies>
-		<Implies locationX="0" locationY="-1" probabilityAbyss="100" hasAbyss="False"></Implies>
+		<Implies locationX="1" locationY="0" hasAbyssProbability="100" hasAbyss="False"></Implies>
+		<Implies locationX="-1" locationY="0" hasAbyssProbability="100" hasAbyss="False"></Implies>
+		<Implies locationX="0" locationY="1" hasAbyssProbability="100" hasAbyss="False"></Implies>
+		<Implies locationX="0" locationY="-1" hasAbyssProbability="100" hasAbyss="False"></Implies>
 	</Rule>
 	
 	<Rule>
@@ -55,7 +55,7 @@
 		<Implies cleared="true"></Implies>
 	</Rule>
   <Rule>
-    <Fact locationX="0" locationY="0" hasMonster="False" probabilityMonster="100" hasAbyss="False" probabilityAbyss="100"></Fact>
-    <Implies locationX="0" locationY="0" isSafe="True" probability="100"></Implies>
+    <Fact locationX="0" locationY="0" hasMonster="False" hasMonsterProbability="100" hasAbyss="False" hasAbyssProbability="100"></Fact>
+    <Implies locationX="0" locationY="0" isSafe="True" isSafeProbability="100"></Implies>
   </Rule>
 </Rules>

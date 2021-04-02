@@ -67,7 +67,6 @@ namespace IATD3
 
         private void AdaptSize(int size)
         {
-            // Put agent back to 0, 0
             boardSize = size;
             board = new cCell[boardSize, boardSize];
             InitializeEnvironment();
@@ -79,116 +78,100 @@ namespace IATD3
             Random rng = new Random();
             int portalPosX = rng.Next(0, boardSize);
             int portalPosY = rng.Next(0, boardSize);
-            for (int line = 0; line < boardSize; line++)
+            for (int posX = 0; posX < boardSize; posX++)
             {
-                for (int column = 0; column < boardSize; column++)
+                for (int posY = 0; posY < boardSize; posY++)
                 {
-                    if (line == portalPosY && column == portalPosX)
+                    if (posX == portalPosY && posY == portalPosX)
                     {
-                        board[line, column] = new cCell(line, column, true);
-                        AdaptToNeighboursProperties(line, column);
+                        board[posX, posY] = new cCell(posX, posY, true);
+                        AdaptToNeighboursProperties(posX, posY);
                     }
                     else
                     {
                         bool hasMonster = rng.Next(0, 100) <= _percentageRateMonster;
                         bool hasAbyss = rng.Next(0, 100) <= _percentageRateAbyss && !hasMonster;
-                        board[line, column] = new cCell(line, column, hasAbyss, hasMonster);
-                        AdaptToNeighboursProperties(line, column);
-                        AdaptNeighboursProperties(line, column, hasAbyss, hasMonster);
+                        board[posX, posY] = new cCell(posX, posY, hasAbyss, hasMonster);
+                        AdaptToNeighboursProperties(posX, posY);
+                        AdaptNeighboursProperties(posX, posY, hasAbyss, hasMonster);
                     }
                 }
             }
         }
 
-        private void AdaptToNeighboursProperties(int line, int column)
+        private void AdaptToNeighboursProperties(int posX, int posY)
         {
-            if (CheckNeighboursMonsters(line, column))
+            if (CheckNeighboursMonsters(posX, posY))
             {
-                board[line, column].HasOdour = true;
+                board[posX, posY].HasOdour = true;
             }
-            if (CheckNeighboursAbysses(line, column))
+            if (CheckNeighboursAbysses(posX, posY))
             {
-                board[line, column].HasWind = true;
+                board[posX, posY].HasWind = true;
             }
         }
 
-        public bool CheckNeighboursMonsters(int line, int column)
+        public bool CheckNeighboursMonsters(int posX, int posY)
         {
             bool hasMonsterUp = (
-                (line - 1) >= 0
-                    ? board[line - 1, column].HasMonster
+                (posX - 1) >= 0
+                    ? board[posX - 1, posY].HasMonster
                     : false
             );
             bool hasMonsterLeft = (
-                (column - 1) >= 0
-                    ? board[line, column - 1].HasMonster
+                (posY - 1) >= 0
+                    ? board[posX, posY - 1].HasMonster
                     : false
             );
             return hasMonsterUp || hasMonsterLeft;
         }
 
-
-        public bool CheckNeighboursMonstersReverse(int line, int column)
-        {
-            bool hasMonsterUp = (
-                (line + 1) >= 0
-                    ? board[line + 1, column].HasMonster
-                    : false
-            );
-            bool hasMonsterLeft = (
-                (column + 1) >= 0
-                    ? board[line, column + 1].HasMonster
-                    : false
-            );
-            return hasMonsterUp || hasMonsterLeft;
-        }
-
-        private bool CheckNeighboursAbysses(int line, int column)
+        private bool CheckNeighboursAbysses(int posX, int posY)
         {
             bool hasAbyssUp = (
-                (line - 1) >= 0 &&
-                board[line - 1, column].HasAbyss
+                (posX - 1) >= 0 &&
+                board[posX - 1, posY].HasAbyss
             );
             bool hasAbyssLeft = (
-                (column - 1) >= 0 &&
-                board[line, column - 1].HasAbyss
+                (posY - 1) >= 0 &&
+                board[posX, posY - 1].HasAbyss
             );
             return hasAbyssUp || hasAbyssLeft;
         }
 
-        private void AdaptNeighboursProperties(int line, int column, bool hasAbyss, bool hasMonster)
+        private void AdaptNeighboursProperties(int posX, int posY, bool hasAbyss, bool hasMonster)
         {
             if (hasAbyss)
             {
-                AdaptNeighboursWind(line, column);
+                AdaptNeighboursWind(posX, posY);
             }
             if (hasMonster)
             {
-                AdaptNeighboursMonster(line, column);
+                AdaptNeighboursMonster(posX, posY);
             }
         }
 
-        private void AdaptNeighboursWind(int line, int column)
+        private void AdaptNeighboursWind(int posX, int posY)
         {
-            if ((line - 1) >= 0)
+            if ((posX - 1) >= 0)
             {
-                board[line - 1, column].HasWind = true;
+                board[posX - 1, posY].HasWind = true;
             }
-            if ((column - 1) >= 0)
+            if ((posY - 1) >= 0)
             {
-                board[line, column - 1].HasWind = true;
+                board[posX, posY - 1].HasWind = true;
             }
         }
 
-        private void AdaptNeighboursMonster(int line, int column)
+        private void AdaptNeighboursMonster(int posX, int posY)
         {
-            if ((line - 1) >= 0)
+            if ((posX - 1) >= 0)
             {
-                board[line - 1, column].HasOdour = true;
+                board[posX - 1, posY].HasOdour = true;
             }
-            if ((column - 1) >= 0)
+            if ((posY - 1) >= 0)
             {
-                board[line, column - 1].HasOdour = true;
+                board[posX, posY - 1].HasOdour = true;
             }
         }
 
@@ -209,39 +192,40 @@ namespace IATD3
             }
         }
 
-        private bool ThrowStone(int line, int column)
+        private bool ThrowStone(int posX, int posY)
         {
-            LogAction("ThrowStone", new Tuple<int, int>(line, column));
+            LogAction("ThrowStone", new Tuple<int, int>(posX, posY));
 
-            bool hadMonster = board[line, column].HasMonster;
-            board[line, column].HasMonster = false;
+            bool hadMonster = board[posX, posY].HasMonster;
+            board[posX, posY].HasMonster = false;
+            RemoveOdoursOfDeadMonster(posX, posY);
             return hadMonster;
         }
 
-        public bool IsDeadlyCell(int line, int column)
+        public bool IsDeadlyCell(int posX, int posY)
         {
-            return board[line, column].HasMonster || board[line, column].HasAbyss;
+            return board[posX, posY].HasMonster || board[posX, posY].HasAbyss;
         }
 
-        public bool IsPortal(int line, int column)
+        public bool IsPortal(int posX, int posY)
         {
-            return board[line, column].HasPortal;
+            return board[posX, posY].HasPortal;
         }
         // Smell and wind
-        private bool IsCellSmelly(int line, int column)
+        private bool IsCellSmelly(int posX, int posY)
         {
-            return board[line, column].HasOdour;
+            return board[posX, posY].HasOdour;
         }
-        private bool IsCellWindy(int line, int column)
+        private bool IsCellWindy(int posX, int posY)
         {
-            return board[line, column].HasWind;
+            return board[posX, posY].HasWind;
         }
 
 
         // Effector actions
-        public int Throw(int line, int column)
+        public int Throw(int posX, int posY)
         {
-            ThrowStone(line, column);
+            ThrowStone(posX, posY);
             return _rockCost;
         }
 
@@ -259,27 +243,27 @@ namespace IATD3
 
         public Tuple<bool, int> CheckAgentDeath()
         {
-            if (IsDeadlyCell(agentPosY, agentPosX))
+            if (IsDeadlyCell(agentPosX, agentPosY))
             {
                 return new Tuple<bool, int>(true, killAgent());
             }
             return new Tuple<bool, int>(false, 0);
         }
 
-        public int Move(int lineMovement, int columnMovement)
+        public int Move(int xMovement, int yMovement)
         {
-            LogAction("Move", new Tuple<int, int>(lineMovement, columnMovement));
+            LogAction("Move", new Tuple<int, int>(xMovement, yMovement));
 
-            if (lineMovement < 0
-                || lineMovement >= boardSize
-                || columnMovement < 0
-                || columnMovement >= boardSize)
+            if (xMovement < 0
+                || xMovement >= boardSize
+                || yMovement < 0
+                || yMovement >= boardSize)
             {
                 return int.MinValue;
             }
 
-            agentPosX = columnMovement;
-            agentPosY = lineMovement;
+            agentPosX = xMovement;
+            agentPosY = yMovement;
 
             /*if (IsDeadlyCell(agentPosY, agentPosX))
             {
@@ -297,11 +281,14 @@ namespace IATD3
 
         public int killAgent()
         {
-            LogAction("killAgent", new Tuple<int, int>(agentPosY, agentPosX));
-            gameOverMsg.Visible = true;
-            bMove.Visible = false;
+            LogAction("killAgent", new Tuple<int, int>(agentPosX, agentPosY));
+            if (agentPosX == 0 && agentPosY == 0)
+            {
+                gameOverMsg.Visible = true;
+                bMove.Visible = false;
+            }
 
-            agent.Die(board[agentPosY, agentPosX].HasMonster, board[agentPosY, agentPosX].HasAbyss);
+            agent.Die(board[agentPosX, agentPosY].HasMonster, board[agentPosX, agentPosY].HasAbyss);
             agentPosX = 0;
             agentPosY = 0;
             return _movementCost + _deathCostPerCell * (boardSize * boardSize);
@@ -343,6 +330,23 @@ namespace IATD3
                 neighbours.Add(new Tuple<int, int>(posX, posY + 1));
             }
             return neighbours;
+        }
+
+        public void RemoveOdoursOfDeadMonster(int monsterPosX, int monsterPosY)
+        {
+            foreach (var neighbour in GetNeighbouringPositions(monsterPosX, monsterPosY))
+            {
+                bool odor = false;
+                foreach (var neighbourExtended in GetNeighbouringPositions(neighbour.Item1, neighbour.Item2))
+                {
+                    if (board[neighbourExtended.Item1, neighbourExtended.Item2].HasMonster)
+                    {
+                        odor = true;
+                        break;
+                    }
+                }
+                board[neighbour.Item1, neighbour.Item2].HasOdour = odor;
+            }
         }
     }
 }

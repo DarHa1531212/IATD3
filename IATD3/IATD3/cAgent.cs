@@ -70,6 +70,10 @@ namespace IATD3
         {
             effectorThrowRock.LaunchPosX = locationX;
             effectorThrowRock.LaunchPosY = locationY;
+
+            FactTableManager.AddOrChangeAttribute(locationX, locationY, "hasMonster", "False");
+            FactTableManager.AddOrChangeAttribute(locationX, locationY, "hasMonsterProbability", "100");
+
             return effectorThrowRock.DoAction();
         }
 
@@ -86,14 +90,13 @@ namespace IATD3
 
             //Finding and executing safest move
             Tuple<int, int> position = FindSafestPositionToGoTo();
-            if (position.Item1 == 0 && position.Item2 == 0)
+            if (position == null)
             {
-                Tuple<int, int> rockThrowPosition = FindWhereToThrowRock();
-                if (rockThrowPosition != null)
+                Tuple<int, int> stoneThrowPosition = FindWhereToThrowStone();
+                if (stoneThrowPosition != null)
                 {
-
-                    int throwStoneCost = ThrowStoneTo(rockThrowPosition.Item1, rockThrowPosition.Item2);
-                    UpdateFactsFromRules();
+                    int throwStoneCost = ThrowStoneTo(stoneThrowPosition.Item1, stoneThrowPosition.Item2);
+                    //UpdateFactsFromRules();
                     return (throwStoneCost);
                 }
                 else
@@ -159,14 +162,13 @@ namespace IATD3
             return newPos;
         }
 
-        private Tuple<int, int> FindWhereToThrowRock()
+        private Tuple<int, int> FindWhereToThrowStone()
         {
             foreach (var position in scopeCells)
             {
                 Dictionary<string, string> attributes = new Dictionary<string, string>();
                 attributes.Add("hasMonster", "True");
                 attributes.Add("hasAbyss", "False");
-                attributes.Add("probabilityAbyss", "100");
                 if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
                 {
                     return position;
@@ -285,7 +287,7 @@ namespace IATD3
                 }
             }
             // Si aucune case safe, sélectionner la plus safe (ou lancer une pierre)
-            return new Tuple<int, int>(0, 0);
+            return null;
 
             // Si aucune case safe au dessus d'un seuil, retourner null
         }
@@ -330,21 +332,45 @@ namespace IATD3
                     {
                         foreach (var implication in inference.Implies)
                         {
+                            int xPos = cell.Item1 + Int32.Parse(implication.Attributs["locationX"]);
+                            int yPos = cell.Item2 + Int32.Parse(implication.Attributs["locationY"]);
+
                             foreach (var attribute in implication.Attributs)
+                            {
+                                if ((attribute.Key == "locationX") || (attribute.Key == "locationY") || 
+                                    attribute.Key.Contains("Probability"))
+                                {
+                                    continue;
+                                }
+
+                                String attributeProbability = attribute.Key + "Probability";
+                                //Console.WriteLine("attributeProbability " + attributeProbability);
+                                if (implication.Attributs.ContainsKey(attributeProbability))
+                                {
+                                    FactTableManager.AddOrChangeAttributeIfNecessary(
+                                        xPos, yPos,
+                                        attribute.Key, attribute.Value,
+                                        attributeProbability, implication.Attributs[attributeProbability]
+                                    );
+                                } 
+                                else
+                                {
+                                    FactTableManager.AddOrChangeAttribute(xPos, yPos, attribute.Key, attribute.Value);
+                                }
+                            }
+
+                            /*foreach (var attribute in implication.Attributs)
                             {
                                 if ((attribute.Key == "locationX") || (attribute.Key == "locationY"))
                                 {
                                     continue;
                                 }
 
-                                int xPos = cell.Item1 + Int32.Parse(implication.Attributs["locationX"]);
-                                int yPos = cell.Item2 + Int32.Parse(implication.Attributs["locationY"]);
                                 // /!\ Il y a toujours la mise à jour de tous les attributs (écrasement) de la case alors qu'il ne faut pas forcément
                                 // → Il faut retenir l'information la plus importante (la plus sure et utile) plutôt que la dernière
-
-                                Console.WriteLine(xPos + " " + yPos + " " + attribute.Key + " " + attribute.Value);
-                                FactTableManager.AddOrChangeAttribute(xPos, yPos, attribute.Key, attribute.Value);
-                            }
+                                //FactTableManager.AddOrChangeAttribute(xPos, yPos, attribute.Key, attribute.Value);
+                                FactTableManager.AddOrChangeAttributeIfNecessary(xPos, yPos, attribute.Key, attribute.Value);
+                            }*/
                         }
                     }
                 }

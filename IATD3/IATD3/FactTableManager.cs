@@ -215,6 +215,29 @@ namespace IATD3
             return (element != null);
         }
 
+        public static int AddOrChangeAttributeIfNecessary(
+            int locationX, int locationY, 
+            string attribute, string value,
+            string probabilityAttribute, string probabilityValue)
+        {
+            //Console.WriteLine("XY : " + locationX + " " + locationY);
+            //Console.WriteLine(attribute + " = " + value + " | " + probabilityAttribute + " = " + probabilityValue);
+            string probabilityValueInTable = GetAttributeAtLocation(locationX, locationY, probabilityAttribute);
+            //Console.WriteLine("VS : " + probabilityValueInTable);
+            bool newValueHasHighestProbability = 
+                Int32.Parse(probabilityValue) > (probabilityValueInTable == null ?
+                                                    -1 : 
+                                                    Int32.Parse(probabilityValueInTable));
+            //Console.WriteLine("newValueHasHighestProbability : " + newValueHasHighestProbability);
+            if (newValueHasHighestProbability)
+            {
+                int returnCode = AddOrChangeAttribute(locationX, locationY, attribute, value);
+                int returnCodeProb = AddOrChangeAttribute(locationX, locationY, probabilityAttribute, probabilityValue);
+                return 1;
+            }
+            return 0;
+        }
+
         public static int AddOrChangeAttribute(int locationX, int locationY, string attribute, string value)
         {
             XmlDocument xmldoc = new XmlDocument();

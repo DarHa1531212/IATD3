@@ -58,6 +58,7 @@ namespace IATD3
             {
                 AdaptSize();
             }
+            formAgent.UseSensors();    //mettre à jour les faits
         }
 
         private void createLabels()
@@ -65,9 +66,9 @@ namespace IATD3
             // design inspired by code found at https://playwithcsharpdotnet.blogspot.com/
             int boardSize = environment.BoardSize;
             Board.Controls.Clear();
-            for (int line = 0; line < boardSize; line++)
+            for (int posX = 0; posX < boardSize; posX++)
             {
-                for (int column = 0; column < boardSize; column++)
+                for (int posY = 0; posY < boardSize; posY++)
                 {
                     Label label = new Label();
                     //cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 180 / size);
@@ -76,44 +77,44 @@ namespace IATD3
                     label.Size = new Size(360 / boardSize, 360 / boardSize);
                     label.BorderStyle = BorderStyle.Fixed3D;
                     label.ForeColor = SystemColors.ControlDarkDark;
-                    label.Location = new Point(line * 360 / boardSize, column * 360 / boardSize);
-                    label.BackColor = Color.White;
-                    /*label.Text = "(" + line + ", " + column + ")\n" +
-                        (environment.Board[line, column].HasAbyss ? "Abyss\n" : "") +
-                        (environment.Board[line, column].HasMonster ? "Monster\n" : "") +
-                        (environment.Board[line, column].HasOdour ? "Odour\n" : "") +
-                        (environment.Board[line, column].HasWind ? "Wind\n" : "");*/
+                    label.Location = new Point(posX * 360 / boardSize, posY * 360 / boardSize);
+                    label.BackColor = Color.White; 
+                    /*label.Text = "(" + posX + ", " + posY + ")\n" +
+                        (environment.Board[posX, posY].HasAbyss ? "Abyss\n" : "") +
+                        (environment.Board[posX, posY].HasMonster ? "Monster\n" : "") +
+                        (environment.Board[posX, posY].HasOdour ? "Odour\n" : "") +
+                        (environment.Board[posX, posY].HasWind ? "Wind\n" : "");*/
 
                     if (debugMode)
                     {
-                        if (environment.AgentPosX == column && environment.AgentPosY == line)
+                        if (environment.AgentPosX == posY && environment.AgentPosY == posX)
                         {
                             createPictureBox("Agent", label, new Point(label.Size.Width / 4, label.Size.Width / 4));
                             label.BringToFront();
                         }
-                        if (environment.Board[line, column].HasPortal)
+                        if (environment.Board[posX, posY].HasPortal)
                         {
                             createPictureBox("Portal", label, new Point(0, 0), true);
                         }
-                        if (environment.Board[line, column].HasAbyss)
+                        if (environment.Board[posX, posY].HasAbyss)
                         {
                             createPictureBox("Abyss", label, new Point(0, 0));
                         }
-                        if (environment.Board[line, column].HasMonster)
+                        if (environment.Board[posX, posY].HasMonster)
                         {
                             createPictureBox("Monster", label, new Point(0, label.Size.Width / 2));
                         }
-                        if (environment.Board[line, column].HasWind)
+                        if (environment.Board[posX, posY].HasWind)
                         {
                             createPictureBox("Wind", label, new Point(label.Size.Width / 2, 0));
                         }
-                        if (environment.Board[line, column].HasOdour)
+                        if (environment.Board[posX, posY].HasOdour)
                         {
                             createPictureBox("Odour", label, new Point(label.Size.Width / 2, label.Size.Width / 2));
                         }
                     }
 
-                    environment.Board[line, column].Label = label;
+                    environment.Board[posX, posY].Label = label;
 
                     Board.Controls.Add(label);
                 }
@@ -122,7 +123,7 @@ namespace IATD3
 
         private void AdaptSize()
         {
-            if(environment.SizeToBeAdapted)
+            if (environment.SizeToBeAdapted)
             {
                 resetScoreLabel();
             }
@@ -155,8 +156,6 @@ namespace IATD3
         private void bMove_Click(object sender, EventArgs e)
         {
             Console.WriteLine("NEW MOVE ACTION *****************");
-            formAgent.UseSensors();    //mettre à jour les faits
-
             int actionCost = formAgent.Act(); //l'agent fait une action
             updateScoreLabel(actionCost);
             if (actionCost > 0)
@@ -166,6 +165,7 @@ namespace IATD3
             //test end condition
             //if end reached, generate new board
 
+            formAgent.UseSensors();    //mettre à jour les faits
             AdaptSize(); // maj de l'affichage
         }
 
@@ -202,10 +202,11 @@ namespace IATD3
 
         private void addScoreToHistory()
         {
-            if(this.scoreHistory.Text=="")
+            if (this.scoreHistory.Text == String.Empty)
             {
                 this.scoreHistory.Text += this.currentScore.Text;
-            }else
+            }
+            else
             {
                 this.scoreHistory.Text += ", " + this.currentScore.Text;
             }

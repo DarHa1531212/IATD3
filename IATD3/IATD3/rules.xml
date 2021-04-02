@@ -28,8 +28,8 @@
 	<Rule>
 		<Fact locationX="0" locationY="0" hasWind="False"></Fact>
 		<Implies locationX="1" locationY="0" hasAbyssProbability="0"></Implies>
-		<Implies locationX="-1" locationY="0" hasAbyssProbability="100"></Implies>
-		<Implies locationX="0" locationY="1" hasAbyssProbability="100"></Implies>
-		<Implies locationX="0" locationY="-1" hasAbyssProbability="100"></Implies>
+		<Implies locationX="-1" locationY="0" hasAbyssProbability="0"></Implies>
+		<Implies locationX="0" locationY="1" hasAbyssProbability="0"></Implies>
+		<Implies locationX="0" locationY="-1" hasAbyssProbability="0"></Implies>
 	</Rule>
 </Rules>

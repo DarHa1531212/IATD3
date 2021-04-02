@@ -183,13 +183,26 @@ namespace IATD3
         {
             foreach (var position in scopeCells)
             {
+                String monsterProbability = FactTableManager.GetAttributeOfFactAtLocation(
+                    "Scope", position.Item1, position.Item2, "hasMonsterProbability");
+
+                if(monsterProbability == null || monsterProbability == "")
+                {
+                    continue;
+                }
+                int monsterProba = Int32.Parse(monsterProbability);
+                if(monsterProba >= 25)
+                {
+                    return position;
+                }
+                /*
                 Dictionary<string, string> attributes = new Dictionary<string, string>();
                 attributes.Add("hasMonsterProbability", "100");
                 //attributes.Add("hasAbyss", "False");
                 if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
                 {
                     return position;
-                }
+                }*/
             }
 
             return null;
@@ -309,9 +322,9 @@ namespace IATD3
             foreach (var position in scopeCells)
             {
                 String monsterProbability = FactTableManager.GetAttributeOfFactAtLocation(
-                    "Scope", position.Item1, position.Item2, "hasMonsterProbabilty");
+                    "Scope", position.Item1, position.Item2, "hasMonsterProbability");
                 String abyssProbability = FactTableManager.GetAttributeOfFactAtLocation(
-                    "Scope", position.Item1, position.Item2, "hasAbyssProbabilty");
+                    "Scope", position.Item1, position.Item2, "hasAbyssProbability");
 
                 if (monsterProbability != null &&
                     monsterProbability != "" &&
@@ -324,7 +337,7 @@ namespace IATD3
                 /* Code equivalent au dessus
                  * 
                 Dictionary<string, string> attributes = new Dictionary<string, string>();
-                attributes.Add("hasMonsterProbabilty", "100");
+                attributes.Add("hasMonsterProbability", "100");
                 if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
                 {
                     // Besoin de lancer une pierre en premier avant de bouger
@@ -444,9 +457,21 @@ namespace IATD3
                             foreach (var attribute in implication.Attributs)
                             {
                                 // At xPos, yPos, ajouter tous les attributs 
-                                
+
                                 //grâce à la méthode UpdateProbability si c'est une proba
                                 // grace à AddOrChangeAttribute sinon
+                                if ((attribute.Key == "locationX") || (attribute.Key == "locationY"))
+                                {
+                                    continue;
+                                }
+                                if(attribute.Key.Contains("Probability"))
+                                {
+                                    FactTableManager.UpdateProbability(xPos, yPos, attribute.Key, attribute.Value);
+                                } else
+                                {
+                                    FactTableManager.AddOrChangeAttribute(xPos, yPos, attribute.Key, attribute.Value);
+                                }
+
                                 /*
                                 if ((attribute.Key == "locationX") || (attribute.Key == "locationY") ||
                                     attribute.Key.Contains("Probability"))

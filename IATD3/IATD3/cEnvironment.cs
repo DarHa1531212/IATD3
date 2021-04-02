@@ -298,13 +298,13 @@ namespace IATD3
             {
                 return killAgent();
             }*/
+
+            agent.UpdatePosition(agentPosX, agentPosY);
             Tuple<bool, int> agentDeath = CheckAgentDeath();
             if (agentDeath.Item1)
             {
                 return agentDeath.Item2;
             }
-
-            agent.UpdatePosition(agentPosX, agentPosY);
             return _movementCost;
         }
 

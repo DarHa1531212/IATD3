@@ -27,6 +27,9 @@ namespace IATD3
         List<Tuple<int, int>> knownCells;
         List<Tuple<int, int>> scopeCells;
 
+        float safetyThreshold;
+        int lastLevelUtility;
+
         public cAgent(cEnvironment environment)
         {
             // Instantiate effectors
@@ -50,6 +53,10 @@ namespace IATD3
 
             loadRulesFile();
             FactTableManager.CreateFactFile();
+
+            // Init safety threshold
+            safetyThreshold = 80.0f;
+            lastLevelUtility = 0;
         }
 
         private int UsePortal()
@@ -60,7 +67,9 @@ namespace IATD3
 
             relativeLocationX = 0;
             relativeLocationY = 0;
-            return effectorUsePortal.DoAction();
+            int utility = effectorUsePortal.DoAction();
+            modifySafetyThreshold();
+            return utility;
         }
 
         private int ThrowStoneTo(int locationX, int locationY)
@@ -278,13 +287,38 @@ namespace IATD3
             fs.Close();
         }
 
+        private float GetSafetyProbability(int positionX, int positionY)
+        {
+            Dictionary<string, string> attributes = new Dictionary<string, string>();
+            attributes.Add("isSafe", "True");
+            if (FactTableManager.IsFactInTable("Scope", positionX, positionY, attributes))
+            {
+                return 100.0f;
+            }
+
+            float abyssProbability = 0.0f;
+            float monsterProbability = 0.0f;
+            string hasMonsterValue = FactTableManager.GetAttributeAtLocation(positionX, positionY, "hasMonster");
+            if (hasMonsterValue != null && hasMonsterValue == "True")
+            {
+                monsterProbability = (float)int.Parse(FactTableManager.GetAttributeAtLocation(positionX, positionY, "hasMonsterProbability"));
+            }
+            string hasAbyssValue = FactTableManager.GetAttributeAtLocation(positionX, positionY, "hasAbyss");
+            if (hasAbyssValue != null && hasAbyssValue == "True")
+            {
+                abyssProbability = (float)int.Parse(FactTableManager.GetAttributeAtLocation(positionX, positionY, "hasAbyssProbability"));
+            }
+
+            return ((100.0f - monsterProbability) * (100.0f - abyssProbability)) / 100.0f;
+
+        }
+
         private Tuple<int, int> FindSafestPositionToGoTo()
         {
             foreach (var position in scopeCells)
             {
-                Dictionary<string, string> attributes = new Dictionary<string, string>();
-                attributes.Add("isSafe", "True");
-                if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
+                float safety = GetSafetyProbability(position.Item1, position.Item2);
+                if(safety >= safetyThreshold)
                 {
                     return position;
                 }
@@ -635,9 +669,22 @@ namespace IATD3
                 case "ThrowStone":
                     ThrowStoneTo(Convert.ToInt32(parameters[0]), Convert.ToInt32(parameters[1]));
                     break;
-
             }
+        }
 
+        public void SetUtility(int utility)
+        {
+            lastLevelUtility = utility;
+        }
+
+        // Prototype : Agent needs to know its utility
+        private void modifySafetyThreshold()
+        {
+            // Change safety threshold with lastLevelUtility
+            if(lastLevelUtility < 0)
+            {
+                // Do something
+            }
         }
 
         /*  public int MoveTo()

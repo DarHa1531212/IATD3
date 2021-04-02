@@ -1,4 +1,5 @@
 <FactTable>
-  <Fact locationX="2" locationY="1" presence="false" value="high">Monster</Fact>
-  <Fact locationX="1" locationY="0" presence="true" velocity="slow">Wind</Fact>
+  <Facts>
+    <Fact locationX="2" locationY="5" hasMonster="True" hasMonsterProbability="50" hasAbyss="True" hasAbyssProbability="25">Scope</Fact>
+  </Facts>
 </FactTable>

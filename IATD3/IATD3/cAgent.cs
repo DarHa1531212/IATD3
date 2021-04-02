@@ -30,6 +30,8 @@ namespace IATD3
         List<Tuple<int, int>> knownCells;
         List<Tuple<int, int>> scopeCells;
 
+        float safetyThreshold;
+
         public cAgent(cEnvironment environment)
         {
             // Instantiate effectors
@@ -53,6 +55,9 @@ namespace IATD3
 
             loadRulesFile();
             FactTableManager.CreateFactFile();
+
+            // Init safety threshold
+            safetyThreshold = 80.0f;
         }
 
         private int UsePortal()
@@ -275,13 +280,38 @@ namespace IATD3
             fs.Close();
         }
 
+        private float GetSafetyProbability(int positionX, int positionY)
+        {
+            Dictionary<string, string> attributes = new Dictionary<string, string>();
+            attributes.Add("isSafe", "True");
+            if (FactTableManager.IsFactInTable("Scope", positionX, positionY, attributes))
+            {
+                return 100.0f;
+            }
+
+            float abyssProbability = 0;
+            float monsterProbability = 0;
+            string hasMonsterValue = FactTableManager.GetAttributeAtLocation(positionX, positionY, "hasMonster");
+            if (hasMonsterValue == "true")
+            {
+                monsterProbability = float.Parse(FactTableManager.GetAttributeAtLocation(positionX, positionY, "monsterProbabilty"));
+            }
+            string hasAbyssValue = FactTableManager.GetAttributeAtLocation(positionX, positionY, "hasAbyss");
+            if (hasAbyssValue == "true")
+            {
+                abyssProbability = float.Parse(FactTableManager.GetAttributeAtLocation(positionX, positionY, "abyssProbabilty"));
+            }
+
+            return ((100f - monsterProbability) * (100f - abyssProbability)) / 100f;
+
+        }
+
         private Tuple<int, int> FindSafestPositionToGoTo()
         {
             foreach (var position in scopeCells)
             {
-                Dictionary<string, string> attributes = new Dictionary<string, string>();
-                attributes.Add("isSafe", "True");
-                if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
+                float safety = GetSafetyProbability(position.Item1, position.Item2);
+                if(safety >= safetyThreshold)
                 {
                     return position;
                 }

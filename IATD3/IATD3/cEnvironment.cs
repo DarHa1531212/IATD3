@@ -43,10 +43,13 @@ namespace IATD3
         public int AgentPosX { get => agentPosX; }
         public int AgentPosY { get => agentPosY; }
 
+        private int currentAgentScore;
+
         public cEnvironment(Label log = null, Button move = null, Label gameOver = null)
         {
             agentPosX = 0;
             agentPosY = 0;
+            currentAgentScore = 0;
             AdaptSize(_boardSizeBeginning);
             //agent = new cAgent(this);
             actionsLog = log;
@@ -226,6 +229,7 @@ namespace IATD3
         public int Throw(int posX, int posY)
         {
             ThrowStone(posX, posY);
+            currentAgentScore += _rockCost;
             return _rockCost;
         }
 
@@ -234,9 +238,12 @@ namespace IATD3
             LogAction("UsePortal", new Tuple<int, int>(agentPosX, agentPosY));
 
             int returnTotal = _portalCostPerCell * boardSize * boardSize;
+            currentAgentScore += returnTotal;
+            agent.SetUtility(currentAgentScore);
             GenerateNextBoard();
             agentPosX = 0;
             agentPosY = 0;
+            currentAgentScore = 0;
 
             return returnTotal;
         }

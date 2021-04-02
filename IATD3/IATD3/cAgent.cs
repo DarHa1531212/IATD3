@@ -31,6 +31,7 @@ namespace IATD3
         List<Tuple<int, int>> scopeCells;
 
         float safetyThreshold;
+        int lastLevelUtility;
 
         public cAgent(cEnvironment environment)
         {
@@ -58,6 +59,7 @@ namespace IATD3
 
             // Init safety threshold
             safetyThreshold = 80.0f;
+            lastLevelUtility = 0;
         }
 
         private int UsePortal()
@@ -68,7 +70,9 @@ namespace IATD3
 
             relativeLocationX = 0;
             relativeLocationY = 0;
-            return effectorUsePortal.DoAction();
+            int utility = effectorUsePortal.DoAction();
+            modifySafetyThreshold();
+            return utility;
         }
 
         private int ThrowStoneTo(int locationX, int locationY)
@@ -615,9 +619,22 @@ namespace IATD3
                 case "ThrowStone":
                     ThrowStoneTo(Convert.ToInt32(parameters[0]), Convert.ToInt32(parameters[1]));
                     break;
-
             }
+        }
 
+        public void SetUtility(int utility)
+        {
+            lastLevelUtility = utility;
+        }
+
+        // Prototype : Agent needs to know its utility
+        private void modifySafetyThreshold()
+        {
+            // Change safety threshold with lastLevelUtility
+            if(lastLevelUtility < 0)
+            {
+                // Do something
+            }
         }
 
         /*  public int MoveTo()

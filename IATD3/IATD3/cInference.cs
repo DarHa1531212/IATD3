@@ -1,26 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace IATD3
 {
-
     public class cInference
     {
+        #region Attributes
+
         private List<cFact> facts;
         private List<cFact> implies;
         private List<cAction> actions;
 
+        private bool isActionInference;
+        private bool isMarked;
+
+        #endregion
+
+        #region Getters / Setters
+
         public List<cFact> Facts { get => facts; set => facts = value; }
         public List<cFact> Implies { get => implies; set => implies = value; }
         public List<cAction> Actions { get => actions; set => actions = value; }
-
-        private bool isActionInference;
-        private bool isMarked;
         public bool IsActionInference { get => isActionInference; set => isActionInference = value; }
         public bool IsMarked { get => isMarked; set => isMarked = value; }
+
+        #endregion
+
+        #region Constructor
 
         public cInference()
         {
@@ -28,5 +33,7 @@ namespace IATD3
             implies = new List<cFact>();
             actions = new List<cAction>();
         }
+
+        #endregion
     }
 }

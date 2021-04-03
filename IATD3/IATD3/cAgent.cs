@@ -8,27 +8,39 @@ namespace IATD3
 {
     public class cAgent
     {
+        #region Attributes
+
         // Effectors
-        cEffectorMove effectorMove;
-        cEffectorUsePortal effectorUsePortal;
-        cEffectorThrowRock effectorThrowRock;
+        readonly private cEffectorMove effectorMove;
+        readonly private cEffectorUsePortal effectorUsePortal;
+        readonly private cEffectorThrowRock effectorThrowRock;
 
         // Sensors
-        cSensorLight sensorLight;
-        cSensorWind sensorWind;
-        cSensorOdour sensorOdour;
-        cSensorNeighbours sensorNeighbours;
-        cSensorAbyss sensorAbyss;
-        cSensorMonster sensorMonster;
+        readonly private cSensorLight sensorLight;
+        readonly private cSensorWind sensorWind;
+        readonly private cSensorOdour sensorOdour;
+        readonly private cSensorNeighbours sensorNeighbours;
+        readonly private cSensorAbyss sensorAbyss;
+        readonly private cSensorMonster sensorMonster;
 
-        // Relative location
-        int relativeLocationX;
-        int relativeLocationY;
+        // Relative position
+        // The agent only knowns where he began and what moves he made
+        private int relativePositionX;
+        private int relativePositionY;
 
-        List<cInference> inferences;
-        List<Tuple<int, int>> knownCells;
-        List<Tuple<int, int>> scopeCells;
+        // Gathered agent data
+        readonly private List<cInference> inferences;
+        readonly private List<Tuple<int, int>> knownCells;
+        readonly private List<Tuple<int, int>> scopeCells;
 
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="cAgent"/> class.
+        /// </summary>
+        /// <param name="environment">The environment.</param>
         public cAgent(cEnvironment environment)
         {
             // Instantiate effectors
@@ -44,57 +56,53 @@ namespace IATD3
             sensorAbyss = new cSensorAbyss(environment);
             sensorMonster = new cSensorMonster(environment);
 
-            // Relative location
-            relativeLocationX = 0;
-            relativeLocationY = 0;
+            // Relative position
+            relativePositionX = 0;
+            relativePositionY = 0;
 
+            // Initialize data
             inferences = new List<cInference>();
             knownCells = new List<Tuple<int, int>>();
             scopeCells = new List<Tuple<int, int>>();
 
+            // Initialize rules
             loadRulesFile();
             FactTableManager.CreateFactFile();
         }
 
-        private int UsePortal()
-        {
-            knownCells.Clear();
-            scopeCells.Clear();
-            FactTableManager.CreateFactFile();
+        #endregion
 
-            relativeLocationX = 0;
-            relativeLocationY = 0;
-            return effectorUsePortal.DoAction();
+        #region Public methods
+
+        /// <summary>
+        /// Updates data at the position of death.
+        /// </summary>
+        /// <param name="positionX">The position x.</param>
+        /// <param name="positionY">The position y.</param>
+        /// <param name="isDeadlyCell">The value for isDeadlyCell data.</param>
+        public void UpdateCellDeath(int positionX, int positionY, String isDeadlyCell)
+        {
+            FactTableManager.AddOrChangeAttribute(positionX, positionY, isDeadlyCell, "True");
         }
 
-        private int ThrowStoneTo(int locationX, int locationY)
-        {
-            effectorThrowRock.LaunchPosX = locationX;
-            effectorThrowRock.LaunchPosY = locationY;
-
-            FactTableManager.UpdateProbability(locationX, locationY, "hasMonsterProbability", "0");
-
-            return effectorThrowRock.DoAction();
-        }
-
-        public void UpdateCellDeath(int locationX, int locationY, String isDeadlyCell)
-        {
-            FactTableManager.AddOrChangeAttribute(locationX, locationY, isDeadlyCell, "True");
-            //FactTableManager.AddOrChangeAttribute(locationX, locationY, isDeadlyCell + "Probability", "100");
-        }
-
+        /// <summary>
+        /// Make the agent action.
+        /// </summary>
+        /// <returns></returns>
         public int Act()
         {
-            Dictionary<string, string> attributes = new Dictionary<string, string>();
-            attributes.Add("hasPortal", "True");
+            Dictionary<string, string> attributes = new Dictionary<string, string>
+            {
+                { "hasPortal", "True" }
+            };
 
-            //comparring the created attributes to the ones in the fact table. AKA, are we on a portal? 
-            if (FactTableManager.IsFactInTable(string.Empty, relativeLocationX, relativeLocationY, attributes))
+            // Compare the created attributes with those of the fact table i.e. are we on a portal? 
+            if (FactTableManager.IsFactInTable(string.Empty, relativePositionX, relativePositionY, attributes))
             {
                 return UsePortal();
             }
 
-            //Finding and executing safest move
+            // Finding and executing the safest move
             Tuple<int, int> position = FindSafestPositionToGoTo();
             if (position == null)
             {
@@ -102,21 +110,22 @@ namespace IATD3
                 if (stoneThrowPosition != null)
                 {
                     int throwStoneCost = ThrowStoneTo(stoneThrowPosition.Item1, stoneThrowPosition.Item2);
-                    //UpdateFactsFromRules();
                     return (throwStoneCost);
                 }
                 else
                 {
-                    //if no location is truely safe and if there is no place to throw a rock (suppose the monsters are in crevaces, it's not worth to throw a rock) 
-                    //we'll move to a random location and hope for the best. This is a worst case scenario
-                    position = MoveToRandomLocationInScope();
-                    Console.WriteLine(position);
+                    // If no position is truely safe and if there is no place to throw a rock,
+                    // we'll move to a random position and hope for the best. This is a worst case scenario.
+                    position = GetRandomPositionInScope();
                 }
 
             }
-            return MoveToLocation(position.Item1, position.Item2);
+            return MoveToPosition(position.Item1, position.Item2);
         }
 
+        /// <summary>
+        /// Uses the sensors.
+        /// </summary>
         public void UseSensors()
         {
             UpdateFacts();
@@ -125,83 +134,124 @@ namespace IATD3
             bool isSmelly = sensorOdour.Sense();
             bool isBright = sensorLight.Sense();
 
-            // Add facts to the facts tables
-            // I propose facts to be in this form :
+            FactTableManager.AddOrChangeAttribute(relativePositionX, relativePositionY, "hasOdour", isSmelly.ToString());
+            FactTableManager.AddOrChangeAttribute(relativePositionX, relativePositionY, "hasWind", isWindy.ToString());
+            FactTableManager.AddOrChangeAttribute(relativePositionX, relativePositionY, "hasPortal", isBright.ToString());
 
-            // <Fact locationX="x" locationY="y" presence="true/false">FactName</Fact>
-
-            // Location would be a relative location (agent only knows what moves he did, not where he is exactly)
-            // But we assume each are cell sizes are equal
-
-            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasOdour", isSmelly.ToString());
-            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasWind", isWindy.ToString());
-            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasPortal", isBright.ToString());
-
-            if(sensorMonster.Sense())
+            if (sensorMonster.Sense())
             {
-                FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasMonsterProbability", "100");
-            } else
-            {
-                FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasMonsterProbability", "0");
-
-            }
-            if (sensorAbyss.Sense())
-            {
-                FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasAbyssProbability", "100");
+                FactTableManager.AddOrChangeAttribute(relativePositionX, relativePositionY, "hasMonsterProbability", "100");
             }
             else
             {
-                FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasAbyssProbability", "0");
-
+                FactTableManager.AddOrChangeAttribute(relativePositionX, relativePositionY, "hasMonsterProbability", "0");
             }
-            FactTableManager.AddOrChangeAttribute(relativeLocationX, relativeLocationY, "hasAbyssProbability", "0");
+            if (sensorAbyss.Sense())
+            {
+                FactTableManager.AddOrChangeAttribute(relativePositionX, relativePositionY, "hasAbyssProbability", "100");
+            }
+            else
+            {
+                FactTableManager.AddOrChangeAttribute(relativePositionX, relativePositionY, "hasAbyssProbability", "0");
+            }
+            FactTableManager.AddOrChangeAttribute(relativePositionX, relativePositionY, "hasAbyssProbability", "0");
 
             UpdateFactsFromRules();
         }
 
+        /// <summary>
+        /// Specifies to the agent that he died (painfully, for sure).
+        /// </summary>
+        /// <param name="hadMonster">If the cause of death is a monster.</param>
+        /// <param name="hadAbyss">If the cause of death is an abyss.</param>
         public void Die(bool hadMonster, bool hadAbyss)
         {
             if (hadMonster == true)
             {
-                FactTableManager.UpdateProbability(relativeLocationX, relativeLocationY, "hasMonsterProbability", "100");
+                FactTableManager.UpdateProbability(relativePositionX, relativePositionY, "hasMonsterProbability", "100");
             }
             else
             {
-                FactTableManager.UpdateProbability(relativeLocationX, relativeLocationY, "hasMonsterProbability", "0");
+                FactTableManager.UpdateProbability(relativePositionX, relativePositionY, "hasMonsterProbability", "0");
             }
 
             if (hadAbyss == true)
             {
-                FactTableManager.UpdateProbability(relativeLocationX, relativeLocationY, "hasAbyssProbability", "100");
+                FactTableManager.UpdateProbability(relativePositionX, relativePositionY, "hasAbyssProbability", "100");
             }
             else
             {
-                FactTableManager.UpdateProbability(relativeLocationX, relativeLocationY, "hasAbyssProbability", "0");
+                FactTableManager.UpdateProbability(relativePositionX, relativePositionY, "hasAbyssProbability", "0");
 
             }
-            /*relativeLocationX = 0;
-            relativeLocationY = 0;*/
             UpdatePosition(0, 0);
-            // Reset la position en (0,0)
         }
 
+        /// <summary>
+        /// Updates the relative position.
+        /// </summary>
+        /// <param name="posX">The position x.</param>
+        /// <param name="posY">The position y.</param>
         public void UpdatePosition(int posX, int posY)
         {
-            relativeLocationX = posX;
-            relativeLocationY = posY;
+            relativePositionX = posX;
+            relativePositionY = posY;
         }
 
-        private Tuple<int, int> MoveToRandomLocationInScope()
+        #endregion
+
+        #region Private methods
+
+        /// <summary>
+        /// Uses the portal to the next board.
+        /// </summary>
+        /// <returns>Action cost.</returns>
+        private int UsePortal()
+        {
+            knownCells.Clear();
+            scopeCells.Clear();
+            FactTableManager.CreateFactFile();
+
+            relativePositionX = 0;
+            relativePositionY = 0;
+            return effectorUsePortal.DoAction();
+        }
+
+        /// <summary>
+        /// Throws the stone to a specific position.
+        /// </summary>
+        /// <param name="positionX">The position x.</param>
+        /// <param name="positionY">The position y.</param>
+        /// <returns></returns>
+        private int ThrowStoneTo(int positionX, int positionY)
+        {
+            effectorThrowRock.LaunchPosX = positionX;
+            effectorThrowRock.LaunchPosY = positionY;
+
+            FactTableManager.UpdateProbability(positionX, positionY, "hasMonsterProbability", "0");
+
+            return effectorThrowRock.DoAction();
+        }
+
+        /// <summary>
+        /// Gets the random position among scope positions.
+        /// </summary>
+        /// <returns>The position.</returns>
+        private Tuple<int, int> GetRandomPositionInScope()
         {
             Random rng = new Random();
             Tuple<int, int> newPos;
             do
             {
                 newPos = scopeCells.ElementAt(rng.Next(0, scopeCells.Count()));
-            } while (newPos.Item1 == relativeLocationX && newPos.Item2 == relativeLocationY);
+            } while (newPos.Item1 == relativePositionX && newPos.Item2 == relativePositionY);
             return newPos;
         }
 
+        /// <summary>
+        /// Finds where to throw a stone.
+        /// </summary>
+        /// <returns>The position to throw the stone at.</returns>
         private Tuple<int, int> FindWhereToThrowStone()
         {
             Tuple<int, int> bestCell = null;
@@ -210,7 +260,7 @@ namespace IATD3
 
             int monsterProbability;
             int abyssProbability;
-            foreach (var position in scopeCells)
+            foreach (Tuple<int, int> position in scopeCells)
             {
                 try
                 {
@@ -253,31 +303,43 @@ namespace IATD3
             return bestCell;
         }
 
+        /// <summary>
+        /// Updates the facts in the table.
+        /// </summary>
         private void UpdateFacts()
         {
-            int result = FactTableManager.ChangeInnerTextAtLocation("Known", relativeLocationX, relativeLocationY); // TODO : fonctionne pas
+            int result = FactTableManager.ChangeInnerTextAtLocation("Known", relativePositionX, relativePositionY);
             if (result == 0)
             {
                 return;
             }
             if (result == -1)
             {
-                FactTableManager.AddOrReplaceFactAtLocation("Scope", relativeLocationX, relativeLocationY, new Dictionary<String, String>(), "Known");
+                FactTableManager.AddOrReplaceFactAtLocation("Scope", 
+                    relativePositionX, relativePositionY, 
+                    new Dictionary<String, String>(), "Known"
+                );
             }
-            Tuple<int, int> currentCell = new Tuple<int, int>(relativeLocationX, relativeLocationY);
+            Tuple<int, int> currentCell = new Tuple<int, int>(relativePositionX, relativePositionY);
             knownCells.Add(currentCell);
             scopeCells.Remove(currentCell);
 
-            foreach (var neighbourPos in sensorNeighbours.Get(relativeLocationX, relativeLocationY))
+            foreach (Tuple<int, int> neighbourPos in sensorNeighbours.Get(relativePositionX, relativePositionY))
             {
                 if (!knownCells.Contains(neighbourPos) && !scopeCells.Contains(neighbourPos))
                 {
-                    FactTableManager.AddOrReplaceFactAtLocation("Scope", neighbourPos.Item1, neighbourPos.Item2, new Dictionary<String, String>());
+                    FactTableManager.AddOrReplaceFactAtLocation("Scope", 
+                        neighbourPos.Item1, neighbourPos.Item2, 
+                        new Dictionary<String, String>()
+                    );
                     scopeCells.Add(new Tuple<int, int>(neighbourPos.Item1, neighbourPos.Item2));
                 }
             }
         }
 
+        /// <summary>
+        /// Loads the rules from the file.
+        /// </summary>
         private void loadRulesFile()
         {
             inferences.Clear();
@@ -294,32 +356,32 @@ namespace IATD3
                 XmlNodeList actions = ((XmlElement)xmlnode[i]).GetElementsByTagName("Action");
 
                 cInference inference = new cInference();
-                for (var j = 0; j < facts.Count; j++)
+                for (int j = 0; j < facts.Count; j++)
                 {
                     // Récupération du fait
                     cFact fact = new cFact(facts.Item(j).Value);
 
-                    // Récupération des attributs associés au fait
+                    // Récupération des attributes associés au fait
                     XmlElement xmlElement = facts.Item(j) as XmlElement;
                     XmlAttributeCollection attributes = xmlElement.Attributes;
                     foreach (XmlAttribute att in attributes)
                     {
-                        fact.Attributs.Add(att.Name, att.Value);
+                        fact.Attributes.Add(att.Name, att.Value);
                     }
 
                     inference.Facts.Add(fact);
                 }
-                for (var j = 0; j < implies.Count; j++)
+                for (int j = 0; j < implies.Count; j++)
                 {
                     // Récupération de l'implication
                     cFact implie = new cFact(implies.Item(j).Value);
 
-                    // Récupération des attributs associés à l'implication
+                    // Récupération des attributes associés à l'implication
                     XmlElement xmlElement = implies.Item(j) as XmlElement;
                     XmlAttributeCollection attributes = xmlElement.Attributes;
                     foreach (XmlAttribute att in attributes)
                     {
-                        implie.Attributs.Add(att.Name, att.Value);
+                        implie.Attributes.Add(att.Name, att.Value);
                     }
 
                     inference.Implies.Add(implie);
@@ -327,7 +389,7 @@ namespace IATD3
                 inference.IsActionInference = false;
                 if (actions.Count > 0)
                 {
-                    foreach (var action in actions)
+                    foreach (object action in actions)
                     {
                         cAction ourAction = new cAction();
                         XmlElement xmlElement = action as XmlElement;
@@ -338,7 +400,7 @@ namespace IATD3
                         string attributs = xmlElement.GetAttribute("parameters");
                         ourAction.SetParameters(attributs);
 
-                        // L'ajouter à l'inférence  // 
+                        // L'ajouter à l'inférence
                         inference.Actions.Add(ourAction);
 
                     }
@@ -350,12 +412,18 @@ namespace IATD3
             fs.Close();
         }
 
+        /// <summary>
+        /// Finds the safest position to go to.
+        /// </summary>
+        /// <returns>The safest position to go to.</returns>
         private Tuple<int, int> FindSafestPositionToGoTo()
         {
-            foreach (var position in scopeCells)
+            foreach (Tuple<int, int> position in scopeCells)
             {
-                Dictionary<string, string> attributes = new Dictionary<string, string>();
-                attributes.Add("isSafe", "True");
+                Dictionary<string, string> attributes = new Dictionary<string, string>
+                {
+                    { "isSafe", "True" }
+                };
                 if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
                 {
                     return position;
@@ -364,7 +432,7 @@ namespace IATD3
 
             Tuple<int, int> posWithBestProbability = null;
             int bestProbability = int.MaxValue;
-            foreach (var position in scopeCells)
+            foreach (Tuple<int, int> position in scopeCells)
             {
                 String monsterProbability = FactTableManager.GetAttributeOfFactAtLocation(
                     "Scope", position.Item1, position.Item2, "hasMonsterProbability");
@@ -379,28 +447,14 @@ namespace IATD3
                     return null;
                 }
 
-                /* Code equivalent au dessus
-                 * 
-                Dictionary<string, string> attributes = new Dictionary<string, string>();
-                attributes.Add("hasMonsterProbability", "100");
-                if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
-                {
-                    // Besoin de lancer une pierre en premier avant de bouger
-                    return null;
-                }*/
-
-                if (abyssProbability == null || abyssProbability == "")
+                if (abyssProbability == "0" || abyssProbability == null || abyssProbability == "")
                 {
                     abyssProbability = "0";
-                }
-
-                if (abyssProbability == "0")
-                {
                     return position;
                 }
                 else
                 {
-                    int abyssProb = Int32.Parse(abyssProbability);
+                    int abyssProb = Convert.ToInt32(abyssProbability);
                     if (bestProbability > abyssProb)
                     {
                         bestProbability = abyssProb;
@@ -409,85 +463,21 @@ namespace IATD3
                 }
             }
             return posWithBestProbability;
-
-
-
-            /* Code équivalent au dessus
-             * 
-            //attributes.Clear();
-            //attributes.Add("hasMonster", "False");
-            //attributes.Add("hasMonsterProbability", "0");
-            //attributes.Add("hasAbyss", "True");
-
-
-            if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
-            {
-                int hasAbyssProbability = Int32.Parse(FactTableManager.GetAttributeOfFactAtLocation(
-                                            "Scope",
-                                            position.Item1, position.Item2,
-                                            "hasAbyssProbability"
-                                          ));
-                if (bestProbability > hasAbyssProbability)
-                {
-                    bestProbability = hasAbyssProbability;
-                    posWithBestProbability = position;
-                }
-                continue;
-            }
-            attributes.Clear();
-            attributes.Add("hasMonsterProbability", "0");
-            //attributes.Add("hasAbyss", "False");
-            if (FactTableManager.IsFactInTable("Scope", position.Item1, position.Item2, attributes))
-            {
-                int hasAbyssProbability = Int32.Parse(FactTableManager.GetAttributeOfFactAtLocation(
-                                            "Scope",
-                                            position.Item1, position.Item2,
-                                            "hasAbyssProbability"
-                                          ));
-                int convertedHasAbyssProbability = 100 - hasAbyssProbability;
-                if (bestProbability > convertedHasAbyssProbability)
-                {
-                    bestProbability = hasAbyssProbability;
-                    posWithBestProbability = position;
-                }
-            }*/
-            // Si aucune case safe, sélectionner la plus safe (ou lancer une pierre)
-
-            // Si aucune case safe au dessus d'un seuil, retourner null
-        }
-
-        private void createXmlFile()
-        {
-            XmlTextWriter writer = new XmlTextWriter(@"../../facts.xml", null);
-            writer.WriteStartDocument();
-            writer.WriteEndElement();
-
-            writer.WriteEndDocument();
-            writer.Close();
         }
 
         /// <summary>
-        ///    Uses each sensor to add facts to fact table.
+        /// Updates the facts according to the rules.
         /// </summary>
-
-
         private void UpdateFactsFromRules()
         {
             List<Tuple<int, int>> cellsToCheck = new List<Tuple<int, int>>();
             cellsToCheck.AddRange(knownCells);
             cellsToCheck.AddRange(scopeCells);
 
-            //delete
-            int i = 0;
-            foreach (var cell in cellsToCheck)
+            foreach (Tuple<int, int> cell in cellsToCheck)
             {
-                foreach (var inference in inferences)
+                foreach (cInference inference in inferences)
                 {
-                    if (i == 26)
-                    {
-                        Console.WriteLine(":D");
-                    }
-                    ++i;
                     if (inference.IsActionInference)
                     {
                         continue;
@@ -496,9 +486,9 @@ namespace IATD3
                     bool conditionsAreRespected = inference.Facts.All(
                         fact =>
                         {
-                            int posX = cell.Item1 + Int32.Parse(fact.Attributs["locationX"]);
-                            int posY = cell.Item2 + Int32.Parse(fact.Attributs["locationY"]);
-                            return fact.Attributs.All(
+                            int posX = cell.Item1 + Convert.ToInt32(fact.Attributes["locationX"]);
+                            int posY = cell.Item2 + Convert.ToInt32(fact.Attributes["locationY"]);
+                            return fact.Attributes.All(
                                 attribute =>
                                     (attribute.Key == "locationX") || (attribute.Key == "locationY") ||
                                     (FactTableManager.GetAttributeAtLocation(posX, posY, attribute.Key) == attribute.Value)
@@ -508,21 +498,18 @@ namespace IATD3
                     );
                     if (conditionsAreRespected)
                     {
-                        foreach (var implication in inference.Implies)
+                        foreach (cFact implication in inference.Implies)
                         {
-                            int xPos = cell.Item1 + Int32.Parse(implication.Attributs["locationX"]);
-                            int yPos = cell.Item2 + Int32.Parse(implication.Attributs["locationY"]);
+                            int xPos = cell.Item1 + Convert.ToInt32(implication.Attributes["locationX"]);
+                            int yPos = cell.Item2 + Convert.ToInt32(implication.Attributes["locationY"]);
 
-                            foreach (var attribute in implication.Attributs)
+                            foreach (KeyValuePair<string, string> attribute in implication.Attributes)
                             {
-                                // At xPos, yPos, ajouter tous les attributs 
-
-                                //grâce à la méthode UpdateProbability si c'est une proba
-                                // grace à AddOrChangeAttribute sinon
                                 if ((attribute.Key == "locationX") || (attribute.Key == "locationY"))
                                 {
                                     continue;
                                 }
+
                                 if (attribute.Key.Contains("Probability"))
                                 {
                                     FactTableManager.UpdateProbability(xPos, yPos, attribute.Key, attribute.Value);
@@ -531,271 +518,24 @@ namespace IATD3
                                 {
                                     FactTableManager.AddOrChangeAttribute(xPos, yPos, attribute.Key, attribute.Value);
                                 }
-
-                                /*
-                                if ((attribute.Key == "locationX") || (attribute.Key == "locationY") ||
-                                    attribute.Key.Contains("Probability"))
-                                {
-                                    continue;
-                                }
-
-                                String attributeProbability = attribute.Key + "Probability";
-                                if (implication.Attributs.ContainsKey(attributeProbability))
-                                {
-                                    FactTableManager.AddOrChangeAttributeIfNecessary(
-                                        xPos, yPos,
-                                        attribute.Key, attribute.Value,
-                                        attributeProbability, implication.Attributs[attributeProbability]
-                                    );
-                                }
-                                else
-                                {
-                                    FactTableManager.AddOrChangeAttribute(xPos, yPos, attribute.Key, attribute.Value);
-                                }*/
                             }
-
-                            /*foreach (var attribute in implication.Attributs)
-                            {
-                                if ((attribute.Key == "locationX") || (attribute.Key == "locationY"))
-                                {
-                                    continue;
-                                }
-
-                                // /!\ Il y a toujours la mise à jour de tous les attributs (écrasement) de la case alors qu'il ne faut pas forcément
-                                // → Il faut retenir l'information la plus importante (la plus sure et utile) plutôt que la dernière
-                                //FactTableManager.AddOrChangeAttribute(xPos, yPos, attribute.Key, attribute.Value);
-                                FactTableManager.AddOrChangeAttributeIfNecessary(xPos, yPos, attribute.Key, attribute.Value);
-                            }*/
                         }
                     }
                 }
             }
         }
 
-        //Déplace l'agent à l'emplacement spécifié en paramètre d'entrée
-        private int MoveToLocation(int locationX, int locationY)
+        /// <summary>
+        /// Moves agent to specified position.
+        /// </summary>
+        /// <param name="positionX">The position x.</param>
+        /// <param name="positionY">The position y.</param>
+        /// <returns>The move cost.</returns>
+        private int MoveToPosition(int positionX, int positionY)
         {
-            return effectorMove.DoAction(locationX, locationY);
+            return effectorMove.DoAction(positionX, positionY);
         }
 
-        private List<cInference> CheckInferencesThatCompletesGoals(cFact goalToInfer)
-        {
-            List<cInference> markedInferences = new List<cInference>();
-            foreach (cInference inference in inferences)
-            {
-                if (inference.IsMarked)
-                {
-                    continue;
-                }
-                foreach (cFact implie in inference.Implies)
-                {
-                    if (goalToInfer.Element != implie.Element)
-                    {
-                        break;
-                    }
-                    foreach (var attribute in goalToInfer.Attributs)
-                    {
-                        String valueInImplie;
-                        bool isValueIn = implie.Attributs.TryGetValue(attribute.Key, out valueInImplie);
-                        if (isValueIn && valueInImplie == attribute.Value)
-                        {
-                            markedInferences.Add(inference);
-                        }
-
-                    }
-                }
-
-
-            }
-            return markedInferences;
-        }
-
-
-        private bool CheckIfFactIsPartiallyInList(List<cFact> facts, cFact factToCheck)
-        {
-            foreach (cFact factProven in facts)
-            {
-                if (factProven.Element != factToCheck.Element)
-                {
-                    continue;
-                }
-
-                bool areAllAttributesIn = true;
-                foreach (var attribute in factToCheck.Attributs)
-                {
-                    String valueInProvenFact;
-                    bool isValueIn = factProven.Attributs.TryGetValue(attribute.Key, out valueInProvenFact);
-                    if (!isValueIn || valueInProvenFact != attribute.Value)
-                    {
-                        areAllAttributesIn = false;
-                        break;
-                    }
-                }
-                if (areAllAttributesIn)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private cAction ChainageArriere(List<cFact> initialGoals)
-        {
-            // 1.Charger les faits initiaux
-            // 2.Empiler le but dans une pile pile_buts
-            Stack<cFact> goalsStack = new Stack<cFact>();
-            Stack<cInference> rulesStack = new Stack<cInference>();
-            Stack<cAction> actions = new Stack<cAction>();
-
-            List<cFact> goalsMet = new List<cFact>();
-
-            foreach (cFact initialGoal in initialGoals)
-            {
-                goalsStack.Push(initialGoal);
-            }
-
-            bool isCompleted = false;
-
-            // 3. Tant que Pas Terminé faire
-            while (!isCompleted)
-            {
-                if (goalsStack.Count == 0)
-                {
-                    break;
-                }
-                cFact goalOfThisLoop = goalsStack.Peek();
-                // Si le but a été atteint via une autre règle, c'est bien
-                if (CheckIfFactIsPartiallyInList(goalsMet, goalOfThisLoop))
-                {
-                    goalsStack.Pop();
-                    continue;
-                }
-                // Si le but est déjà dans la table des faits c'est bien aussi.
-                if (FactTableManager.IsFactInTable(goalOfThisLoop))
-                {
-                    goalsStack.Pop();
-                    continue;
-                }
-
-                // 3.1 Sélectionner les règles applicables et non marquées
-                // - celles dont la conclusion = au sommet de la pile_buts
-                List<cInference> possibleInferences = CheckInferencesThatCompletesGoals(goalsStack.Peek());
-                // si pas de règles applicables. Dépiler la pile_buts , et la pile_regles
-                if (possibleInferences.Count == 0)
-                {
-                    for (int i = 0; i < rulesStack.Peek().Facts.Count; ++i)
-                    {
-                        goalsStack.Pop();
-                    }
-                    if (rulesStack.Count > 0)
-                    {
-                        rulesStack.Pop();
-                    }
-                }
-                //3.2 Choisir la règle à appliquer
-                //ajouter les autres règles dans la pile sélectionnée(pile_regles
-                foreach (cInference inferenceToApply in possibleInferences)
-                {
-                    rulesStack.Push(inferenceToApply);
-                }
-            }
-            /*
-                   -
-                   
-                   
-                   3.3 Appliquer la règle
-                   -
-                   Ajouter les conditions au sommet de la pile_buts
-                   -
-                   Empiler la règle dans pile_regles
-                   -
-                   Marquer la règle
-                   3.4 Si
-                   pile_buts est vide alors le processus est terminé
-             */
-            return null;
-        }
-
-        private void GoToPortal()
-        {
-            UpdateFactsFromRules();
-
-            //pile de buts
-
-            cFact finalGoal = new cFact("");
-            finalGoal.Attributs.Add("cleared", "true");
-
-            List<cFact> goals = new List<cFact>();
-            goals.Add(finalGoal);
-            cAction actionToDo = ChainageArriere(goals);
-
-            if (actionToDo != null)
-            {
-                ExecuteAction(actionToDo);
-            }
-
-            // Appeler chainage arrière qui renvoie une action.
-            // Si non nulle, l'effectuer.
-        }
-
-        public void GoToSafeCell()
-        {
-            UpdateFactsFromRules();
-
-            //pile de buts
-            cFact safeCell = new cFact("");
-            safeCell.Attributs.Add("isSafe", "true");
-            safeCell.Attributs.Add("locationX", "0");
-            safeCell.Attributs.Add("locationY", "0");
-
-            cFact agentOnSafeCell = new cFact("AgentPosition");
-            agentOnSafeCell.Attributs.Add("onLocationX", "0");
-            agentOnSafeCell.Attributs.Add("onLocationY", "0");
-
-            List<cFact> goals = new List<cFact>();
-            goals.Add(safeCell);
-            goals.Add(agentOnSafeCell);
-            cAction actionToDo = ChainageArriere(goals);
-
-            if (actionToDo != null)
-            {
-                ExecuteAction(actionToDo);
-            }
-
-            // Appeler chainage arrière qui renvoie une action.
-            // Si non nulle, l'effectuer.
-        }
-
-        private void ExecuteAction(cAction actionParams)
-        {
-            string[] parameters = actionParams.Parameters;
-            switch (actionParams.Name)
-            {
-                case "UsePortal":
-                    UsePortal();
-                    break;
-                case "MoveTo":
-                    MoveToLocation(Convert.ToInt32(parameters[0]), Convert.ToInt32(parameters[1]));
-                    break;
-                case "ThrowStone":
-                    ThrowStoneTo(Convert.ToInt32(parameters[0]), Convert.ToInt32(parameters[1]));
-                    break;
-
-            }
-
-        }
-
-        /*  public int MoveTo()
-          {
-              Tuple<int, int> newPosition = Move();
-
-              if (newPosition == null)
-              {
-                  return int.MinValue;
-              }
-              effectorMove.MovementPosX = newPosition.Item1;
-              effectorMove.MovementPosY = newPosition.Item2;
-              return effectorMove.DoAction();
-          }*/
+        #endregion
     }
 }

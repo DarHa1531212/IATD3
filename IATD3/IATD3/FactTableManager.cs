@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml;
 
 namespace IATD3
 {
     public static class FactTableManager
     {
+        #region Constants
+
         private const string _path = @"../../facts.xml";
 
+        #endregion
+
+        #region Public methods
+
+        /// <summary>
+        /// Creates the fact file.
+        /// </summary>
         public static void CreateFactFile()
         {
             XmlDocument xmldoc = new XmlDocument();
@@ -25,27 +31,16 @@ namespace IATD3
             fs.Close();
         }
 
-        private static void AddFact(string factName, Dictionary<string, string> attributes)
-        {
-            XmlDocument xmldoc = new XmlDocument();
-            FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
-            xmldoc.Load(fs);
-
-            XmlNode facts = xmldoc.DocumentElement.SelectSingleNode("Facts");
-
-            XmlElement newFact = xmldoc.CreateElement("Fact");
-            newFact.InnerText = factName;
-            foreach (string attribute in attributes.Keys)
-            {
-                newFact.SetAttribute(attribute, attributes[attribute]);
-            }
-            facts.AppendChild(newFact);
-            fs.SetLength(0);
-            xmldoc.Save(fs);
-            fs.Close();
-        }
-
-        public static void AddOrReplaceFactAtLocation(string factName,
+        /// <summary>
+        /// Adds or replaces the fact at the specified location.
+        /// </summary>
+        /// <param name="factName">Name of the fact.</param>
+        /// <param name="locationX">The location x.</param>
+        /// <param name="locationY">The location y.</param>
+        /// <param name="newAttributes">The new attributes.</param>
+        /// <param name="newFactName">New name of the fact.</param>
+        public static void AddOrReplaceFactAtLocation(
+            string factName,
             int locationX,
             int locationY,
             Dictionary<string, string> newAttributes,
@@ -84,43 +79,14 @@ namespace IATD3
             }
         }
 
-        public static void AddOrReplaceFactStatusAtLocation(
-            string oldFactName,
-            string newFactName,
-            int locationX,
-            int locationY,
-            Dictionary<string, string> newAttributes)
-        {
-            XmlDocument xmldoc = new XmlDocument();
-            FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
-            xmldoc.Load(fs);
-
-            XmlNode element = xmldoc.SelectSingleNode("//Fact[@locationX='" + locationX.ToString() +
-                "' and @locationY='" + locationY.ToString() + "' and text()='" + oldFactName + "']");
-
-            newAttributes.Add("locationX", locationX.ToString());
-            newAttributes.Add("locationY", locationY.ToString());
-
-            if (element == null)
-            {
-                fs.Close();
-                AddFact(newFactName, newAttributes);
-            }
-            else
-            {
-                XmlElement xmlElement = element as XmlElement;
-                xmlElement.RemoveAllAttributes();
-                foreach (string attribute in newAttributes.Keys)
-                {
-                    xmlElement.SetAttribute(attribute, newAttributes[attribute]);
-                }
-                xmlElement.InnerText = newFactName;
-                fs.SetLength(0);
-                xmldoc.Save(fs);
-                fs.Close();
-            }
-        }
-
+        /// <summary>
+        /// Gets the attribute of a fact at the given location.
+        /// </summary>
+        /// <param name="factName">Name of the fact.</param>
+        /// <param name="locationX">The location x.</param>
+        /// <param name="locationY">The location y.</param>
+        /// <param name="attribute">The attribute.</param>
+        /// <returns>The attribute</returns>
         public static string GetAttributeOfFactAtLocation(string factName, int locationX, int locationY, string attribute)
         {
             XmlDocument xmldoc = new XmlDocument();
@@ -140,6 +106,13 @@ namespace IATD3
             return xmlElement.GetAttribute(attribute);
         }
 
+        /// <summary>
+        /// Gets the attribute at location.
+        /// </summary>
+        /// <param name="locationX">The location x.</param>
+        /// <param name="locationY">The location y.</param>
+        /// <param name="attribute">The attribute.</param>
+        /// <returns>The attributes.</returns>
         public static string GetAttributeAtLocation(int locationX, int locationY, string attribute)
         {
             XmlDocument xmldoc = new XmlDocument();
@@ -159,6 +132,16 @@ namespace IATD3
             return xmlElement.GetAttribute(attribute);
         }
 
+        /// <summary>
+        /// Determines whether a fact with the given name and attributes is in the table already.
+        /// </summary>
+        /// <param name="factName">Name of the fact.</param>
+        /// <param name="locationX">The location x.</param>
+        /// <param name="locationY">The location y.</param>
+        /// <param name="attributes">The attributes.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified facts are in the table; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsFactInTable(string factName, int locationX, int locationY, Dictionary<string, string> attributes)
         {
             XmlDocument xmldoc = new XmlDocument();
@@ -179,95 +162,106 @@ namespace IATD3
             }
             xpath += "]";
 
-            //error here. XML functions are badly implemented
             XmlNode element = xmldoc.SelectSingleNode(xpath);
             fs.Close();
 
             return (element != null);
         }
 
-        public static bool IsFactInTable(cFact fact)
+        /// <summary>
+        /// Changes the inner text at location.
+        /// </summary>
+        /// <param name="newInnerText">The new inner text.</param>
+        /// <param name="locationX">The location x.</param>
+        /// <param name="locationY">The location y.</param>
+        /// <returns>an opcode depending on the execution of the function
+        ///  - -1 if the fact doesn't exist
+        ///  - 0 if the fact exists already have the given text
+        ///  - 1 if the fact is updated.
+        /// 
+        ///</returns>
+        public static int ChangeInnerTextAtLocation(string newInnerText, int locationX, int locationY)
         {
+
             XmlDocument xmldoc = new XmlDocument();
             FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
             xmldoc.Load(fs);
 
-            string xpath = "//Fact[";
-
-            bool isFirstAttribute = true;
-            foreach (string attribute in fact.Attributs.Keys)
+            XmlNode element = xmldoc.SelectSingleNode("//Fact[@locationX='" + locationX.ToString() +
+                "' and @locationY='" + locationY.ToString() + "']");
+            if (element == null)
             {
-                if (!isFirstAttribute)
-                {
-                    xpath += "and";
-                }
-                xpath += " @" + attribute + "='" + fact.Attributs[attribute] + "'";
-                if (isFirstAttribute)
-                {
-                    isFirstAttribute = false;
-                }
+                fs.Close();
+                return -1;
             }
-
-            xpath += "]";
-
-            XmlNode element = xmldoc.SelectSingleNode(xpath);
+            XmlElement fact = element as XmlElement;
+            String oldInnerText = fact.InnerText;
+            fact.InnerText = newInnerText;
+            fs.SetLength(0);
+            xmldoc.Save(fs);
             fs.Close();
 
-            return (element != null);
-        }
-
-        public static int AddOrChangeAttributeIfNecessary(
-            int locationX, int locationY,
-            string attribute, string value,
-            string probabilityAttribute, string probabilityValue)
-        {
-            String valueInTable = GetAttributeAtLocation(locationX, locationY, attribute);
-            int probabilityValueInTable = Convert.ToInt32(GetAttributeAtLocation(locationX, locationY, probabilityAttribute));
-
-            String newValue = value;
-            int newProbability = Convert.ToInt32(probabilityValue);
-
-            if (value != valueInTable && valueInTable != String.Empty)
+            if (newInnerText != oldInnerText)
             {
-                // Conversion dans le même référentiel (false / true)
-                newValue = valueInTable;
-                newProbability = 100 - newProbability;
-            }
-            newProbability += probabilityValueInTable;
-            newProbability = (newProbability > 100 ? 100 : (newProbability < 0 ? 0 : newProbability)); // On garde un pourcentage
-
-            bool probabilityHasToBeUpdated = (
-                newProbability > (probabilityValueInTable == 0 ?
-                                    -1 :
-                                    probabilityValueInTable)
-            );
-
-            if (probabilityHasToBeUpdated)
-            {
-                int returnCode = AddOrChangeAttribute(locationX, locationY, attribute, newValue);
-                int returnCodeProb = AddOrChangeAttribute(locationX, locationY, probabilityAttribute, newProbability.ToString());
                 return 1;
             }
             return 0;
-
-            /*int p = Int32.Parse(probabilityValue) + probabilityValueInTable;
-            p = (p > 100 ? 100 : (p < 0 ? 0 : p)); // On garde un pourcentage
-            bool hasNewProbability =
-                p > (probabilityValueInTable == 0 ?
-                        -1 :
-                        probabilityValueInTable);
-
-            bool hasNewValue = GetAttributeAtLocation(locationX, locationY, attribute) != value;
-
-            if (hasNewValue || hasNewProbability)
-            {
-                int returnCode = AddOrChangeAttribute(locationX, locationY, attribute, value);
-                int returnCodeProb = AddOrChangeAttribute(locationX, locationY, probabilityAttribute, probabilityValue);
-                return 1;
-            }
-            return 0;*/
         }
 
+        /// <summary>
+        /// Updates the probability.
+        /// </summary>
+        /// <param name="locationX">The location x.</param>
+        /// <param name="locationY">The location y.</param>
+        /// <param name="attributeName">Name of the attribute.</param>
+        /// <param name="newProbability">The new probability.</param>
+        public static void UpdateProbability(int locationX, int locationY, String attributeName, String newProbability)
+        {
+            String oldProbability = GetAttributeAtLocation(locationX, locationY, attributeName);
+
+            // Cas où l'attribut n'existe pas
+            if (oldProbability == null || oldProbability == "")
+            {
+                AddOrChangeAttribute(locationX, locationY, attributeName, newProbability);
+                return;
+            }
+
+            // Cas où la probabilité était de 0
+            if (oldProbability == "0")
+            {
+                return;
+            }
+
+            // Cas où la nouvelle probabilité est de 0
+            if (newProbability == "0")
+            {
+                AddOrChangeAttribute(locationX, locationY, attributeName, newProbability);
+            }
+            else
+            {
+                int oldProba = Convert.ToInt32(oldProbability);
+                int newProba = Convert.ToInt32(newProbability);
+
+                if (newProba > oldProba)
+                {
+                    AddOrChangeAttribute(locationX, locationY, attributeName, newProbability);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds or changes the attribute.
+        /// </summary>
+        /// <param name="locationX">The location x.</param>
+        /// <param name="locationY">The location y.</param>
+        /// <param name="attribute">The attribute.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// Returns an opcode depending on the execution of the function :
+        ///  - -1 if the fact doesn't exist
+        ///  - 0 if the fact exists and do not already have the attribute
+        ///  - 1 otherwise (if the fact exists with the attribute).
+        /// </returns>
         public static int AddOrChangeAttribute(int locationX, int locationY, string attribute, string value)
         {
             XmlDocument xmldoc = new XmlDocument();
@@ -299,90 +293,35 @@ namespace IATD3
             return returnCode;
         }
 
-        private static void AddOrCreateFactsId(int id)
+        #endregion
+
+        #region Private methods
+
+        /// <summary>
+        /// Adds the fact to the fact table.
+        /// </summary>
+        /// <param name="factName">Name of the fact.</param>
+        /// <param name="attributes">The attributes.</param>
+        private static void AddFact(string factName, Dictionary<string, string> attributes)
         {
             XmlDocument xmldoc = new XmlDocument();
             FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
             xmldoc.Load(fs);
 
-            XmlNode element = xmldoc.SelectSingleNode("//Fact[@id='" + id + "']");
-            if (element == null)
-            {
-                fs.Close();
-                return;
-            }
-            XmlNode facts = xmldoc.CreateElement("Facts");
-            XmlElement factsElement = facts as XmlElement;
-            factsElement.SetAttribute("id", id.ToString());
-            xmldoc.DocumentElement.AppendChild(facts);
+            XmlNode facts = xmldoc.DocumentElement.SelectSingleNode("Facts");
 
+            XmlElement newFact = xmldoc.CreateElement("Fact");
+            newFact.InnerText = factName;
+            foreach (string attribute in attributes.Keys)
+            {
+                newFact.SetAttribute(attribute, attributes[attribute]);
+            }
+            facts.AppendChild(newFact);
             fs.SetLength(0);
             xmldoc.Save(fs);
             fs.Close();
         }
 
-        public static int ChangeInnerTextAtLocation(string newInnerText, int locationX, int locationY)
-        {
-
-            XmlDocument xmldoc = new XmlDocument();
-            FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite);
-            xmldoc.Load(fs);
-
-            XmlNode element = xmldoc.SelectSingleNode("//Fact[@locationX='" + locationX.ToString() +
-                "' and @locationY='" + locationY.ToString() + "']");
-            if (element == null)
-            {
-                fs.Close();
-                return -1;
-            }
-            XmlElement fact = element as XmlElement;
-            String oldInnerText = fact.InnerText;
-            fact.InnerText = newInnerText;
-            fs.SetLength(0);
-            xmldoc.Save(fs);
-            fs.Close();
-
-            if (newInnerText != oldInnerText)
-            {
-                return 1;
-            }
-            return 0;
-        }
-
-        public static void UpdateProbability(int locationX, int locationY, String attributeName, String newProbability)
-        {
-            String oldProbability = GetAttributeAtLocation(locationX, locationY, attributeName);
-
-            // Cas l'attribut n'existe pas
-            if (oldProbability == null || oldProbability == "")
-            {
-                AddOrChangeAttribute(locationX, locationY, attributeName, newProbability);
-                return;
-            }
-
-            // Cas la probabilité était de 0
-            if (oldProbability == "0")
-            {
-                return;
-            }
-
-            // Cas où la probabilité n'était pas de 0
-
-            // Cas où la nouvelle probabilité est de 0
-            if (newProbability == "0")
-            {
-                AddOrChangeAttribute(locationX, locationY, attributeName, newProbability);
-            }
-            else
-            {
-                int oldProba = Int32.Parse(oldProbability);
-                int newProba = Int32.Parse(newProbability);
-
-                if(newProba > oldProba)
-                {
-                    AddOrChangeAttribute(locationX, locationY, attributeName, newProbability);
-                }
-            }
-        }
+        #endregion
     }
 }

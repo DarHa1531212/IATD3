@@ -1,37 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IATD3
 {
 
     public class cFact
     {
-        private String element;
-        private Dictionary<String, String> attributs;
+        #region Attributes
 
-        public Dictionary<String, String> Attributs { get => attributs; set => attributs = value; }
+        private String element;
+        private Dictionary<String, String> attributes;
+
+        #endregion
+
+        #region Getters / Setters
+
+        public Dictionary<String, String> Attributes { get => attributes; set => attributes = value; }
         public String Element { get => element; set => element = value; }
+
+        #endregion
+
+        #region Constructors
 
         public cFact(String e)
         {
             element = e;
-            attributs = new Dictionary<String, String>();
+            attributes = new Dictionary<String, String>();
         }
 
-        /*public bool CorrespondsTo(cFact other)
-        {
-            bool correspondsTo = true;
-            foreach (var attribut in Attributs)
-            {
-                if (attribut.Key != "locationX" && attribut.Key != "locationY")
-                {
-                    correspondsTo = correspondsTo && (attribut.Value == other.Attributs[attribut.Key]);
-                }
-            }
-            return correspondsTo;
-        }*/
+        #endregion
     }
 }

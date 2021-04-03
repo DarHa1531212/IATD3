@@ -2,8 +2,9 @@
   <Facts>
     <Fact locationX="0" locationY="0" hasOdour="False" hasWind="False" hasPortal="False" hasMonsterProbability="0" hasAbyssProbability="0" isSafe="True" isSafeProbability="100">Known</Fact>
     <Fact locationX="1" locationY="0" hasMonsterProbability="0" hasAbyssProbability="0" isSafe="True" isSafeProbability="100" hasOdour="True" hasWind="False" hasPortal="False">Known</Fact>
-    <Fact locationX="0" locationY="1" hasMonsterProbability="0" hasAbyssProbability="0" isSafe="True" isSafeProbability="100">Scope</Fact>
+    <Fact locationX="0" locationY="1" hasMonsterProbability="0" hasAbyssProbability="0" isSafe="True" isSafeProbability="100" hasOdour="False" hasWind="True" hasPortal="False">Known</Fact>
     <Fact locationX="2" locationY="0" hasMonsterProbability="25" hasAbyssProbability="0">Scope</Fact>
-    <Fact locationX="1" locationY="1" hasMonsterProbability="25" hasAbyssProbability="0">Scope</Fact>
+    <Fact locationX="1" locationY="1" hasMonsterProbability="0" hasAbyssProbability="0" isSafe="True" isSafeProbability="100">Scope</Fact>
+    <Fact locationX="0" locationY="2" hasMonsterProbability="0" hasAbyssProbability="25">Scope</Fact>
   </Facts>
 </FactTable>

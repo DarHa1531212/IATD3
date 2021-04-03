@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace IATD3
@@ -13,7 +8,7 @@ namespace IATD3
     public partial class Form1 : Form
     {
         private const bool debugMode = true;
-        private static Dictionary<String, String> filenames = new Dictionary<String, String>(){
+        private static readonly Dictionary<String, String> filenames = new Dictionary<String, String>(){
             { "Portal", "Portal.png" },
             { "Abyss", "Abyss.png" },
             { "Monster", "Monster.png" },
@@ -21,7 +16,7 @@ namespace IATD3
             { "Odour", "Odour.png" },
             { "Agent", "Agent.png" }
         };
-        private static Dictionary<String, Color> colors = new Dictionary<String, Color>(){
+        private static readonly Dictionary<String, Color> colors = new Dictionary<String, Color>(){
             { "Portal", Color.Beige },
             { "Abyss", Color.LightSkyBlue },
             { "Monster", Color.PaleVioletRed },
@@ -42,8 +37,8 @@ namespace IATD3
 
         private void InitObject()
         {
-            this.AutoSize = true;
-            environment = new cEnvironment(this.actionsLog, this.bMove, this.gameOverMsg);
+            AutoSize = true;
+            environment = new cEnvironment(actionsLog, bMove, gameOverMsg);
             Board.AutoSize = true;
             boardCpt = 0;
             boardNumber.Text = String.Empty;
@@ -70,15 +65,17 @@ namespace IATD3
             {
                 for (int posY = 0; posY < boardSize; posY++)
                 {
-                    Label label = new Label();
-                    //cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 180 / size);
-                    //cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 180 / size);
-                    //label.TextAlign = ContentAlignment.MiddleCenter;
-                    label.Size = new Size(360 / boardSize, 360 / boardSize);
-                    label.BorderStyle = BorderStyle.Fixed3D;
-                    label.ForeColor = SystemColors.ControlDarkDark;
-                    label.Location = new Point(posX * 360 / boardSize, posY * 360 / boardSize);
-                    label.BackColor = Color.White; 
+                    Label label = new Label
+                    {
+                        //cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 180 / size);
+                        //cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 180 / size);
+                        //label.TextAlign = ContentAlignment.MiddleCenter;
+                        Size = new Size(360 / boardSize, 360 / boardSize),
+                        BorderStyle = BorderStyle.Fixed3D,
+                        ForeColor = SystemColors.ControlDarkDark,
+                        Location = new Point(posX * 360 / boardSize, posY * 360 / boardSize),
+                        BackColor = Color.White
+                    };
                     /*label.Text = "(" + posX + ", " + posY + ")\n" +
                         (environment.Board[posX, posY].HasAbyss ? "Abyss\n" : "") +
                         (environment.Board[posX, posY].HasMonster ? "Monster\n" : "") +
@@ -140,14 +137,16 @@ namespace IATD3
 
         private void createPictureBox(string pictureKey, Label parent, Point location, bool fullSize = false)
         {
-            PictureBox img = new PictureBox();
-            img.ImageLocation = @"../../images/" + filenames[pictureKey];
-            img.SizeMode = PictureBoxSizeMode.Zoom;
-            img.Location = location;
-            img.BackColor = colors[pictureKey];
-            img.Size = fullSize
+            PictureBox img = new PictureBox
+            {
+                ImageLocation = @"../../images/" + filenames[pictureKey],
+                SizeMode = PictureBoxSizeMode.Zoom,
+                Location = location,
+                BackColor = colors[pictureKey],
+                Size = fullSize
                 ? new Size(parent.Size.Width, parent.Size.Height)
-                : new Size(parent.Size.Width / 2, parent.Size.Height / 2);
+                : new Size(parent.Size.Width / 2, parent.Size.Height / 2)
+            };
             new ToolTip().SetToolTip(img, pictureKey);
             parent.Controls.Add(img);
         }
@@ -196,24 +195,24 @@ namespace IATD3
 
         private void resetScoreLabel()
         {
-            this.currentScore.Text = "0";
+            currentScore.Text = "0";
         }
 
         private void addScoreToHistory()
         {
-            if (this.scoreHistory.Text == String.Empty)
+            if (scoreHistory.Text == String.Empty)
             {
-                this.scoreHistory.Text += this.currentScore.Text;
+                scoreHistory.Text += currentScore.Text;
             }
             else
             {
-                this.scoreHistory.Text += ", " + this.currentScore.Text;
+                scoreHistory.Text += ", " + currentScore.Text;
             }
         }
 
         private void resetHistory()
         {
-            this.scoreHistory.Text = "";
+            scoreHistory.Text = "";
         }
 
         private void Form1_Load(object sender, EventArgs e)

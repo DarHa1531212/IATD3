@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IATD3
 {
@@ -14,14 +11,17 @@ namespace IATD3
             environment = _environment;
         }
 
+        /// <summary>
+        /// Senses the position attributes in the environment.    
+        /// </summary>
+        /// <returns>If the position contains a spcific attribute.</returns>
         public abstract bool Sense();
     }
 
     class cSensorLight : cSensor
     {
         public cSensorLight(cEnvironment _environment) : base(_environment)
-        {
-        }
+        { }
 
         public override bool Sense()
         {
@@ -32,8 +32,8 @@ namespace IATD3
     class cSensorOdour : cSensor
     {
         public cSensorOdour(cEnvironment _environment) : base(_environment)
-        {
-        }
+        { }
+
         public override bool Sense()
         {
             return environment.IsAgentCellSmelly();
@@ -42,10 +42,9 @@ namespace IATD3
 
     class cSensorWind : cSensor
     {
-        public cSensorWind(cEnvironment _environment) : base (_environment)
-        {
-
-        }
+        public cSensorWind(cEnvironment _environment) : base(_environment)
+        { }
+        
         public override bool Sense()
         {
             return environment.IsAgentCellWindy();
@@ -68,9 +67,7 @@ namespace IATD3
     public class cSensorAbyss : cSensor
     {
         public cSensorAbyss(cEnvironment _environment) : base(_environment)
-        {
-
-        }
+        { }
         public override bool Sense()
         {
             return environment.IsAgentOnAbyss();
@@ -80,9 +77,7 @@ namespace IATD3
     public class cSensorMonster : cSensor
     {
         public cSensorMonster(cEnvironment _environment) : base(_environment)
-        {
-
-        }
+        { }
         public override bool Sense()
         {
             return environment.IsAgentOnMonster();

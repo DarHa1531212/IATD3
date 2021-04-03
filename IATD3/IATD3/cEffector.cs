@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace IATD3
+﻿namespace IATD3
 {
     public abstract class cEffector
     {
@@ -18,7 +12,7 @@ namespace IATD3
         ///   Sends the action to the environment (to simulate our agent doing the action).    
         /// </summary>
         /// <returns>
-        ///   The cost of the action
+        ///   The cost of the action.
         /// </returns>
         public abstract int DoAction();
     }
@@ -29,9 +23,8 @@ namespace IATD3
         private int movementPosY;
 
         public cEffectorMove(cEnvironment environment) : base(environment)
-        {
+        { }
 
-        }
         public int MovementPosX { get => movementPosX; set => movementPosX = value; }
         public int MovementPosY { get => movementPosY; set => movementPosY = value; }
 
@@ -42,8 +35,6 @@ namespace IATD3
             return DoAction();
         }
 
-
-        //todo remove this function if possible. Exists only due to the override requirement
         public override int DoAction()
         {
             int cost = environment.Move(movementPosX, movementPosY);
@@ -66,10 +57,8 @@ namespace IATD3
 
         public override int DoAction()
         {
-            //int cost = environment.Throw(launchPosY, launchPosX);
             int cost = environment.Throw(launchPosX, launchPosY);
 
-            // Add that there is no monster on selected cell (and delete other fact if exists)
             return cost;
         }
     }

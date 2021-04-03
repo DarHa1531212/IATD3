@@ -1,22 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace IATD3
 {
     public class cCell
     {
+        #region Attributes
+
         private Label label;
-        private int posX;
-        private int posY;
+        private readonly int posX;
+        private readonly int posY;
         private bool hasAbyss;
         private bool hasMonster;
         private bool hasOdour;
         private bool hasWind;
         private bool hasPortal;
+
+        #endregion
+
+        #region Getters / Setters
 
         public bool HasWind { get => hasWind; set => hasWind = value; }
         public bool HasOdour { get => hasOdour; set => hasOdour = value; }
@@ -25,23 +26,30 @@ namespace IATD3
         public bool HasPortal { get => hasPortal; set => hasPortal = value; }
         public Label Label { get => label; set => label = value; }
 
-        public cCell(int posX, int posY, bool hasAbyss, bool hasMonster) {
+        #endregion
+
+        #region Constructors
+
+        public cCell(int posX, int posY, bool hasAbyss, bool hasMonster)
+        {
             this.posX = posX;
             this.posY = posY;
             this.hasAbyss = hasAbyss;
             this.hasMonster = hasMonster;
-            this.hasOdour = false;
-            this.hasWind = false;
+            hasOdour = false;
+            hasWind = false;
         }
         public cCell(int posX, int posY, bool hasPortal)
         {
             this.posX = posX;
             this.posY = posY;
             this.hasPortal = hasPortal;
-            this.hasAbyss = false;
-            this.hasMonster = false;
-            this.hasOdour = false;
-            this.hasWind = false;
+            hasAbyss = false;
+            hasMonster = false;
+            hasOdour = false;
+            hasWind = false;
         }
+
+        #endregion
     }
 }
